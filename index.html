@@ -9,6 +9,13 @@
   <meta property="og:description" content="Stablecoin payout verification layer for wallet ownership, network/asset matching, mismatch detection, and audit trail." />
   <meta property="og:type" content="website" />
   <meta name="theme-color" content="#06080d" />
+  <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://payeeproof.com/payeeproof-logo.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./payeeproof-favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./payeeproof-favicon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./payeeproof-favicon-180.png" />
+  <link rel="shortcut icon" href="./payeeproof-favicon.ico" />
   <style>
     :root {
       --bg: #06080d;
@@ -171,6 +178,14 @@
       display: grid;
       place-items: center;
       font-size: 18px;
+      overflow: hidden;
+      flex: 0 0 42px;
+    }
+    .logo img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
     }
     .brand-title { font-weight: 700; letter-spacing: -0.02em; }
     .brand-sub { color: #71717a; font-size: 12px; }
@@ -371,7 +386,7 @@
   <header class="topbar">
     <div class="container topbar-inner">
       <div class="brand">
-        <div class="logo">✓</div>
+        <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
         <div>
           <div class="brand-title">PayeeProof</div>
           <div class="brand-sub">Stablecoin payout verification layer</div>
@@ -380,7 +395,7 @@
       <nav>
         <a href="#workflow">Workflow</a>
         <a href="#mismatch">Mismatch handling</a>
-        <a href="#api">API</a>
+        <a href="#api">Integrations</a>
         <a href="#contact">Contact</a>
       </nav>
       <div class="btn-row">
@@ -569,25 +584,27 @@
 
     <section id="api" class="section">
       <div class="container">
-        <div class="eyebrow">API and integrations</div>
-        <h2>Built for ops teams, payouts, and internal tools</h2>
-        <p class="section-copy">The first commercial version should look simple on the surface and structured underneath: request creation, result retrieval, webhook delivery, and searchable audit events.</p>
+        <div class="eyebrow">Example API flow</div>
+        <h2>Designed for ops teams, payouts, and internal tools</h2>
+        <p class="section-copy">This block shows an illustrative request / response shape for pilot integrations — not public source code and not a live production endpoint. Its job is simple: make the product feel concrete, integratable, and easy to evaluate.</p>
 
         <div class="grid two-col" style="margin-top: 34px; grid-template-columns: .9fr 1.1fr;">
           <div class="card feature-card">
-            <h3 style="font-size:24px; margin-bottom:14px;">Core modules</h3>
-            <p class="muted" style="margin-bottom:18px;">Enough structure to feel like a product, not a brochure.</p>
+            <h3 style="font-size:24px; margin-bottom:14px;">What this communicates</h3>
+            <p class="muted" style="margin-bottom:18px;">Enough structure to show how PayeeProof fits into a real payout workflow.</p>
             <div class="bullet-list">
-              <div class="bullet"><strong>Client dashboard</strong><span class="muted">Create and monitor verification requests.</span></div>
-              <div class="bullet"><strong>Verification page</strong><span class="muted">Short payee-facing ownership flow.</span></div>
-              <div class="bullet"><strong>Webhook layer</strong><span class="muted">Notify systems when status changes.</span></div>
-              <div class="bullet"><strong>Expiry + policy engine</strong><span class="muted">Handle timeouts and rule blocks.</span></div>
-              <div class="bullet"><strong>Asset / chain checks</strong><span class="muted">Validate expected payout configuration.</span></div>
+              <div class="bullet"><strong>Request creation</strong><span class="muted">A payer system opens a verification request with expected wallet, chain, asset, and expiry.</span></div>
+              <div class="bullet"><strong>Verification session</strong><span class="muted">The payee completes a short ownership and payout-detail check.</span></div>
+              <div class="bullet"><strong>Status delivery</strong><span class="muted">Systems receive a verified / mismatch / expired result.</span></div>
+              <div class="bullet"><strong>Reason codes</strong><span class="muted">Mismatch results return exact failure type and next-action logic.</span></div>
+              <div class="bullet"><strong>Audit events</strong><span class="muted">Ops teams keep a searchable record for review and downstream workflows.</span></div>
             </div>
           </div>
 
           <div class="codebox">
-<pre>POST /v1/verification-requests
+<pre>// Example payload for pilot integrations
+
+POST /v1/verification-requests
 {
   "reference": "invoice_2048",
   "expected_chain": "ethereum",
@@ -643,11 +660,11 @@
 
   <footer class="footer">
     <div class="container footer-inner">
-      <div>© 2026 PayeeProof</div>
+      <div class="footer-brand"><div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div><div class="footer-brand-text">© 2026 PayeeProof</div></div>
       <div class="footer-links">
         <a href="#workflow">Workflow</a>
         <a href="#mismatch">Mismatch handling</a>
-        <a href="#api">API</a>
+        <a href="#api">Integrations</a>
         <a href="#contact">Contact</a>
       </div>
     </div>
