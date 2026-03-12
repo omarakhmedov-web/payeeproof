@@ -1,102 +1,739 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PayeeProof — Verify stablecoin payout details before funds move</title>
-  <meta name="description" content="PayeeProof helps teams verify wallet ownership, network, asset, and payout details before sending stablecoins.">
+  <meta name="description" content="PayeeProof helps teams verify wallet ownership, network, asset, and payout details before sending stablecoins — with clear results, mismatch reasons, and an audit trail." />
+  <meta property="og:title" content="PayeeProof — Verify stablecoin payout details before funds move" />
+  <meta property="og:description" content="Stablecoin payout verification layer for wallet ownership, network/asset matching, mismatch detection, and audit trail." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#06080d" />
   <style>
-    body{
-      margin:0;
-      font-family:Arial,Helvetica,sans-serif;
-      background:#0b0d10;
-      color:#f3f4f6;
-      line-height:1.6;
+    :root {
+      --bg: #06080d;
+      --panel: rgba(255,255,255,.05);
+      --panel-2: rgba(255,255,255,.03);
+      --line: rgba(255,255,255,.10);
+      --text: #f4f4f5;
+      --muted: #a1a1aa;
+      --white: #ffffff;
+      --ok-bg: rgba(16, 185, 129, .10);
+      --ok-line: rgba(16, 185, 129, .20);
+      --warn-bg: rgba(245, 158, 11, .10);
+      --warn-line: rgba(245, 158, 11, .20);
+      --radius-xl: 28px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
     }
-    .wrap{
-      max-width:980px;
-      margin:0 auto;
-      padding:64px 24px;
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
     }
-    h1{
-      font-size:48px;
-      line-height:1.1;
-      margin:0 0 18px;
+
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+    .section { padding: 88px 0; }
+    .section-sm { padding: 64px 0; }
+    .grid { display: grid; gap: 24px; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
     }
-    p{
-      font-size:18px;
-      color:#c9d1d9;
-      max-width:760px;
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: #e4e4e7;
+      padding: 9px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      font-weight: 600;
     }
-    .btns{
-      margin-top:28px;
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
+    .btn-row { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 15px 20px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      font-weight: 700;
+      font-size: 15px;
+      transition: .18s ease;
+      cursor: pointer;
     }
-    a.btn{
-      display:inline-block;
-      padding:14px 18px;
-      border-radius:12px;
-      text-decoration:none;
-      font-weight:700;
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: var(--white);
+      color: #000;
+      border-color: transparent;
     }
-    .primary{
-      background:#ffffff;
-      color:#0b0d10;
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
     }
-    .secondary{
-      border:1px solid #2f3742;
-      color:#f3f4f6;
+    .muted { color: var(--muted); }
+    .eyebrow {
+      color: #a1a1aa;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .22em;
+      margin-bottom: 12px;
     }
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:16px;
-      margin-top:48px;
+    h1, h2, h3, p { margin: 0; }
+    h1 {
+      font-size: clamp(40px, 7vw, 72px);
+      line-height: .98;
+      letter-spacing: -0.04em;
+      max-width: 920px;
     }
-    .card{
-      background:#13171c;
-      border:1px solid #232933;
-      border-radius:18px;
-      padding:20px;
+    h2 {
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: 1.04;
+      letter-spacing: -0.03em;
     }
-    .muted{
-      color:#98a2b3;
-      font-size:14px;
-      margin-top:48px;
+    h3 { font-size: 28px; line-height: 1.1; letter-spacing: -0.02em; }
+    .lead {
+      font-size: clamp(18px, 2.2vw, 22px);
+      color: var(--muted);
+      max-width: 780px;
+      line-height: 1.7;
+    }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.08), transparent 26%),
+        radial-gradient(circle at 82% 8%, rgba(59,130,246,.15), transparent 16%),
+        var(--bg);
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 36px;
+      align-items: center;
+      min-height: 86vh;
+      padding: 56px 0;
+    }
+    .hero-copy { display: grid; gap: 22px; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .tag {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: #d4d4d8;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid var(--line);
+      background: rgba(6,8,13,.8);
+      backdrop-filter: blur(16px);
+    }
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 16px 0;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+    }
+    .brand-title { font-weight: 700; letter-spacing: -0.02em; }
+    .brand-sub { color: #71717a; font-size: 12px; }
+    nav { display: flex; gap: 24px; }
+    nav a { color: var(--muted); font-size: 14px; }
+    nav a:hover { color: var(--white); }
+
+    .demo-card { padding: 24px; }
+    .demo-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 20px;
+    }
+    .badge-ok {
+      color: #86efac;
+      border: 1px solid rgba(134,239,172,.2);
+      background: rgba(34,197,94,.10);
+      border-radius: 999px;
+      font-size: 12px;
+      padding: 8px 12px;
+      font-weight: 600;
+    }
+    .field-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .field { display: grid; gap: 8px; }
+    .field.wide { grid-column: 1 / -1; }
+    label { font-size: 13px; color: var(--muted); }
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.22);
+      color: var(--white);
+      border-radius: 14px;
+      padding: 13px 14px;
+      font: inherit;
+      outline: none;
+    }
+    textarea { min-height: 140px; resize: vertical; }
+    input:focus, textarea:focus, select:focus {
+      border-color: rgba(255,255,255,.28);
+      box-shadow: 0 0 0 4px rgba(255,255,255,.04);
+    }
+
+    .outcome {
+      margin-top: 16px;
+      border-radius: 18px;
+      padding: 16px;
+      border: 1px solid var(--warn-line);
+      background: var(--warn-bg);
+    }
+    .outcome.ok {
+      border-color: var(--ok-line);
+      background: var(--ok-bg);
+    }
+    .outcome-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .statusline { font-size: 14px; color: #d4d4d8; font-weight: 600; }
+    .outcome-title { margin-top: 6px; font-size: 20px; font-weight: 700; }
+    .outcome-note { margin-top: 8px; font-size: 14px; color: #d4d4d8; }
+    .audit-pill {
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.20);
+      color: var(--muted);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .three-col { grid-template-columns: repeat(3, 1fr); }
+    .two-col { grid-template-columns: repeat(2, 1fr); }
+    .feature-card { padding: 26px; }
+    .iconbox {
+      width: 44px; height: 44px;
+      display: grid; place-items: center;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.20);
+      margin-bottom: 16px;
+      font-size: 18px;
+    }
+    .feature-card p, .section-copy { color: var(--muted); }
+    .section-copy { margin-top: 16px; max-width: 860px; font-size: 18px; line-height: 1.8; }
+
+    .tabs { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .tab {
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.20);
+      color: #d4d4d8;
+      text-align: left;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .tab.active {
+      background: #fff;
+      color: #000;
+      border-color: transparent;
+    }
+    .bullet-list { display: grid; gap: 12px; }
+    .bullet {
+      display: flex;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.20);
+      border-radius: 18px;
+      color: #d4d4d8;
+    }
+
+    .soft-section {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: var(--panel-2);
+    }
+
+    .mismatch-card { padding: 22px; }
+    .mismatch-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .mismatch-badge {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: #d4d4d8;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .codebox {
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.24);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      overflow-x: auto;
+    }
+    pre {
+      margin: 0;
+      white-space: pre;
+      color: #d4d4d8;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      padding: 26px 0;
+      color: #71717a;
+      font-size: 14px;
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+    .footer-links { display: flex; gap: 18px; flex-wrap: wrap; }
+    .footer-links a:hover { color: #d4d4d8; }
+
+    @media (max-width: 980px) {
+      nav { display: none; }
+      .hero-grid,
+      .three-col,
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 720px) {
+      .field-grid,
+      .tabs {
+        grid-template-columns: 1fr;
+      }
+      .section { padding: 72px 0; }
+      .hero-grid { min-height: auto; padding: 34px 0 72px; }
+      .btn-row { flex-direction: column; align-items: stretch; }
+      .btn { width: 100%; }
+      .topbar-inner { padding: 14px 0; }
+      .audit-pill { white-space: normal; }
+      .outcome-top { flex-direction: column; }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>Verify stablecoin payout details before funds move.</h1>
-    <p>
-      PayeeProof helps teams verify wallet ownership, network, asset, and payout details
-      before sending stablecoins — with clear results, mismatch reasons, and an audit trail.
-    </p>
-
-    <div class="btns">
-      <a class="btn primary" href="mailto:payeeproof@gmail.com?subject=PayeeProof%20Pilot">Request pilot</a>
-      <a class="btn secondary" href="mailto:payeeproof@gmail.com?subject=PayeeProof%20Demo">Book demo</a>
-    </div>
-
-    <div class="grid">
-      <div class="card">
-        <h3>Create request</h3>
-        <p>Set expected wallet, network, asset, amount reference, and expiry.</p>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="logo">✓</div>
+        <div>
+          <div class="brand-title">PayeeProof</div>
+          <div class="brand-sub">Stablecoin payout verification layer</div>
+        </div>
       </div>
-      <div class="card">
-        <h3>Recipient verifies</h3>
-        <p>Recipient confirms ownership and payout details in a short flow.</p>
-      </div>
-      <div class="card">
-        <h3>Get result + audit</h3>
-        <p>Payer receives a clear pass/mismatch outcome with reason codes and logs.</p>
+      <nav>
+        <a href="#workflow">Workflow</a>
+        <a href="#mismatch">Mismatch handling</a>
+        <a href="#api">API</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="btn-row">
+        <a class="btn btn-secondary" href="#contact">Book demo</a>
+        <a class="btn btn-primary" href="#contact">Request pilot</a>
       </div>
     </div>
+  </header>
 
-    <p class="muted">payeeproof.com</p>
-  </div>
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="pill">Verify payout details before funds move</div>
+          <h1>Reduce stablecoin payout mistakes before the transfer is sent.</h1>
+          <p class="lead">PayeeProof verifies wallet ownership, network, asset, and destination details before a stablecoin payout is released — with exact mismatch reasons, retry logic, and an audit trail.</p>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="#contact">Request pilot →</a>
+            <a class="btn btn-secondary" href="#workflow">View workflow</a>
+          </div>
+          <div class="tag-row">
+            <div class="tag">No custody</div>
+            <div class="tag">Webhook ready</div>
+            <div class="tag">Reason codes</div>
+            <div class="tag">Audit logs</div>
+          </div>
+        </div>
+
+        <div class="card demo-card">
+          <div class="demo-head">
+            <div>
+              <div class="badge-ok">Interactive demo</div>
+            </div>
+            <div class="muted" style="font-size:12px;">Mock state</div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="company">Company</label>
+              <input id="company" value="Atlas Treasury" />
+            </div>
+            <div class="field">
+              <label for="network">Network</label>
+              <select id="network">
+                <option>Ethereum</option>
+                <option>Polygon</option>
+                <option>Arbitrum</option>
+                <option>Base</option>
+                <option>BNB Chain</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="asset">Asset</label>
+              <select id="asset">
+                <option>USDC</option>
+                <option>USDT</option>
+                <option>DAI</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="expected">Expected wallet</label>
+              <input id="expected" value="0xA1f4...9B27" />
+            </div>
+            <div class="field wide">
+              <label for="provided">Provided wallet</label>
+              <input id="provided" value="0xA1f4...9B27" />
+            </div>
+          </div>
+
+          <div id="outcome" class="outcome ok">
+            <div class="outcome-top">
+              <div>
+                <div class="statusline" id="statusLine">Verified</div>
+                <div class="outcome-title" id="reasonTitle">All payout details match the request.</div>
+                <div class="outcome-note" id="nextAction">Safe to proceed to payout approval.</div>
+              </div>
+              <div class="audit-pill">Audit event ready</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="workflow" class="section">
+      <div class="container">
+        <div class="eyebrow">Workflow</div>
+        <h2>A short verification flow for payer and payee</h2>
+        <p class="section-copy">The MVP product form is straightforward: landing page, client dashboard, verification page, result page, and webhook/API layer. The goal is clarity, not ceremony.</p>
+
+        <div class="grid three-col" style="margin-top: 34px;">
+          <article class="card feature-card">
+            <div class="iconbox">1</div>
+            <h3 style="font-size:24px;">Create request</h3>
+            <p style="margin-top:12px;">Set wallet, network, asset, reference, expiry, and payout policy rules.</p>
+          </article>
+          <article class="card feature-card">
+            <div class="iconbox">2</div>
+            <h3 style="font-size:24px;">Verify payee</h3>
+            <p style="margin-top:12px;">Payee confirms wallet ownership and payout details through a short session.</p>
+          </article>
+          <article class="card feature-card">
+            <div class="iconbox">3</div>
+            <h3 style="font-size:24px;">Decide safely</h3>
+            <p style="margin-top:12px;">Payer gets a pass / mismatch result with exact reason code and next action.</p>
+          </article>
+        </div>
+
+        <div class="grid two-col" style="margin-top: 28px; grid-template-columns: .42fr .58fr;">
+          <div class="card feature-card">
+            <h3 style="font-size:24px; margin-bottom:14px;">Role view</h3>
+            <p class="muted" style="margin-bottom:18px;">Switch perspective to explain the workflow in plain language.</p>
+            <div class="tabs">
+              <button class="tab active" data-role="payer">Payer team</button>
+              <button class="tab" data-role="payee">Payee</button>
+              <button class="tab" data-role="result">Result</button>
+            </div>
+          </div>
+
+          <div class="card feature-card">
+            <h3 id="roleTitle" style="font-size:24px; margin-bottom:14px;">Payer team</h3>
+            <p class="muted" style="margin-bottom:18px;">This is the exact shape of the MVP story for outreach and demos.</p>
+            <div id="roleBullets" class="bullet-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="mismatch" class="section soft-section">
+      <div class="container">
+        <div class="eyebrow">Mismatch handling</div>
+        <h2>Mismatch is not a dead end</h2>
+        <p class="section-copy">The MVP should not just say “Mismatch detected.” It should explain what failed, compare expected vs provided values, and tell the user exactly what to do next.</p>
+
+        <div class="grid two-col" style="margin-top: 34px;">
+          <article class="card mismatch-card">
+            <div class="mismatch-top">
+              <strong>WRONG_NETWORK</strong>
+              <span class="mismatch-badge">Retry allowed</span>
+            </div>
+            <p class="muted">Provided wallet is on a different chain than requested.</p>
+            <p style="margin-top: 12px; color:#d4d4d8;">Next action: resubmit using the correct network.</p>
+          </article>
+          <article class="card mismatch-card">
+            <div class="mismatch-top">
+              <strong>WRONG_ASSET</strong>
+              <span class="mismatch-badge">Retry allowed</span>
+            </div>
+            <p class="muted">Requested asset does not match the provided asset.</p>
+            <p style="margin-top: 12px; color:#d4d4d8;">Next action: confirm the payout asset and retry.</p>
+          </article>
+          <article class="card mismatch-card">
+            <div class="mismatch-top">
+              <strong>ADDRESS_MISMATCH</strong>
+              <span class="mismatch-badge">Retry allowed</span>
+            </div>
+            <p class="muted">The submitted wallet differs from the expected destination.</p>
+            <p style="margin-top: 12px; color:#d4d4d8;">Next action: review destination details before approval.</p>
+          </article>
+          <article class="card mismatch-card">
+            <div class="mismatch-top">
+              <strong>OWNERSHIP_PROOF_FAILED</strong>
+              <span class="mismatch-badge">New request</span>
+            </div>
+            <p class="muted">Wallet ownership could not be verified.</p>
+            <p style="margin-top: 12px; color:#d4d4d8;">Next action: start a fresh request or complete proof again.</p>
+          </article>
+          <article class="card mismatch-card">
+            <div class="mismatch-top">
+              <strong>REQUEST_EXPIRED</strong>
+              <span class="mismatch-badge">New request</span>
+            </div>
+            <p class="muted">Verification session timed out.</p>
+            <p style="margin-top: 12px; color:#d4d4d8;">Next action: create a new verification request.</p>
+          </article>
+          <article class="card mismatch-card">
+            <div class="mismatch-top">
+              <strong>POLICY_BLOCKED</strong>
+              <span class="mismatch-badge">Escalate</span>
+            </div>
+            <p class="muted">Payout violated a configured payout rule.</p>
+            <p style="margin-top: 12px; color:#d4d4d8;">Next action: review policy settings and escalate internally.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="api" class="section">
+      <div class="container">
+        <div class="eyebrow">API and integrations</div>
+        <h2>Built for ops teams, payouts, and internal tools</h2>
+        <p class="section-copy">The first commercial version should look simple on the surface and structured underneath: request creation, result retrieval, webhook delivery, and searchable audit events.</p>
+
+        <div class="grid two-col" style="margin-top: 34px; grid-template-columns: .9fr 1.1fr;">
+          <div class="card feature-card">
+            <h3 style="font-size:24px; margin-bottom:14px;">Core modules</h3>
+            <p class="muted" style="margin-bottom:18px;">Enough structure to feel like a product, not a brochure.</p>
+            <div class="bullet-list">
+              <div class="bullet"><strong>Client dashboard</strong><span class="muted">Create and monitor verification requests.</span></div>
+              <div class="bullet"><strong>Verification page</strong><span class="muted">Short payee-facing ownership flow.</span></div>
+              <div class="bullet"><strong>Webhook layer</strong><span class="muted">Notify systems when status changes.</span></div>
+              <div class="bullet"><strong>Expiry + policy engine</strong><span class="muted">Handle timeouts and rule blocks.</span></div>
+              <div class="bullet"><strong>Asset / chain checks</strong><span class="muted">Validate expected payout configuration.</span></div>
+            </div>
+          </div>
+
+          <div class="codebox">
+<pre>POST /v1/verification-requests
+{
+  "reference": "invoice_2048",
+  "expected_chain": "ethereum",
+  "expected_asset": "USDC",
+  "expected_wallet": "0xA1f4...9B27",
+  "expires_in_sec": 1800,
+  "policy": {
+    "allow_retry": true,
+    "block_on_mismatch": true
+  }
+}
+
+200 OK
+{
+  "request_id": "vr_01J...",
+  "status": "pending",
+  "verification_url": "https://payeeproof.com/verify/vr_01J..."
+}</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section soft-section">
+      <div class="container grid two-col" style="grid-template-columns: .9fr 1.1fr; align-items:start;">
+        <div>
+          <div class="eyebrow">Contact</div>
+          <h2>Request a pilot or early access</h2>
+          <p class="section-copy">Use the first version of the site to collect interest, qualify use cases, and convert outreach into real conversations.</p>
+          <div class="grid" style="margin-top:28px; gap:12px;">
+            <div class="bullet"><strong>Email</strong><span class="muted">hello@payeeproof.com</span></div>
+            <div class="bullet"><strong>Use cases</strong><span class="muted">Treasury, finance ops, payroll, marketplaces, and B2B payout workflows.</span></div>
+          </div>
+        </div>
+
+        <div class="card feature-card">
+          <h3 style="font-size:24px; margin-bottom:14px;">Pilot request form</h3>
+          <p class="muted" style="margin-bottom:18px;">Lead capture for the first version. Wire it to email, Google Sheets, or your backend later.</p>
+          <form class="grid" action="mailto:hello@payeeproof.com" method="post" enctype="text/plain">
+            <div class="field-grid">
+              <div class="field"><input name="name" placeholder="Name" /></div>
+              <div class="field"><input name="company" placeholder="Company" /></div>
+              <div class="field"><input name="email" placeholder="Work email" /></div>
+              <div class="field"><input name="volume" placeholder="Monthly payout volume" /></div>
+              <div class="field wide"><textarea name="use_case" placeholder="Describe your payout workflow or use case"></textarea></div>
+            </div>
+            <button class="btn btn-primary" type="submit">Submit request</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>© 2026 PayeeProof</div>
+      <div class="footer-links">
+        <a href="#workflow">Workflow</a>
+        <a href="#mismatch">Mismatch handling</a>
+        <a href="#api">API</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const roles = {
+      payer: {
+        title: 'Payer team',
+        bullets: [
+          'Creates a request with expected wallet, chain, asset, and expiry.',
+          'Gets a clear pass / mismatch decision before funds move.',
+          'Stores an audit trail for ops, finance, and compliance.'
+        ]
+      },
+      payee: {
+        title: 'Payee',
+        bullets: [
+          'Opens a short verification link.',
+          'Confirms wallet ownership and payout details.',
+          'Sees the exact mismatch reason if something is off.'
+        ]
+      },
+      result: {
+        title: 'Result',
+        bullets: [
+          'Status: verified / mismatch / expired / blocked.',
+          'Exact reason code and expected vs provided values.',
+          'Webhook + dashboard log for downstream systems.'
+        ]
+      }
+    };
+
+    const roleTitle = document.getElementById('roleTitle');
+    const roleBullets = document.getElementById('roleBullets');
+    const tabButtons = document.querySelectorAll('.tab');
+
+    function renderRole(key) {
+      const item = roles[key];
+      roleTitle.textContent = item.title;
+      roleBullets.innerHTML = item.bullets.map(b => `<div class="bullet"><strong>›</strong><span>${b}</span></div>`).join('');
+      tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.role === key));
+    }
+    renderRole('payer');
+    tabButtons.forEach(btn => btn.addEventListener('click', () => renderRole(btn.dataset.role)));
+
+    const network = document.getElementById('network');
+    const asset = document.getElementById('asset');
+    const expected = document.getElementById('expected');
+    const provided = document.getElementById('provided');
+    const outcome = document.getElementById('outcome');
+    const statusLine = document.getElementById('statusLine');
+    const reasonTitle = document.getElementById('reasonTitle');
+    const nextAction = document.getElementById('nextAction');
+
+    function updateOutcome() {
+      const chainMatch = network.value === 'Ethereum';
+      const assetMatch = asset.value === 'USDC';
+      const walletMatch = expected.value.trim() === provided.value.trim();
+
+      if (chainMatch && assetMatch && walletMatch) {
+        outcome.classList.add('ok');
+        statusLine.textContent = 'Verified';
+        reasonTitle.textContent = 'All payout details match the request.';
+        nextAction.textContent = 'Safe to proceed to payout approval.';
+        return;
+      }
+
+      outcome.classList.remove('ok');
+      statusLine.textContent = 'Mismatch detected';
+
+      if (!chainMatch) {
+        reasonTitle.textContent = 'WRONG_NETWORK';
+        nextAction.textContent = 'Ask payee to retry with the correct network.';
+      } else if (!assetMatch) {
+        reasonTitle.textContent = 'WRONG_ASSET';
+        nextAction.textContent = 'Confirm the payout asset and retry.';
+      } else {
+        reasonTitle.textContent = 'ADDRESS_MISMATCH';
+        nextAction.textContent = 'Review the destination wallet before approval.';
+      }
+    }
+
+    [network, asset, expected, provided].forEach(el => el.addEventListener('input', updateOutcome));
+    [network, asset].forEach(el => el.addEventListener('change', updateOutcome));
+    updateOutcome();
+  </script>
 </body>
 </html>
