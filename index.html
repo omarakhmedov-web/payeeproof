@@ -369,6 +369,48 @@
       display: none;
     }
 
+    .demo-truststrip {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: #d4d4d8;
+      font-size: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .demo-truststrip strong { color: var(--white); }
+    .explain-box {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.18);
+    }
+    .explain-box .k {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: #a1a1aa;
+      margin-bottom: 8px;
+    }
+    .explain-box .v {
+      font-size: 13px;
+      color: #e4e4e7;
+      line-height: 1.7;
+    }
+    .demo-cta {
+      margin-top: 16px;
+      display: grid;
+      gap: 10px;
+    }
+    .demo-cta-note {
+      font-size: 12px;
+      color: #a1a1aa;
+    }
+
     .three-col { grid-template-columns: repeat(3, 1fr); }
     .two-col { grid-template-columns: repeat(2, 1fr); }
     .feature-card { padding: 26px; }
@@ -620,6 +662,13 @@
             <span id="demoState" class="muted" style="font-size:13px;">Ready to verify.</span>
           </div>
 
+          <div class="demo-truststrip">
+            <strong>Public demo only</strong>
+            <span>· No funds move</span>
+            <span>· No API key in browser</span>
+            <span>· No payout request stored</span>
+          </div>
+
           <div id="demoError" class="demo-error"></div>
 
           <div id="outcome" class="outcome ok">
@@ -649,6 +698,19 @@
                 <div class="k">Provided</div>
                 <div class="v" id="providedResultValue">ethereum · USDC · 0x1111111111111111111111111111111111111111</div>
               </div>
+            </div>
+
+            <div class="explain-box">
+              <div class="k">What happened</div>
+              <div class="v" id="explainValue">All submitted payout details match the expected request. In pilot mode, the client would then validate the signed artifact before releasing funds.</div>
+            </div>
+
+            <div class="demo-cta">
+              <div class="btn-row">
+                <a class="btn btn-primary" href="#contact">Request pilot access</a>
+                <a class="btn btn-secondary" href="#workflow">See integration flow</a>
+              </div>
+              <div class="demo-cta-note">Pilot mode includes authenticated request/session flow, signed verification artifacts, and audit-ready responses.</div>
             </div>
 
             <div class="demo-footnote" id="demoFootnote">This public demo returns a safe preview response. Pilot mode uses the full request/session/artifact flow.</div>
@@ -939,6 +1001,7 @@ POST /demo/verify
     const expectedResultValue = document.getElementById('expectedResultValue');
     const providedResultValue = document.getElementById('providedResultValue');
     const demoFootnote = document.getElementById('demoFootnote');
+    const explainValue = document.getElementById('explainValue');
     const demoState = document.getElementById('demoState');
     const demoError = document.getElementById('demoError');
 
@@ -1031,6 +1094,37 @@ POST /demo/verify
       demoFootnote.textContent = data.demo_only
         ? 'Public demo only. Pilot mode uses the authenticated request/session/artifact flow.'
         : 'Pilot mode response.';
+
+      explainValue.textContent = buildExplanation(data);
+    }
+
+    function buildExplanation(data) {
+      const code = data.reason_code || '';
+      if (data.status === 'verified') {
+        return 'All submitted payout details match the expected request. In pilot mode, the client would then validate the signed artifact before releasing funds.';
+      }
+      if (code === 'ASSET_MISMATCH') {
+        return 'The submitted asset does not match the expected payout asset. Recommended action: block payout, correct the asset, and re-run verification.';
+      }
+      if (code === 'NETWORK_MISMATCH') {
+        return 'The submitted network differs from the requested network. Recommended action: block payout, confirm the correct chain, and retry.';
+      }
+      if (code === 'ADDRESS_MISMATCH') {
+        return 'The submitted destination wallet does not match the expected payout address. Recommended action: stop payout approval and review the destination details.';
+      }
+      if (code === 'OWNERSHIP_PROOF_FAILED') {
+        return 'Wallet ownership could not be verified. Recommended action: do not pay, and start a fresh verification request or complete proof again.';
+      }
+      if (code === 'REQUEST_EXPIRED') {
+        return 'The verification request expired before completion. Recommended action: create a new request and verify again within the allowed time window.';
+      }
+      if (data.status === 'blocked') {
+        return 'The verification result is blocked by policy or proof failure. Recommended action: do not release funds until the issue is resolved.';
+      }
+      if (data.status === 'expired') {
+        return 'The verification window has expired. Recommended action: create a fresh request and repeat verification.';
+      }
+      return 'The submitted payout details do not match the expected request. Recommended action: block payout, review the mismatch reason, and re-run verification if allowed.';
     }
 
     function showError(message) {
