@@ -29,6 +29,8 @@
       --ok-line: rgba(16, 185, 129, .20);
       --warn-bg: rgba(245, 158, 11, .10);
       --warn-line: rgba(245, 158, 11, .20);
+      --bad-bg: rgba(239, 68, 68, .10);
+      --bad-line: rgba(239, 68, 68, .20);
       --radius-xl: 28px;
       --radius-lg: 24px;
       --radius-md: 18px;
@@ -83,6 +85,7 @@
       font-size: 15px;
       transition: .18s ease;
       cursor: pointer;
+      text-align: center;
     }
     .btn:hover { transform: translateY(-1px); }
     .btn-primary {
@@ -93,6 +96,10 @@
     .btn-secondary {
       background: transparent;
       color: var(--text);
+    }
+    .btn-ghost {
+      background: rgba(255,255,255,.03);
+      color: #d4d4d8;
     }
     .muted { color: var(--muted); }
     .eyebrow {
@@ -147,13 +154,13 @@
     }
     .hero-grid {
       display: grid;
-      grid-template-columns: 1.08fr .92fr;
+      grid-template-columns: 1.02fr .98fr;
       gap: 36px;
-      align-items: center;
+      align-items: start;
       min-height: 86vh;
       padding: 56px 0;
     }
-    .hero-copy { display: grid; gap: 22px; }
+    .hero-copy { display: grid; gap: 22px; align-content: center; }
     .tag-row { display: flex; flex-wrap: wrap; gap: 10px; }
     .tag {
       border: 1px solid var(--line);
@@ -229,6 +236,18 @@
     .field-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
     .field { display: grid; gap: 8px; }
     .field.wide { grid-column: 1 / -1; }
+    .demo-group {
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      border-radius: 18px;
+    }
+    .demo-group h4 {
+      margin: 0 0 14px 0;
+      font-size: 14px;
+      letter-spacing: .03em;
+      color: #e4e4e7;
+    }
     label { font-size: 13px; color: var(--muted); }
     input, textarea, select {
       width: 100%;
@@ -246,16 +265,51 @@
       box-shadow: 0 0 0 4px rgba(255,255,255,.04);
     }
 
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 16px 0 4px;
+    }
+    .preset-btn {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: #d4d4d8;
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+    .preset-btn.active,
+    .preset-btn:hover {
+      background: rgba(255,255,255,.08);
+      color: var(--white);
+    }
+
+    .demo-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+      align-items: center;
+    }
+
     .outcome {
-      margin-top: 16px;
+      margin-top: 18px;
       border-radius: 18px;
-      padding: 16px;
+      padding: 18px;
       border: 1px solid var(--warn-line);
       background: var(--warn-bg);
     }
     .outcome.ok {
       border-color: var(--ok-line);
       background: var(--ok-bg);
+    }
+    .outcome.bad {
+      border-color: var(--bad-line);
+      background: var(--bad-bg);
     }
     .outcome-top {
       display: flex;
@@ -274,6 +328,45 @@
       padding: 10px 12px;
       font-size: 12px;
       white-space: nowrap;
+    }
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .result-kv {
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.20);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .result-kv .k {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: #a1a1aa;
+      margin-bottom: 8px;
+    }
+    .result-kv .v {
+      font-size: 13px;
+      color: #f4f4f5;
+      word-break: break-word;
+    }
+    .demo-footnote {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #a1a1aa;
+    }
+    .demo-error {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--bad-line);
+      background: var(--bad-bg);
+      color: #fecaca;
+      font-size: 13px;
+      display: none;
     }
 
     .three-col { grid-template-columns: repeat(3, 1fr); }
@@ -370,6 +463,11 @@
       gap: 18px;
       flex-wrap: wrap;
     }
+    .footer-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
     .footer-links { display: flex; gap: 18px; flex-wrap: wrap; }
     .footer-links a:hover { color: #d4d4d8; }
 
@@ -383,7 +481,8 @@
     }
     @media (max-width: 720px) {
       .field-grid,
-      .tabs {
+      .tabs,
+      .result-grid {
         grid-template-columns: 1fr;
       }
       .section { padding: 72px 0; }
@@ -407,78 +506,121 @@
         </div>
       </div>
       <nav>
+        <a href="#live-demo">Live demo</a>
         <a href="#workflow">Workflow</a>
         <a href="#mismatch">Mismatch handling</a>
         <a href="#api">Integrations</a>
         <a href="#contact">Contact</a>
       </nav>
       <div class="btn-row">
-        <a class="btn btn-secondary" href="#contact">Book 15-min intro</a>
+        <a class="btn btn-secondary" href="#live-demo">Try live demo</a>
         <a class="btn btn-primary" href="#contact">Request pilot review</a>
       </div>
     </div>
   </header>
 
   <main>
-    <section class="hero">
+    <section id="live-demo" class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
           <div class="pill">Verify payout details before funds move</div>
           <h1>Reduce stablecoin payout mistakes before the transfer is sent.</h1>
           <p class="lead">PayeeProof verifies wallet ownership, network, asset, and destination details before a stablecoin payout is released — with exact mismatch reasons, retry logic, and an audit trail.</p>
-          <div class="trustline"><strong>No custody.</strong> No fund movement. Pilot-first verification layer.</div>
+          <div class="trustline"><strong>No custody.</strong> No fund movement. Demo-first verification layer.</div>
           <div class="btn-row">
-            <a class="btn btn-primary" href="#contact">Request pilot review →</a>
+            <a class="btn btn-primary" href="#live-demo">Run live demo →</a>
             <a class="btn btn-secondary" href="#workflow">View workflow</a>
           </div>
           <div class="tag-row">
-            <div class="tag">No custody</div>
-            <div class="tag">Webhook ready</div>
+            <div class="tag">Live demo</div>
+            <div class="tag">No API key in browser</div>
             <div class="tag">Reason codes</div>
-            <div class="tag">Audit logs</div>
+            <div class="tag">Audit-ready responses</div>
           </div>
         </div>
 
         <div class="card demo-card">
           <div class="demo-head">
             <div>
-              <div class="badge-ok">Product preview</div>
+              <div class="badge-ok">Live interactive demo</div>
             </div>
-            <div class="muted" style="font-size:12px;">Illustrative pilot state</div>
+            <div class="muted" style="font-size:12px;">Public demo only · no real payout request stored</div>
           </div>
 
           <div class="field-grid">
-            <div class="field">
-              <label for="company">Company</label>
-              <input id="company" value="Atlas Treasury" />
+            <div class="demo-group">
+              <h4>Expected payout data</h4>
+              <div class="field-grid">
+                <div class="field">
+                  <label for="expectedNetwork">Network</label>
+                  <select id="expectedNetwork">
+                    <option value="ethereum">Ethereum</option>
+                    <option value="polygon">Polygon</option>
+                    <option value="arbitrum">Arbitrum</option>
+                    <option value="base">Base</option>
+                    <option value="bsc">BNB Chain</option>
+                    <option value="solana">Solana</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="expectedAsset">Asset</label>
+                  <select id="expectedAsset">
+                    <option value="USDC">USDC</option>
+                    <option value="USDT">USDT</option>
+                  </select>
+                </div>
+                <div class="field wide">
+                  <label for="expectedWallet">Expected wallet</label>
+                  <input id="expectedWallet" value="0x1111111111111111111111111111111111111111" />
+                </div>
+              </div>
             </div>
-            <div class="field">
-              <label for="network">Network</label>
-              <select id="network">
-                <option>Ethereum</option>
-                <option>Polygon</option>
-                <option>Arbitrum</option>
-                <option>Base</option>
-                <option>BNB Chain</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="asset">Asset</label>
-              <select id="asset">
-                <option>USDC</option>
-                <option>USDT</option>
-                <option>DAI</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="expected">Expected wallet</label>
-              <input id="expected" value="0xA1f4...9B27" />
-            </div>
-            <div class="field wide">
-              <label for="provided">Provided wallet</label>
-              <input id="provided" value="0xA1f4...9B27" />
+
+            <div class="demo-group">
+              <h4>Provided by payee</h4>
+              <div class="field-grid">
+                <div class="field">
+                  <label for="providedNetwork">Network</label>
+                  <select id="providedNetwork">
+                    <option value="ethereum">Ethereum</option>
+                    <option value="polygon">Polygon</option>
+                    <option value="arbitrum">Arbitrum</option>
+                    <option value="base">Base</option>
+                    <option value="bsc">BNB Chain</option>
+                    <option value="solana">Solana</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="providedAsset">Asset</label>
+                  <select id="providedAsset">
+                    <option value="USDC">USDC</option>
+                    <option value="USDT">USDT</option>
+                  </select>
+                </div>
+                <div class="field wide">
+                  <label for="providedWallet">Provided wallet</label>
+                  <input id="providedWallet" value="0x1111111111111111111111111111111111111111" />
+                </div>
+              </div>
             </div>
           </div>
+
+          <div class="preset-row" id="presetRow">
+            <button class="preset-btn active" data-scenario="happy" type="button">Happy path</button>
+            <button class="preset-btn" data-scenario="wrong_asset" type="button">Wrong asset</button>
+            <button class="preset-btn" data-scenario="wrong_network" type="button">Wrong network</button>
+            <button class="preset-btn" data-scenario="address_mismatch" type="button">Address mismatch</button>
+            <button class="preset-btn" data-scenario="ownership_failed" type="button">Ownership failed</button>
+            <button class="preset-btn" data-scenario="expired" type="button">Expired</button>
+          </div>
+
+          <div class="demo-actions">
+            <button id="runDemoBtn" class="btn btn-primary" type="button">Run verification</button>
+            <button id="resetDemoBtn" class="btn btn-ghost" type="button">Reset</button>
+            <span id="demoState" class="muted" style="font-size:13px;">Ready to verify.</span>
+          </div>
+
+          <div id="demoError" class="demo-error"></div>
 
           <div id="outcome" class="outcome ok">
             <div class="outcome-top">
@@ -487,8 +629,29 @@
                 <div class="outcome-title" id="reasonTitle">All payout details match the request.</div>
                 <div class="outcome-note" id="nextAction">Safe to proceed to payout approval.</div>
               </div>
-              <div class="audit-pill">Audit event ready</div>
+              <div class="audit-pill" id="auditPill">Demo response ready</div>
             </div>
+
+            <div class="result-grid">
+              <div class="result-kv">
+                <div class="k">Reason code</div>
+                <div class="v" id="reasonCodeValue">OK</div>
+              </div>
+              <div class="result-kv">
+                <div class="k">Retry allowed</div>
+                <div class="v" id="retryAllowedValue">No</div>
+              </div>
+              <div class="result-kv">
+                <div class="k">Expected</div>
+                <div class="v" id="expectedResultValue">ethereum · USDC · 0x1111111111111111111111111111111111111111</div>
+              </div>
+              <div class="result-kv">
+                <div class="k">Provided</div>
+                <div class="v" id="providedResultValue">ethereum · USDC · 0x1111111111111111111111111111111111111111</div>
+              </div>
+            </div>
+
+            <div class="demo-footnote" id="demoFootnote">This public demo returns a safe preview response. Pilot mode uses the full request/session/artifact flow.</div>
           </div>
         </div>
       </div>
@@ -547,7 +710,7 @@
         <div class="grid two-col" style="margin-top: 34px;">
           <article class="card mismatch-card">
             <div class="mismatch-top">
-              <strong>WRONG_NETWORK</strong>
+              <strong>NETWORK_MISMATCH</strong>
               <span class="mismatch-badge">Retry allowed</span>
             </div>
             <p class="muted">Provided wallet is on a different chain than requested.</p>
@@ -555,7 +718,7 @@
           </article>
           <article class="card mismatch-card">
             <div class="mismatch-top">
-              <strong>WRONG_ASSET</strong>
+              <strong>ASSET_MISMATCH</strong>
               <span class="mismatch-badge">Retry allowed</span>
             </div>
             <p class="muted">Requested asset does not match the provided asset.</p>
@@ -597,7 +760,6 @@
       </div>
     </section>
 
-
     <section id="faq" class="section-sm">
       <div class="container">
         <div class="eyebrow">FAQ</div>
@@ -625,7 +787,7 @@
       <div class="container">
         <div class="eyebrow">Example API flow</div>
         <h2>Designed for ops teams, payouts, and internal tools</h2>
-        <p class="section-copy">This block shows an illustrative request / response shape for pilot integrations — not public source code and not a live production endpoint. Its job is simple: make the product feel concrete, integratable, and easy to evaluate.</p>
+        <p class="section-copy">The public website now includes a live demo preview. Pilot integrations still use the full request / session / artifact flow behind authenticated endpoints.</p>
 
         <div class="grid two-col" style="margin-top: 34px; grid-template-columns: .9fr 1.1fr;">
           <div class="card feature-card">
@@ -641,26 +803,28 @@
           </div>
 
           <div class="codebox">
-<pre>// Example payload for pilot integrations
-
-POST /v1/verification-requests
+<pre>// Public website demo
+POST /demo/verify
 {
-  "reference": "invoice_2048",
-  "expected_chain": "ethereum",
-  "expected_asset": "USDC",
-  "expected_wallet": "0xA1f4...9B27",
-  "expires_in_sec": 1800,
-  "policy": {
-    "allow_retry": true,
-    "block_on_mismatch": true
+  "expected": {
+    "network": "ethereum",
+    "asset": "USDC",
+    "address": "0x1111111111111111111111111111111111111111"
+  },
+  "provided": {
+    "network": "ethereum",
+    "asset": "USDT",
+    "address": "0x1111111111111111111111111111111111111111"
   }
 }
 
 200 OK
 {
-  "request_id": "vr_01J...",
-  "status": "pending",
-  "verification_url": "https://payeeproof.com/verify/vr_01J..."
+  "demo_only": true,
+  "status": "mismatch_detected",
+  "reason_code": "ASSET_MISMATCH",
+  "next_action": "BLOCK_AND_REVERIFY",
+  "retry_allowed": true
 }</pre>
           </div>
         </div>
@@ -703,6 +867,7 @@ POST /v1/verification-requests
     <div class="container footer-inner">
       <div class="footer-brand"><div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div><div class="footer-brand-text">© 2026 PayeeProof</div></div>
       <div class="footer-links">
+        <a href="#live-demo">Live demo</a>
         <a href="#workflow">Workflow</a>
         <a href="#mismatch">Mismatch handling</a>
         <a href="#api">Integrations</a>
@@ -739,6 +904,8 @@ POST /v1/verification-requests
       }
     };
 
+    const DEMO_API_URL = 'https://payeeproof-mvp.onrender.com/demo/verify';
+
     const roleTitle = document.getElementById('roleTitle');
     const roleBullets = document.getElementById('roleBullets');
     const tabButtons = document.querySelectorAll('.tab');
@@ -752,46 +919,214 @@ POST /v1/verification-requests
     renderRole('payer');
     tabButtons.forEach(btn => btn.addEventListener('click', () => renderRole(btn.dataset.role)));
 
-    const network = document.getElementById('network');
-    const asset = document.getElementById('asset');
-    const expected = document.getElementById('expected');
-    const provided = document.getElementById('provided');
+    const expectedNetwork = document.getElementById('expectedNetwork');
+    const expectedAsset = document.getElementById('expectedAsset');
+    const expectedWallet = document.getElementById('expectedWallet');
+    const providedNetwork = document.getElementById('providedNetwork');
+    const providedAsset = document.getElementById('providedAsset');
+    const providedWallet = document.getElementById('providedWallet');
+    const runDemoBtn = document.getElementById('runDemoBtn');
+    const resetDemoBtn = document.getElementById('resetDemoBtn');
+    const presetButtons = document.querySelectorAll('.preset-btn');
+
     const outcome = document.getElementById('outcome');
     const statusLine = document.getElementById('statusLine');
     const reasonTitle = document.getElementById('reasonTitle');
     const nextAction = document.getElementById('nextAction');
+    const auditPill = document.getElementById('auditPill');
+    const reasonCodeValue = document.getElementById('reasonCodeValue');
+    const retryAllowedValue = document.getElementById('retryAllowedValue');
+    const expectedResultValue = document.getElementById('expectedResultValue');
+    const providedResultValue = document.getElementById('providedResultValue');
+    const demoFootnote = document.getElementById('demoFootnote');
+    const demoState = document.getElementById('demoState');
+    const demoError = document.getElementById('demoError');
 
-    function updateOutcome() {
-      const chainMatch = network.value === 'Ethereum';
-      const assetMatch = asset.value === 'USDC';
-      const walletMatch = expected.value.trim() === provided.value.trim();
+    const state = {
+      scenario: 'happy',
+      ownershipProofStatus: 'verified',
+      simulateExpired: false
+    };
 
-      if (chainMatch && assetMatch && walletMatch) {
-        outcome.classList.add('ok');
-        statusLine.textContent = 'Verified';
-        reasonTitle.textContent = 'All payout details match the request.';
-        nextAction.textContent = 'Safe to proceed to payout approval.';
-        return;
+    const defaults = {
+      network: 'ethereum',
+      asset: 'USDC',
+      wallet: '0x1111111111111111111111111111111111111111'
+    };
+
+    function setActivePreset(scenario) {
+      state.scenario = scenario;
+      presetButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.scenario === scenario));
+    }
+
+    function applyScenario(scenario) {
+      expectedNetwork.value = defaults.network;
+      expectedAsset.value = defaults.asset;
+      expectedWallet.value = defaults.wallet;
+      providedNetwork.value = defaults.network;
+      providedAsset.value = defaults.asset;
+      providedWallet.value = defaults.wallet;
+      state.ownershipProofStatus = 'verified';
+      state.simulateExpired = false;
+
+      if (scenario === 'wrong_asset') {
+        providedAsset.value = 'USDT';
+      } else if (scenario === 'wrong_network') {
+        providedNetwork.value = 'polygon';
+      } else if (scenario === 'address_mismatch') {
+        providedWallet.value = '0x2222222222222222222222222222222222222222';
+      } else if (scenario === 'ownership_failed') {
+        state.ownershipProofStatus = 'failed';
+      } else if (scenario === 'expired') {
+        state.simulateExpired = true;
       }
 
-      outcome.classList.remove('ok');
-      statusLine.textContent = 'Mismatch detected';
+      setActivePreset(scenario);
+      clearError();
+    }
 
-      if (!chainMatch) {
-        reasonTitle.textContent = 'WRONG_NETWORK';
-        nextAction.textContent = 'Ask payee to retry with the correct network.';
-      } else if (!assetMatch) {
-        reasonTitle.textContent = 'WRONG_ASSET';
-        nextAction.textContent = 'Confirm the payout asset and retry.';
+    function readPayload() {
+      return {
+        expected: {
+          network: expectedNetwork.value,
+          asset: expectedAsset.value,
+          address: expectedWallet.value.trim()
+        },
+        provided: {
+          network: providedNetwork.value,
+          asset: providedAsset.value,
+          address: providedWallet.value.trim()
+        },
+        ownership_proof_status: state.ownershipProofStatus,
+        simulate_expired: state.simulateExpired
+      };
+    }
+
+    function fmtTriplet(item) {
+      return `${item.network} · ${item.asset} · ${item.address}`;
+    }
+
+    function renderOutcome(data) {
+      outcome.classList.remove('ok', 'bad');
+
+      if (data.status === 'verified') {
+        outcome.classList.add('ok');
+        statusLine.textContent = 'Verified';
+      } else if (data.status === 'blocked' || data.status === 'expired') {
+        outcome.classList.add('bad');
+        statusLine.textContent = data.status === 'expired' ? 'Expired' : 'Blocked';
       } else {
-        reasonTitle.textContent = 'ADDRESS_MISMATCH';
-        nextAction.textContent = 'Review the destination wallet before approval.';
+        statusLine.textContent = 'Mismatch detected';
+      }
+
+      reasonTitle.textContent = data.summary || data.reason_code || data.status;
+      nextAction.textContent = data.next_action || 'Review the result before payout approval.';
+      reasonCodeValue.textContent = data.reason_code || '—';
+      retryAllowedValue.textContent = data.retry_allowed ? 'Yes' : 'No';
+      expectedResultValue.textContent = fmtTriplet(data.expected);
+      providedResultValue.textContent = fmtTriplet(data.provided);
+      auditPill.textContent = data.audit_preview && data.audit_preview.created_at
+        ? `Demo response · ${data.audit_preview.created_at}`
+        : 'Demo response ready';
+      demoFootnote.textContent = data.demo_only
+        ? 'Public demo only. Pilot mode uses the authenticated request/session/artifact flow.'
+        : 'Pilot mode response.';
+    }
+
+    function showError(message) {
+      demoError.style.display = 'block';
+      demoError.textContent = message;
+    }
+
+    function clearError() {
+      demoError.style.display = 'none';
+      demoError.textContent = '';
+    }
+
+    async function runDemo() {
+      clearError();
+      demoState.textContent = 'Running verification…';
+      runDemoBtn.disabled = true;
+
+      try {
+        const response = await fetch(DEMO_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(readPayload())
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          const message = data.message || data.error || `Demo request failed (${response.status})`;
+          showError(message);
+          demoState.textContent = 'Verification failed.';
+          return;
+        }
+
+        renderOutcome(data);
+        demoState.textContent = 'Verification complete.';
+      } catch (error) {
+        showError('Could not reach the demo API. First deploy the updated app.py on Render, then retry.');
+        demoState.textContent = 'Connection error.';
+      } finally {
+        runDemoBtn.disabled = false;
       }
     }
 
-    [network, asset, expected, provided].forEach(el => el.addEventListener('input', updateOutcome));
-    [network, asset].forEach(el => el.addEventListener('change', updateOutcome));
-    updateOutcome();
+    function resetDemo() {
+      applyScenario('happy');
+      renderOutcome({
+        status: 'verified',
+        summary: 'All payout details match the request.',
+        reason_code: 'OK',
+        next_action: 'Safe to proceed to payout approval.',
+        retry_allowed: false,
+        expected: {
+          network: defaults.network,
+          asset: defaults.asset,
+          address: defaults.wallet
+        },
+        provided: {
+          network: defaults.network,
+          asset: defaults.asset,
+          address: defaults.wallet
+        },
+        demo_only: true,
+        audit_preview: {
+          created_at: 'ready'
+        }
+      });
+      demoState.textContent = 'Ready to verify.';
+      clearError();
+    }
+
+    presetButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        applyScenario(btn.dataset.scenario);
+      });
+    });
+
+    [expectedNetwork, expectedAsset, expectedWallet, providedNetwork, providedAsset, providedWallet].forEach(el => {
+      el.addEventListener('input', () => {
+        state.ownershipProofStatus = 'verified';
+        state.simulateExpired = false;
+        setActivePreset('happy');
+        clearError();
+      });
+      el.addEventListener('change', () => {
+        state.ownershipProofStatus = 'verified';
+        state.simulateExpired = false;
+        setActivePreset('happy');
+        clearError();
+      });
+    });
+
+    runDemoBtn.addEventListener('click', runDemo);
+    resetDemoBtn.addEventListener('click', resetDemo);
+
+    applyScenario('happy');
+    resetDemo();
   </script>
 </body>
 </html>
