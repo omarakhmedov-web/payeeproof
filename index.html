@@ -122,6 +122,20 @@
       max-width: 780px;
       line-height: 1.7;
     }
+    .trustline {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      color: #d4d4d8;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .trustline strong { color: var(--white); }
     .hero {
       position: relative;
       overflow: hidden;
@@ -412,6 +426,7 @@
           <div class="pill">Verify payout details before funds move</div>
           <h1>Reduce stablecoin payout mistakes before the transfer is sent.</h1>
           <p class="lead">PayeeProof verifies wallet ownership, network, asset, and destination details before a stablecoin payout is released — with exact mismatch reasons, retry logic, and an audit trail.</p>
+          <div class="trustline"><strong>No custody.</strong> No fund movement. Pilot-first verification layer.</div>
           <div class="btn-row">
             <a class="btn btn-primary" href="#contact">Request pilot →</a>
             <a class="btn btn-secondary" href="#workflow">View workflow</a>
@@ -427,9 +442,9 @@
         <div class="card demo-card">
           <div class="demo-head">
             <div>
-              <div class="badge-ok">Interactive demo</div>
+              <div class="badge-ok">Product preview</div>
             </div>
-            <div class="muted" style="font-size:12px;">Mock state</div>
+            <div class="muted" style="font-size:12px;">Illustrative pilot state</div>
           </div>
 
           <div class="field-grid">
@@ -577,6 +592,30 @@
             </div>
             <p class="muted">Payout violated a configured payout rule.</p>
             <p style="margin-top: 12px; color:#d4d4d8;">Next action: review policy settings and escalate internally.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="faq" class="section-sm">
+      <div class="container">
+        <div class="eyebrow">FAQ</div>
+        <h2>The fast answers buyers look for</h2>
+        <p class="section-copy">Small trust signals matter. These three answers remove the most common early objections.</p>
+
+        <div class="grid three-col" style="margin-top: 34px;">
+          <article class="card feature-card">
+            <h3 style="font-size:22px;">Does PayeeProof hold funds?</h3>
+            <p class="muted" style="margin-top:12px;">No. PayeeProof is a verification layer only. It does not custody assets and does not move funds.</p>
+          </article>
+          <article class="card feature-card">
+            <h3 style="font-size:22px;">How long does verification take?</h3>
+            <p class="muted" style="margin-top:12px;">For standard flows, the target is typically under 60 seconds from request open to result.</p>
+          </article>
+          <article class="card feature-card">
+            <h3 style="font-size:22px;">What happens on mismatch?</h3>
+            <p class="muted" style="margin-top:12px;">The result returns a clear status, exact reason code, expected vs provided values, and the next action.</p>
           </article>
         </div>
       </div>
