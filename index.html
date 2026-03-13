@@ -513,6 +513,19 @@
     .footer-links { display: flex; gap: 18px; flex-wrap: wrap; }
     .footer-links a:hover { color: #d4d4d8; }
 
+
+    .inline-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+    .mini-note {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
     @media (max-width: 980px) {
       nav { display: none; }
       .hero-grid,
@@ -719,6 +732,33 @@
       </div>
     </section>
 
+
+    <section id="who-for" class="section-sm">
+      <div class="container">
+        <div class="eyebrow">Who this is for</div>
+        <h2>Built for teams sending stablecoin payouts where mistakes are expensive.</h2>
+        <p class="section-copy">PayeeProof fits finance, treasury, operations, payroll, OTC, and vendor payout workflows that need one last verification step before funds move.</p>
+
+        <div class="grid three-col" style="margin-top: 34px;">
+          <article class="card feature-card">
+            <div class="iconbox">◦</div>
+            <h3 style="font-size:24px;">Finance & Treasury</h3>
+            <p style="margin-top:12px;">Reduce payout errors before USDC or USDT leaves your workflow.</p>
+          </article>
+          <article class="card feature-card">
+            <div class="iconbox">◦</div>
+            <h3 style="font-size:24px;">Payroll & Vendor Ops</h3>
+            <p style="margin-top:12px;">Confirm network, asset, and wallet details before recurring payments are sent.</p>
+          </article>
+          <article class="card feature-card">
+            <div class="iconbox">◦</div>
+            <h3 style="font-size:24px;">Crypto-native Platforms</h3>
+            <p style="margin-top:12px;">Add a verification layer before disbursements, settlements, or off-platform payouts.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <section id="workflow" class="section">
       <div class="container">
         <div class="eyebrow">Workflow</div>
@@ -889,6 +929,41 @@ POST /demo/verify
   "retry_allowed": true
 }</pre>
           </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="why-pilot" class="section soft-section">
+      <div class="container">
+        <div class="eyebrow">Why pilot first</div>
+        <h2>Start with a controlled pilot before full integration.</h2>
+        <p class="section-copy">The public demo shows how verification decisions work. A pilot adds authenticated request flows, signed verification artifacts, audit-ready responses, and client-specific policies without forcing a full production rollout on day one.</p>
+
+        <div class="grid two-col" style="margin-top: 34px;">
+          <article class="card feature-card">
+            <h3 style="font-size:24px; margin-bottom:14px;">Public demo</h3>
+            <div class="bullet-list">
+              <div class="bullet"><strong>Interactive preview</strong><span class="muted">Run a safe verification scenario directly on the website.</span></div>
+              <div class="bullet"><strong>No credentials needed</strong><span class="muted">No client API key in the browser and no real payout request stored.</span></div>
+              <div class="bullet"><strong>Fast evaluation</strong><span class="muted">Useful for internal review, buyer education, and early screening.</span></div>
+            </div>
+          </article>
+
+          <article class="card feature-card">
+            <h3 style="font-size:24px; margin-bottom:14px;">Pilot mode</h3>
+            <div class="bullet-list">
+              <div class="bullet"><strong>Authenticated flow</strong><span class="muted">Request creation, verification session, and client-bound result handling.</span></div>
+              <div class="bullet"><strong>Signed artifacts</strong><span class="muted">Verification artifacts, clear status logic, and audit-ready responses.</span></div>
+              <div class="bullet"><strong>Client-specific rules</strong><span class="muted">Policy checks, expiry settings, and mismatch handling matched to your workflow.</span></div>
+            </div>
+
+            <div class="inline-cta">
+              <a href="#contact" class="btn btn-primary">Request pilot access</a>
+              <a href="#live-demo" class="btn btn-secondary">Try the demo first</a>
+            </div>
+            <div class="mini-note">Pilot mode is the correct next step for teams that want a real workflow without jumping straight into a full production rollout.</div>
+          </article>
         </div>
       </div>
     </section>
