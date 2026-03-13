@@ -413,8 +413,8 @@
         <a href="#contact">Contact</a>
       </nav>
       <div class="btn-row">
-        <a class="btn btn-secondary" href="#contact">Book demo</a>
-        <a class="btn btn-primary" href="#contact">Request pilot</a>
+        <a class="btn btn-secondary" href="#contact">Book 15-min intro</a>
+        <a class="btn btn-primary" href="#contact">Request pilot review</a>
       </div>
     </div>
   </header>
@@ -428,7 +428,7 @@
           <p class="lead">PayeeProof verifies wallet ownership, network, asset, and destination details before a stablecoin payout is released — with exact mismatch reasons, retry logic, and an audit trail.</p>
           <div class="trustline"><strong>No custody.</strong> No fund movement. Pilot-first verification layer.</div>
           <div class="btn-row">
-            <a class="btn btn-primary" href="#contact">Request pilot →</a>
+            <a class="btn btn-primary" href="#contact">Request pilot review →</a>
             <a class="btn btn-secondary" href="#workflow">View workflow</a>
           </div>
           <div class="tag-row">
@@ -668,29 +668,31 @@ POST /v1/verification-requests
     </section>
 
     <section id="contact" class="section soft-section">
-      <div class="container grid two-col" style="grid-template-columns: .9fr 1.1fr; align-items:start;">
+      <div class="container grid two-col" style="grid-template-columns: .92fr 1.08fr; align-items:start;">
         <div>
-          <div class="eyebrow">Contact</div>
-          <h2>Request a pilot or early access</h2>
-          <p class="section-copy">Use the first version of the site to collect interest, qualify use cases, and convert outreach into real conversations.</p>
+          <div class="eyebrow">Pilot access</div>
+          <h2>Request a pilot walkthrough</h2>
+          <p class="section-copy">Share your payout flow and evaluation goals. PayeeProof is positioned for early teams that want a clear verification layer before funds move — without custody risk or heavy implementation upfront.</p>
           <div class="grid" style="margin-top:28px; gap:12px;">
-            <div class="bullet"><strong>Email</strong><span class="muted">hello@payeeproof.com</span></div>
-            <div class="bullet"><strong>Use cases</strong><span class="muted">Treasury, finance ops, payroll, marketplaces, and B2B payout workflows.</span></div>
+            <div class="bullet"><strong>Best for</strong><span class="muted">Treasury teams, finance ops, payroll flows, marketplaces, OTC desks, and B2B payout workflows.</span></div>
+            <div class="bullet"><strong>What you get</strong><span class="muted">A short fit check, recommended pilot scope, and a practical next step for integration or manual review.</span></div>
+            <div class="bullet"><strong>Contact</strong><span class="muted">hello@payeeproof.com</span></div>
           </div>
+          <p class="muted" style="margin-top:16px; font-size:13px;">Early-access product. Pilot evaluations and first integrations are handled directly with the team.</p>
         </div>
 
         <div class="card feature-card">
-          <h3 style="font-size:24px; margin-bottom:14px;">Pilot request form</h3>
-          <p class="muted" style="margin-bottom:18px;">Lead capture for the first version. Wire it to email, Google Sheets, or your backend later.</p>
+          <h3 style="font-size:24px; margin-bottom:14px;">Request pilot review</h3>
+          <p class="muted" style="margin-bottom:18px;">Tell us who you are, what flow you need to protect, and roughly how often payouts happen. This is enough to start a serious conversation.</p>
           <form class="grid" action="mailto:hello@payeeproof.com" method="post" enctype="text/plain">
             <div class="field-grid">
-              <div class="field"><input name="name" placeholder="Name" /></div>
-              <div class="field"><input name="company" placeholder="Company" /></div>
+              <div class="field"><input name="name" placeholder="Full name" /></div>
+              <div class="field"><input name="company" placeholder="Company / team" /></div>
               <div class="field"><input name="email" placeholder="Work email" /></div>
-              <div class="field"><input name="volume" placeholder="Monthly payout volume" /></div>
-              <div class="field wide"><textarea name="use_case" placeholder="Describe your payout workflow or use case"></textarea></div>
+              <div class="field"><input name="volume" placeholder="Monthly payout volume (optional)" /></div>
+              <div class="field wide"><textarea name="use_case" placeholder="Describe your payout flow, risk point, or pilot use case"></textarea></div>
             </div>
-            <button class="btn btn-primary" type="submit">Submit request</button>
+            <button class="btn btn-primary" type="submit">Request pilot review</button>
           </form>
         </div>
       </div>
