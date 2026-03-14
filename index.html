@@ -959,7 +959,7 @@ POST /demo/verify
               <a href="#contact" class="btn btn-primary">Request pilot access</a>
               <a href="#live-demo" class="btn btn-secondary">Run live demo</a>
             </div>
-            <div class="mini-note">Pilot mode is the correct next step for teams that want a real workflow without jumping straight into a full production rollout. Prefer email? <a href="mailto:hello@payeeproof.com" style="color:#f4f4f5; text-decoration: underline;">hello@payeeproof.com</a></div>
+            <div class="mini-note">Pilot mode is the correct next step for teams that want a real workflow without jumping straight into a full production rollout. Prefer email? <span style="color:#f4f4f5; text-decoration: underline;">hello@payeeproof.com</span></div>
           </article>
         </div>
       </div>
@@ -974,7 +974,7 @@ POST /demo/verify
           <div class="grid" style="margin-top:28px; gap:12px;">
             <div class="bullet"><strong>Best for</strong><span class="muted">Treasury teams, finance ops, payroll flows, marketplaces, OTC desks, and B2B payout workflows.</span></div>
             <div class="bullet"><strong>What you get</strong><span class="muted">A short fit check, recommended pilot scope, and a practical next step for integration or manual review.</span></div>
-            <div class="bullet"><strong>Contact</strong><span class="muted"><a href="mailto:hello@payeeproof.com" style="color:inherit; text-decoration: underline;">hello@payeeproof.com</a></span></div>
+            <div class="bullet"><strong>Contact</strong><span class="muted"><span style="color:inherit; text-decoration: underline;">hello@payeeproof.com</span></span></div>
           </div>
           <p class="muted" style="margin-top:16px; font-size:13px;">Early-access product. Pilot evaluations and first integrations are handled directly with the team.</p>
         </div>
@@ -982,15 +982,21 @@ POST /demo/verify
         <div class="card feature-card">
           <h3 style="font-size:24px; margin-bottom:14px;">Request pilot review</h3>
           <p class="muted" style="margin-bottom:18px;">Tell us who you are, what flow you need to protect, and roughly how often payouts happen. This is enough to start a serious conversation.</p>
-          <form class="grid" action="mailto:hello@payeeproof.com" method="post" enctype="text/plain">
+          <form class="grid" id="pilotRequestForm" novalidate>
             <div class="field-grid">
-              <div class="field"><input name="name" placeholder="Full name" /></div>
-              <div class="field"><input name="company" placeholder="Company / team" /></div>
-              <div class="field"><input name="email" placeholder="Work email" /></div>
-              <div class="field"><input name="volume" placeholder="Monthly payout volume (optional)" /></div>
-              <div class="field wide"><textarea name="use_case" placeholder="Describe your payout flow, risk point, or pilot use case"></textarea></div>
+              <div class="field"><input id="pilotName" name="name" placeholder="Full name" autocomplete="name" /></div>
+              <div class="field"><input id="pilotCompany" name="company" placeholder="Company / team" autocomplete="organization" /></div>
+              <div class="field"><input id="pilotEmail" name="email" type="email" placeholder="Work email" autocomplete="email" /></div>
+              <div class="field"><input id="pilotVolume" name="volume" placeholder="Monthly payout volume (optional)" /></div>
+              <div class="field wide"><textarea id="pilotUseCase" name="use_case" placeholder="Describe your payout flow, risk point, or pilot use case"></textarea></div>
             </div>
-            <button class="btn btn-primary" type="submit">Request pilot review</button>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+              <button class="btn btn-primary" id="pilotRequestBtn" type="submit">Request pilot review</button>
+              <button class="btn btn-secondary" id="pilotCopyBtn" type="button">Copy request details</button>
+            </div>
+            <div id="pilotFormMsg" class="muted" style="margin-top:12px; font-size:13px;">
+              Submitted securely to the PayeeProof team. No mail client opens.
+            </div>
           </form>
         </div>
       </div>
@@ -1039,6 +1045,7 @@ POST /demo/verify
     };
 
     const DEMO_API_URL = 'https://payeeproof-mvp.onrender.com/demo/verify';
+    const PILOT_REQUEST_API_URL = 'https://payeeproof-mvp.onrender.com/pilot-request';
 
     const roleTitle = document.getElementById('roleTitle');
     const roleBullets = document.getElementById('roleBullets');
@@ -1293,6 +1300,124 @@ POST /demo/verify
 
     applyScenario('happy');
     resetDemo();
+
+    const pilotRequestForm = document.getElementById('pilotRequestForm');
+    const pilotRequestBtn = document.getElementById('pilotRequestBtn');
+    const pilotCopyBtn = document.getElementById('pilotCopyBtn');
+    const pilotFormMsg = document.getElementById('pilotFormMsg');
+    const pilotName = document.getElementById('pilotName');
+    const pilotCompany = document.getElementById('pilotCompany');
+    const pilotEmail = document.getElementById('pilotEmail');
+    const pilotVolume = document.getElementById('pilotVolume');
+    const pilotUseCase = document.getElementById('pilotUseCase');
+
+    function setPilotFormMessage(message, type = 'neutral') {
+      pilotFormMsg.textContent = message;
+      pilotFormMsg.style.color = type === 'error'
+        ? '#fca5a5'
+        : type === 'success'
+          ? '#86efac'
+          : '#a6afbe';
+    }
+
+    function buildPilotPayload() {
+      const payload = {
+        name: pilotName.value.trim(),
+        company: pilotCompany.value.trim(),
+        email: pilotEmail.value.trim(),
+        volume: pilotVolume.value.trim(),
+        notes: pilotUseCase.value.trim()
+      };
+
+      if (!payload.name || !payload.company || !payload.email || !payload.notes) {
+        setPilotFormMessage('Please complete Full name, Company / team, Work email, and Use case before submitting.', 'error');
+        return null;
+      }
+
+      return payload;
+    }
+
+    function buildPilotCopyText(payload) {
+      return [
+        'PayeeProof pilot request',
+        '',
+        `Name: ${payload.name}`,
+        `Company / team: ${payload.company}`,
+        `Work email: ${payload.email}`,
+        `Monthly payout volume: ${payload.volume || 'Not provided'}`,
+        '',
+        'Use case / flow:',
+        payload.notes,
+        '',
+        'Sent from: https://payeeproof.com'
+      ].join('\n');
+    }
+
+    async function copyPilotDraft(body) {
+      try {
+        await navigator.clipboard.writeText(body);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    async function handlePilotRequest(event) {
+      event.preventDefault();
+      const payload = buildPilotPayload();
+      if (!payload) return;
+
+      pilotRequestBtn.disabled = true;
+      pilotCopyBtn.disabled = true;
+      setPilotFormMessage('Sending your request…');
+
+      try {
+        const response = await fetch(PILOT_REQUEST_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          const message = data.message || data.error || `Pilot request failed (${response.status})`;
+          setPilotFormMessage(message, 'error');
+          return;
+        }
+
+        pilotRequestForm.reset();
+        setPilotFormMessage(data.message || 'Your request has been sent successfully.', 'success');
+      } catch (error) {
+        setPilotFormMessage('Could not send your request right now. Please try again in a moment.', 'error');
+      } finally {
+        pilotRequestBtn.disabled = false;
+        pilotCopyBtn.disabled = false;
+      }
+    }
+
+    async function handlePilotCopy() {
+      const payload = buildPilotPayload();
+      if (!payload) return;
+
+      pilotCopyBtn.disabled = true;
+      const copied = await copyPilotDraft(buildPilotCopyText(payload));
+      setPilotFormMessage(
+        copied
+          ? 'Request details copied to your clipboard.'
+          : 'Clipboard copy was blocked. Please allow clipboard access and retry.',
+        copied ? 'success' : 'error'
+      );
+      pilotCopyBtn.disabled = false;
+    }
+
+    if (pilotRequestForm) {
+      pilotRequestForm.addEventListener('submit', handlePilotRequest);
+    }
+    if (pilotCopyBtn) {
+      pilotCopyBtn.addEventListener('click', handlePilotCopy);
+    }
+
   </script>
 </body>
 </html>
