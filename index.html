@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PayeeProof — Verify stablecoin payout details before funds move</title>
-  <meta name="description" content="PayeeProof helps teams verify wallet ownership, network, asset, and payout details before sending stablecoins — with clear results, mismatch reasons, and an audit trail." />
+  <meta name="description" content="PayeeProof helps teams verify wallet ownership, network, asset, and payout details before sending stablecoins — with security-first controls, clear mismatch reasons, and an audit trail." />
   <meta property="og:title" content="PayeeProof — Verify stablecoin payout details before funds move" />
-  <meta property="og:description" content="Stablecoin payout verification layer for wallet ownership, network/asset matching, mismatch detection, and audit trail." />
+  <meta property="og:description" content="Security-first stablecoin payout verification layer for wallet ownership, network and asset matching, mismatch detection, and audit trail." />
   <meta property="og:type" content="website" />
   <meta name="theme-color" content="#06080d" />
   <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
@@ -563,6 +563,7 @@
       </div>
       <nav>
         <a href="#live-demo">Live demo</a>
+        <a href="#security">Security</a>
         <a href="#workflow">Workflow</a>
         <a href="#mismatch">Mismatch handling</a>
         <a href="#api">Integrations</a>
@@ -579,18 +580,18 @@
     <section id="live-demo" class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <div class="pill">Verify payout details before funds move</div>
-          <h1>Reduce stablecoin payout mistakes before the transfer is sent.</h1>
-          <p class="lead">PayeeProof verifies wallet ownership, network, asset, and destination details before a stablecoin payout is released — with exact mismatch reasons, retry logic, and an audit trail.</p>
-          <div class="trustline"><strong>No custody.</strong> No fund movement. Demo-first verification layer.</div>
+          <div class="pill">Security-first payout verification</div>
+          <h1>Verify stablecoin payout details before funds move.</h1>
+          <p class="lead">PayeeProof is built as a security-first verification layer for stablecoin payouts — checking wallet ownership, network, asset, and destination details before release, with fail-closed logic, exact mismatch reasons, and an audit-friendly result trail.</p>
+          <div class="trustline"><strong>No custody.</strong> No wallet access. Fail-closed verification.</div>
           <div class="btn-row">
             <a class="btn btn-primary" href="#live-demo">Run live demo →</a>
             <a class="btn btn-secondary" href="#workflow">View workflow</a>
           </div>
           <div class="tag-row">
-            <div class="tag">Live demo</div>
-            <div class="tag">No API key in browser</div>
-            <div class="tag">Reason codes</div>
+            <div class="tag">Security-first</div>
+            <div class="tag">No custody</div>
+            <div class="tag">Fail-closed logic</div>
             <div class="tag">Audit-ready responses</div>
           </div>
         </div>
@@ -724,7 +725,7 @@
                 <a class="btn btn-primary" href="#contact">Request pilot access</a>
                 <a class="btn btn-secondary" href="#workflow">See integration flow</a>
               </div>
-              <div class="demo-cta-note">Pilot mode includes authenticated request/session flow, signed verification artifacts, and audit-ready responses.</div>
+              <div class="demo-cta-note">Pilot mode includes authenticated request/session flow, security-first approval gates, signed verification artifacts, and audit-ready responses.</div>
             </div>
 
             <div class="demo-footnote" id="demoFootnote">This public demo returns a safe preview response. Pilot mode uses the full request/session/artifact flow.</div>
@@ -733,6 +734,53 @@
       </div>
     </section>
 
+
+    <section id="security" class="section-sm soft-section">
+      <div class="container">
+        <div class="eyebrow">Security model</div>
+        <h2>Security is not an add-on here — it is the control layer.</h2>
+        <p class="section-copy">PayeeProof is being built as a security-first verification layer for stablecoin payouts. It is not a wallet, not a custodian, and not a payment processor. Its role is to verify payout details before execution, minimize trust assumptions, and return a structured result that client systems can review, log, and use in approval flows.</p>
+
+        <div class="grid three-col" style="margin-top: 34px;">
+          <article class="card feature-card">
+            <div class="iconbox">S</div>
+            <h3 style="font-size:24px;">No custody. Minimal trust surface.</h3>
+            <p style="margin-top:12px;">PayeeProof does not hold customer funds and does not execute payouts. Verification is kept separate from fund movement to reduce exposure.</p>
+          </article>
+          <article class="card feature-card">
+            <div class="iconbox">F</div>
+            <h3 style="font-size:24px;">Fail-closed by design</h3>
+            <p style="margin-top:12px;">If verification is missing, expired, invalid, or mismatched, the safe outcome is block, reverify, or stop — not “continue anyway”.</p>
+          </article>
+          <article class="card feature-card">
+            <div class="iconbox">T</div>
+            <h3 style="font-size:24px;">Short-lived verification windows</h3>
+            <p style="margin-top:12px;">Verification should be fresh. Short-lived sessions help reduce replay risk and keep approval tied to a live workflow.</p>
+          </article>
+          <article class="card feature-card">
+            <div class="iconbox">A</div>
+            <h3 style="font-size:24px;">Audit-friendly result trail</h3>
+            <p style="margin-top:12px;">Each outcome is structured for review and downstream controls, including status, exact mismatch reasons, expected vs provided values, and next action.</p>
+          </article>
+          <article class="card feature-card">
+            <div class="iconbox">V</div>
+            <h3 style="font-size:24px;">Verifiable artifact direction</h3>
+            <p style="margin-top:12px;">Pilot-mode architecture is being shaped toward signed verification artifacts and client-side validation, so approval logic can rely on verifiable results rather than blind trust.</p>
+          </article>
+          <article class="card feature-card">
+            <div class="iconbox">R</div>
+            <h3 style="font-size:24px;">Built for high-trust workflows</h3>
+            <p style="margin-top:12px;">The goal is not a generic address checker. It is a control layer for treasury, payroll, vendor, and crypto-native payout flows where mistakes are operationally expensive.</p>
+          </article>
+        </div>
+
+        <div class="card feature-card" style="margin-top: 28px;">
+          <div class="eyebrow" style="margin-bottom:10px;">Architecture direction</div>
+          <h3 style="font-size:24px; margin-bottom:12px;">Zero-trust payout verification</h3>
+          <p class="muted">PayeeProof should not become a new point of blind trust. It is being built toward a verifiable-control model: signed artifacts, short TTLs, clearer approval gates, tighter key handling, and stronger auditability for payout workflows that need serious controls.</p>
+        </div>
+      </div>
+    </section>
 
     <section id="who-for" class="section-sm">
       <div class="container">
@@ -1007,6 +1055,7 @@ POST /demo/verify
       <div class="footer-brand"><div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div><div class="footer-brand-text">© 2026 PayeeProof</div></div>
       <div class="footer-links">
         <a href="#live-demo">Live demo</a>
+        <a href="#security">Security</a>
         <a href="#workflow">Workflow</a>
         <a href="#mismatch">Mismatch handling</a>
         <a href="#api">Integrations</a>
