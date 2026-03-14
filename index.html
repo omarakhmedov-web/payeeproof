@@ -548,18 +548,6 @@
       .audit-pill { white-space: normal; }
       .outcome-top { flex-direction: column; }
     }
-    .pp-debug-panel {
-      margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(239, 68, 68, 0.28);
-      background: rgba(15, 23, 42, 0.88);
-      color: #fca5a5;
-      font-size: 12px;
-      line-height: 1.55;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
 
   </style>
 </head>
@@ -1007,10 +995,7 @@ POST /demo/verify
               <button class="btn btn-primary" id="pilotRequestBtn" type="submit">Request pilot review</button>
               <button class="btn btn-secondary" id="pilotCopyBtn" type="button">Copy request details</button>
             </div>
-            <div id="pilotFormMsg" class="muted" style="margin-top:12px; font-size:13px;">
-              Submitted securely to the PayeeProof team. No mail client opens.
-            </div>
-            <pre class="pp-debug-panel" id="pilotDebugPanel" hidden></pre>
+            <div id="pilotFormMsg" class="muted" style="margin-top:12px; font-size:13px; display:none;"></div>
           </form>
         </div>
       </div>
@@ -1325,8 +1310,12 @@ POST /demo/verify
     const pilotVolume = document.getElementById('pilotVolume');
     const pilotUseCase = document.getElementById('pilotUseCase');
 
-    function setPilotFormMessage(message, type = 'neutral') {
-      pilotFormMsg.textContent = message;
+    setPilotFormMessage('');
+
+    function setPilotFormMessage(message = '', type = 'neutral') {
+      const hasMessage = Boolean(message && String(message).trim());
+      pilotFormMsg.textContent = hasMessage ? message : '';
+      pilotFormMsg.style.display = hasMessage ? 'block' : 'none';
       pilotFormMsg.style.color = type === 'error'
         ? '#fca5a5'
         : type === 'success'
@@ -1376,18 +1365,6 @@ POST /demo/verify
       }
     }
 
-    function setPilotDebug(message) {
-      const debugPanel = document.getElementById('pilotDebugPanel');
-      if (!debugPanel) return;
-      if (!message) {
-        debugPanel.hidden = true;
-        debugPanel.textContent = '';
-        return;
-      }
-      debugPanel.hidden = false;
-      debugPanel.textContent = message;
-    }
-
     async function handlePilotRequest(event) {
       event.preventDefault();
       const payload = buildPilotPayload();
@@ -1395,12 +1372,9 @@ POST /demo/verify
 
       pilotRequestBtn.disabled = true;
       pilotCopyBtn.disabled = true;
-      setPilotDebug('');
       setPilotFormMessage('Sending your request…');
 
       try {
-        console.log('[PayeeProof] Sending pilot request to:', PILOT_REQUEST_API_URL, payload);
-
         const response = await fetch(PILOT_REQUEST_API_URL, {
           method: 'POST',
           mode: 'cors',
@@ -1411,35 +1385,20 @@ POST /demo/verify
         });
 
         const rawText = await response.text();
-        console.log('[PayeeProof] Pilot response status:', response.status, response.statusText);
-        console.log('[PayeeProof] Pilot response body:', rawText);
-
         let data = {};
         try {
           data = rawText ? JSON.parse(rawText) : {};
-        } catch (parseError) {
-          console.error('[PayeeProof] Could not parse pilot response JSON:', parseError);
-        }
+        } catch (parseError) {}
 
         if (!response.ok) {
           const message = data.message || data.error || `Pilot request failed (${response.status})`;
-          setPilotDebug(`HTTP ${response.status} ${response.statusText}\nResponse: ${rawText || '[empty body]'}`);
           setPilotFormMessage(message, 'error');
           return;
         }
 
         pilotRequestForm.reset();
-        setPilotDebug(`HTTP ${response.status} ${response.statusText}\nResponse: ${rawText || '{ }'}`);
-        setPilotFormMessage(data.message || 'Your request has been sent successfully.', 'success');
+        setPilotFormMessage('Submitted securely to the PayeeProof team.', 'success');
       } catch (error) {
-        console.error('[PayeeProof] Pilot request fetch failed:', error);
-        const details = [
-          `Fetch error: ${error && error.message ? error.message : String(error)}`,
-          `Endpoint: ${PILOT_REQUEST_API_URL}`,
-          `Origin: ${window.location.origin}`,
-          `User agent: ${navigator.userAgent}`
-        ].join('\n');
-        setPilotDebug(details);
         setPilotFormMessage(`Could not send your request right now. ${error && error.message ? error.message : 'Please try again in a moment.'}`, 'error');
       } finally {
         pilotRequestBtn.disabled = false;
