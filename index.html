@@ -1038,7 +1038,7 @@ POST /demo/verify
               <div class="field"><input id="pilotCompany" name="company" placeholder="Company / team" autocomplete="organization" /></div>
               <div class="field"><input id="pilotEmail" name="email" type="email" placeholder="Work email" autocomplete="email" /></div>
               <div class="field"><input id="pilotVolume" name="volume" placeholder="Monthly payout volume (optional)" /></div>
-              <div class="field wide"><textarea id="pilotUseCase" name="use_case" placeholder="Describe your payout flow, risk point, or pilot use case"></textarea></div>
+              <div class="field wide"><textarea id="pilotUseCase" name="use_case" placeholder="What payout or verification flow do you want to protect?"></textarea></div>
             </div>
             <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
               <button class="btn btn-primary" id="pilotRequestBtn" type="submit">Request pilot review</button>
@@ -1359,6 +1359,11 @@ POST /demo/verify
     const pilotEmail = document.getElementById('pilotEmail');
     const pilotVolume = document.getElementById('pilotVolume');
     const pilotUseCase = document.getElementById('pilotUseCase');
+    const PERSONAL_EMAIL_DOMAINS = new Set([
+      'gmail.com','googlemail.com','yahoo.com','yahoo.co.uk','outlook.com','hotmail.com','live.com','msn.com',
+      'icloud.com','me.com','mac.com','aol.com','proton.me','protonmail.com','pm.me','mail.com','gmx.com',
+      'gmx.de','yandex.ru','yandex.com','ya.ru','bk.ru','inbox.ru','list.ru','mail.ru','qq.com','163.com','126.com'
+    ]);
 
     setPilotFormMessage('');
 
@@ -1373,6 +1378,14 @@ POST /demo/verify
           : '#a6afbe';
     }
 
+    function isPersonalEmail(email) {
+      const value = String(email || '').trim().toLowerCase();
+      const atIndex = value.lastIndexOf('@');
+      if (atIndex === -1) return false;
+      const domain = value.slice(atIndex + 1);
+      return PERSONAL_EMAIL_DOMAINS.has(domain);
+    }
+
     function buildPilotPayload() {
       const payload = {
         name: pilotName.value.trim(),
@@ -1383,7 +1396,18 @@ POST /demo/verify
       };
 
       if (!payload.name || !payload.company || !payload.email || !payload.notes) {
-        setPilotFormMessage('Please complete Full name, Company / team, Work email, and Use case before submitting.', 'error');
+        setPilotFormMessage('Please complete Full name, Company / team, Work email, and What payout or verification flow do you want to protect? before submitting.', 'error');
+        return null;
+      }
+
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(payload.email)) {
+        setPilotFormMessage('Please enter a valid work email address.', 'error');
+        return null;
+      }
+
+      if (isPersonalEmail(payload.email)) {
+        setPilotFormMessage('Please use your work email. Personal email domains are not accepted.', 'error');
         return null;
       }
 
@@ -1399,7 +1423,7 @@ POST /demo/verify
         `Work email: ${payload.email}`,
         `Monthly payout volume: ${payload.volume || 'Not provided'}`,
         '',
-        'Use case / flow:',
+        'What payout or verification flow do you want to protect?',
         payload.notes,
         '',
         'Sent from: https://payeeproof.com'
