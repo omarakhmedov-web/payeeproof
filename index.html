@@ -6,7 +6,7 @@
   <title>PayeeProof — live transfer safety for stablecoin payouts</title>
   <meta name="description" content="PayeeProof adds a real pre-send verification layer and practical post-error recovery guidance for stablecoin transfers." />
   <meta property="og:title" content="PayeeProof — live transfer safety for stablecoin payouts" />
-  <meta property="og:description" content="Pre-send verification and post-error recovery, backed by live chain lookups and tx/hash analysis." />
+  <meta property="og:description" content="Pre-send verification and post-error recovery, backed by live chain lookups and transaction analysis." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -255,14 +255,14 @@
             <a class="btn btn-secondary" href="#recovery">Open Recovery Guide</a>
           </div>
           <div class="tag-row">
-            <div class="tag">Live on-chain destination checks</div>
-            <div class="tag">Real tx/hash lookup</div>
-            <div class="tag">Fail-closed decisions</div>
+            <div class="tag">Live recipient-type checks</div>
+            <div class="tag">Real transaction lookup</div>
+            <div class="tag">Block when details do not match</div>
             <div class="tag">No custody</div>
           </div>
           <div class="status-strip">
             <div class="status-chip" id="apiStatus">API status: checking…</div>
-            <div class="status-chip" id="apiConfigured">RPC status: checking…</div>
+            <div class="status-chip" id="apiConfigured">Network checks: checking…</div>
           </div>
         </div>
 
@@ -287,7 +287,7 @@
       <div class="container">
         <div class="eyebrow">Before sending</div>
         <h2>Pre-Send Check</h2>
-        <p class="lead" style="max-width:900px; margin-top:14px;">Use this before funds move. The service compares expected and provided transfer details, validates the address format, and performs a live on-chain destination classification.</p>
+        <p class="lead" style="max-width:900px; margin-top:14px;">Use this before funds move. The service compares expected and provided transfer details, validates the address format, and runs a live check to understand what kind of recipient address was entered.</p>
 
         <div class="card panel" style="margin-top:32px;">
           <div class="panel-head">
@@ -295,7 +295,7 @@
               <h3 style="font-size:24px; margin-bottom:8px;">Run a live verification</h3>
               <p class="muted">Expected vs provided chain, asset, address, and memo/tag. Demo assets in this interface are USDC and USDT. More assets and networks will be added over time.</p>
             </div>
-            <div class="panel-badge">/api/preflight-check</div>
+            <div class="panel-badge">Live checker</div>
           </div>
 
           <div class="grid two-col">
@@ -376,14 +376,14 @@
               <div>
                 <div class="result-status" id="pfResultStatus">Verified</div>
                 <div class="result-title" id="pfResultTitle">All submitted payout details match.</div>
-                <div class="result-text" id="pfResultText">The destination passed structural matching and basic on-chain classification.</div>
+                <div class="result-text" id="pfResultText">The recipient details match and the address passed a basic live recipient check.</div>
               </div>
               <div class="panel-badge" id="pfReason">OK</div>
             </div>
             <div class="result-kv-grid">
-              <div class="result-kv"><div class="result-k">Next action</div><div class="result-v" id="pfNext">SAFE_TO_PROCEED</div></div>
+              <div class="result-kv"><div class="result-k">Next action</div><div class="result-v" id="pfNext">Safe to proceed</div></div>
               <div class="result-kv"><div class="result-k">Risk flags</div><div class="result-v" id="pfFlags">None</div></div>
-              <div class="result-kv"><div class="result-k">Provided destination type</div><div class="result-v" id="pfDestType">unknown</div></div>
+              <div class="result-kv"><div class="result-k">Recipient address type</div><div class="result-v" id="pfDestType">Not clearly identified</div></div>
               <div class="result-kv"><div class="result-k">Checks</div><div class="result-v check-list" id="pfChecks"><div class="check-row"><span>All checks</span><span class="status-yes">Green</span></div></div></div>
             </div>
           </div>
@@ -395,15 +395,15 @@
       <div class="container">
         <div class="eyebrow">After a mistake</div>
         <h2>Mistake Recovery Guide</h2>
-        <p class="lead" style="max-width:900px; margin-top:14px;">Use this after something already went wrong. The service looks up the live transaction and returns practical recovery guidance based on chain, tx status, destination type, and issue type.</p>
+        <p class="lead" style="max-width:900px; margin-top:14px;">Use this after something already went wrong. The service looks up the live transaction and returns practical recovery guidance based on the network, transaction status, recipient type, and issue type.</p>
 
         <div class="card panel" style="margin-top:32px;">
           <div class="panel-head">
             <div>
-              <h3 style="font-size:24px; margin-bottom:8px;">Analyze a real tx/hash</h3>
-              <p class="muted">Paste a real transaction hash to get live status, destination analysis, and practical recovery guidance. More networks will be added over time.</p>
+              <h3 style="font-size:24px; margin-bottom:8px;">Analyze a real transaction</h3>
+              <p class="muted">Paste a real transaction hash to get live status, recipient analysis, and practical recovery guidance. More networks will be added over time.</p>
             </div>
-            <div class="panel-badge">Recovery API</div>
+            <div class="panel-badge">Live analysis</div>
           </div>
 
           <div class="grid two-col">
@@ -426,13 +426,13 @@
                   <select id="rcIssueType">
                     <option value="wrong_network">Wrong network</option>
                     <option value="wrong_address">Wrong address</option>
-                    <option value="sent_to_contract">Sent to contract / program</option>
+                    <option value="sent_to_contract">Sent to smart contract / app</option>
                     <option value="missing_memo">Missing memo / tag</option>
                     <option value="unknown">General analysis</option>
                   </select>
                 </div>
                 <div class="field wide">
-                  <label for="rcHash">Transaction hash / signature</label>
+                  <label for="rcHash">Transaction hash</label>
                   <input id="rcHash" placeholder="0x..." />
                 </div>
                 <div class="field wide">
@@ -456,8 +456,8 @@
             <div class="group">
               <h4>What the guide returns</h4>
               <div class="list" style="margin-top:0;">
-                <div class="list-item"><strong>Status</strong><span>Found / failed / reverted / not found / unavailable</span></div>
-                <div class="list-item"><strong>Observed</strong><span>Chain, status, recipient, token transfer hints, contract/program classification</span></div>
+                <div class="list-item"><strong>Status</strong><span>Confirmed / failed / not found / unavailable</span></div>
+                <div class="list-item"><strong>What was detected</strong><span>Network, status, recipient, transfer hints, and whether the recipient is a wallet, contract, or app</span></div>
                 <div class="list-item"><strong>Recoverability</strong><span>Possible / manual review / unlikely / depends</span></div>
                 <div class="list-item"><strong>Next actions</strong><span>Practical steps for the user or support team</span></div>
               </div>
@@ -465,7 +465,7 @@
           </div>
 
           <div class="panel-actions">
-            <button class="btn btn-primary" id="rcRunBtn" type="button">Analyze tx/hash</button>
+            <button class="btn btn-primary" id="rcRunBtn" type="button">Analyze transaction</button>
             <button class="btn btn-secondary" id="rcClearBtn" type="button">Clear</button>
           </div>
           <div class="note" id="rcState">Ready.</div>
@@ -500,12 +500,12 @@
             <p class="muted">PayeeProof does not hold funds and does not execute transfers. It exists to verify or analyze, not to move money.</p>
           </article>
           <article class="card panel">
-            <h3 style="font-size:22px; margin-bottom:12px;">Fail-closed</h3>
+            <h3 style="font-size:22px; margin-bottom:12px;">Block when details do not match</h3>
             <p class="muted">If details are invalid, mismatched, or suspicious, the safe answer is block, reverify, or escalate — not “probably fine.”</p>
           </article>
           <article class="card panel">
-            <h3 style="font-size:22px; margin-bottom:12px;">Live chain checks</h3>
-            <p class="muted">Uses live RPC lookups for destination classification and transaction analysis instead of purely static form logic.</p>
+            <h3 style="font-size:22px; margin-bottom:12px;">Live network checks</h3>
+            <p class="muted">Uses live blockchain lookups to identify the recipient type and analyze transactions instead of relying only on static form checks.</p>
           </article>
         </div>
       </div>
@@ -517,13 +517,13 @@
         <h2>One system for prevention and recovery.</h2>
         <div class="grid two-col" style="margin-top:34px; grid-template-columns: .95fr 1.05fr;">
           <div class="card panel">
-            <h3 style="font-size:24px; margin-bottom:14px;">What the backend does</h3>
+            <h3 style="font-size:24px; margin-bottom:14px;">What the service does</h3>
             <div class="list" style="margin-top:0;">
-              <div class="list-item"><strong>Preflight</strong><span>Address validation, expected-vs-provided comparison, live on-chain destination classification.</span></div>
-              <div class="list-item"><strong>Recovery</strong><span>Transaction lookup, receipt/status analysis, destination-type checks, practical recovery guidance.</span></div>
-              <div class="list-item"><strong>Pilot leads</strong><span>Stores pilot requests in SQLite and can email them to hello@payeeproof.com.</span></div>
+              <div class="list-item"><strong>Pre-Send Check</strong><span>Checks address format, compares expected and provided details, and runs a live recipient-type check.</span></div>
+              <div class="list-item"><strong>Recovery Guide</strong><span>Looks up a transaction, checks its status, identifies the recipient type, and suggests next steps.</span></div>
+              <div class="list-item"><strong>Pilot requests</strong><span>Saves pilot requests and can email them to hello@payeeproof.com.</span></div>
             </div>
-            <p class="note" style="margin-top:16px;">Private exchange-account verification still requires exchange-side APIs or partnership access. Current coverage focuses on public-chain verification and recovery workflows.</p>
+            <p class="note" style="margin-top:16px;">Some exchange deposit checks still require direct exchange integrations. Current coverage focuses on public blockchain verification and recovery guidance.</p>
           </div>
           <div class="card panel" style="background: rgba(0,0,0,.22);">
 <pre style="margin:0; white-space:pre-wrap; color:#d4d4d8; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; line-height:1.7;">POST /api/preflight-check
@@ -637,6 +637,92 @@ POST Recovery API
       return labels[key] || key.replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
     }
 
+    function humanizeCode(value) {
+      return String(value || '').replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
+    }
+
+    function formatNetworkName(value) {
+      const labels = {
+        ethereum: 'Ethereum',
+        arbitrum: 'Arbitrum',
+        base: 'Base',
+        polygon: 'Polygon',
+        bsc: 'BNB Chain',
+        solana: 'Solana',
+      };
+      return labels[String(value || '').toLowerCase()] || humanizeCode(value);
+    }
+
+    function formatStatusLabel(value) {
+      const labels = {
+        verified: 'Verified',
+        mismatch_detected: 'Mismatch detected',
+        blocked: 'Blocked',
+        error: 'Error',
+        found: 'Found',
+        failed: 'Failed',
+        reverted: 'Failed on-chain',
+        not_found: 'Not found',
+        unavailable: 'Unavailable',
+        confirmed: 'Confirmed',
+        pending: 'Pending',
+      };
+      return labels[String(value || '').toLowerCase()] || humanizeCode(value || '—');
+    }
+
+    function formatReasonLabel(value) {
+      const labels = {
+        OK: 'OK',
+        NETWORK_MISMATCH: 'Wrong network',
+        ASSET_MISMATCH: 'Wrong asset',
+        ADDRESS_MISMATCH: 'Wrong address',
+        MEMO_MISMATCH: 'Memo or tag does not match',
+        INVALID_ADDRESS: 'Invalid address',
+        REQUEST_FAILED: 'Service unavailable',
+        TX_NOT_FOUND: 'Transaction not found',
+        GENERAL_ONCHAIN_GUIDANCE: 'Live transaction guidance',
+      };
+      return labels[String(value || '').toUpperCase()] || humanizeCode(value || '—');
+    }
+
+    function formatNextActionLabel(value) {
+      const labels = {
+        SAFE_TO_PROCEED: 'Safe to proceed',
+        BLOCK_AND_REVERIFY: 'Stop and re-check details',
+        CHECK_BACKEND: 'Service check needed',
+      };
+      return labels[String(value || '').toUpperCase()] || humanizeCode(value || '—');
+    }
+
+    function formatAddressType(value) {
+      const labels = {
+        eoa: 'Regular wallet',
+        contract: 'Smart contract',
+        program: 'On-chain app / program',
+        exchange_deposit: 'Exchange deposit address',
+        deposit_address: 'Exchange deposit address',
+        wallet: 'Regular wallet',
+        unknown: 'Not clearly identified',
+      };
+      return labels[String(value || '').toLowerCase()] || humanizeCode(value || 'Not clearly identified');
+    }
+
+    function formatRecoverability(value) {
+      const labels = {
+        possible: 'Recovery may be possible',
+        manual_review: 'Needs manual review',
+        unlikely: 'Recovery is unlikely',
+        depends: 'Depends on the recipient and platform',
+        unknown: 'Not clear yet',
+      };
+      return labels[String(value || '').toLowerCase()] || humanizeCode(value || '—');
+    }
+
+    function formatRiskFlags(flags) {
+      if (!Array.isArray(flags) || !flags.length) return 'None';
+      return flags.map((item) => humanizeCode(item)).join(', ');
+    }
+
     function renderChecks(checks) {
       const entries = Object.entries(checks || {});
       if (!entries.length) {
@@ -667,11 +753,11 @@ POST Recovery API
         const data = await fetchJson(HEALTH_URL, { method: 'GET' });
         el('apiStatus').innerHTML = `API status: <span class="live-indicator">live</span>`;
         const configured = data.rpc_configured || {};
-        const ready = Object.entries(configured).filter(([,v]) => v).map(([k]) => k);
-        el('apiConfigured').textContent = ready.length ? `RPC status: ${ready.join(', ')}` : 'RPC status: no RPC configured';
+        const ready = Object.entries(configured).filter(([,v]) => v).map(([k]) => formatNetworkName(k));
+        el('apiConfigured').textContent = ready.length ? `Network checks: ${ready.join(', ')}` : 'Network checks: not configured';
       } catch (err) {
         el('apiStatus').innerHTML = `API status: <span class="offline-indicator">offline</span>`;
-        el('apiConfigured').textContent = 'RPC status: backend not reachable';
+        el('apiConfigured').textContent = 'Network checks: service not reachable';
       }
     }
 
@@ -719,24 +805,24 @@ POST Recovery API
         const data = await fetchJson(PRECHECK_URL, { method: 'POST', body: JSON.stringify(payload) });
         const box = el('pfResult');
         setResultBox(box, data.status);
-        el('pfResultStatus').textContent = data.status;
-        el('pfResultTitle').textContent = data.summary || data.reason_code || 'Preflight result';
+        el('pfResultStatus').textContent = formatStatusLabel(data.status);
+        el('pfResultTitle').textContent = data.summary || formatReasonLabel(data.reason_code) || 'Pre-Send result';
         el('pfResultText').textContent = data.explanation || 'No explanation returned.';
-        el('pfReason').textContent = data.reason_code || '—';
-        el('pfNext').textContent = data.next_action || '—';
-        el('pfFlags').textContent = (data.risk_flags && data.risk_flags.length) ? data.risk_flags.join(', ') : 'None';
-        el('pfDestType').textContent = (((data.onchain || {}).provided || {}).address_type) || 'unknown';
+        el('pfReason').textContent = formatReasonLabel(data.reason_code);
+        el('pfNext').textContent = formatNextActionLabel(data.next_action);
+        el('pfFlags').textContent = formatRiskFlags(data.risk_flags);
+        el('pfDestType').textContent = formatAddressType((((data.onchain || {}).provided || {}).address_type) || 'unknown');
         const checks = data.checks || {};
         el('pfChecks').innerHTML = renderChecks(checks);
         el('pfState').textContent = 'Pre-send check complete.';
       } catch (err) {
         const box = el('pfResult');
         setResultBox(box, 'blocked');
-        el('pfResultStatus').textContent = 'error';
-        el('pfResultTitle').textContent = 'Pre-send check failed.';
-        el('pfResultText').textContent = err.message || 'Could not reach backend.';
-        el('pfReason').textContent = 'REQUEST_FAILED';
-        el('pfNext').textContent = 'CHECK_BACKEND';
+        el('pfResultStatus').textContent = 'Error';
+        el('pfResultTitle').textContent = 'Pre-Send Check failed.';
+        el('pfResultText').textContent = err.message || 'Could not reach the service.';
+        el('pfReason').textContent = formatReasonLabel('REQUEST_FAILED');
+        el('pfNext').textContent = formatNextActionLabel('CHECK_BACKEND');
         el('pfFlags').textContent = '—';
         el('pfDestType').textContent = '—';
         el('pfChecks').innerHTML = '<div class="check-row"><span>Checks unavailable</span><span>—</span></div>';
@@ -759,27 +845,27 @@ POST Recovery API
         const box = el('rcResult');
         setRecoveryExpanded(true);
         setResultBox(box, data.status);
-        el('rcResultStatus').textContent = data.status || 'found';
+        el('rcResultStatus').textContent = formatStatusLabel(data.status || 'found');
         el('rcResultTitle').textContent = data.summary || 'Recovery analysis ready.';
-        el('rcResultText').textContent = `Reason code: ${data.reason_code || '—'}`;
-        el('rcReason').textContent = data.reason_code || '—';
-        el('rcRecoverability').textContent = data.recoverability || '—';
-        el('rcDestination').textContent = observed.destination ? `${observed.destination} (${observed.destination_type || 'unknown'})` : '—';
-        el('rcObservedStatus').textContent = observed.tx_status || data.status || '—';
+        el('rcResultText').textContent = data.explanation || `Guidance type: ${formatReasonLabel(data.reason_code)}`;
+        el('rcReason').textContent = formatReasonLabel(data.reason_code);
+        el('rcRecoverability').textContent = formatRecoverability(data.recoverability);
+        el('rcDestination').textContent = observed.destination ? `${observed.destination} (${formatAddressType(observed.destination_type || 'unknown')})` : '—';
+        el('rcObservedStatus').textContent = formatStatusLabel(observed.tx_status || data.status || '—');
         el('rcNextActions').textContent = (data.next_actions || []).join(' | ') || '—';
         el('rcState').textContent = 'Recovery analysis complete.';
       } catch (err) {
         const box = el('rcResult');
         setRecoveryExpanded(false);
         setResultBox(box, 'failed');
-        el('rcResultStatus').textContent = 'error';
+        el('rcResultStatus').textContent = 'Error';
         el('rcResultTitle').textContent = 'Recovery analysis failed.';
-        el('rcResultText').textContent = err.message || 'Could not reach backend.';
+        el('rcResultText').textContent = err.message || 'Could not reach the service.';
         el('rcReason').textContent = 'REQUEST_FAILED';
         el('rcRecoverability').textContent = '—';
         el('rcDestination').textContent = '—';
         el('rcObservedStatus').textContent = '—';
-        el('rcNextActions').textContent = 'Check backend deployment and RPC configuration.';
+        el('rcNextActions').textContent = 'Check whether the service is live and network connections are working.';
         el('rcState').textContent = 'Backend request failed.';
       }
     }
