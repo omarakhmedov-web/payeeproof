@@ -240,9 +240,9 @@
     <section class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <div class="pill">Real service · not a static mock</div>
+          <div class="pill">Live checks · no custody</div>
           <h1>Check before sending. Recover faster after mistakes.</h1>
-          <p class="lead">PayeeProof is moving from a pure landing page into a working service with two practical layers: <strong>Pre-Send Check</strong> for blocking preventable transfer mistakes, and <strong>Mistake Recovery Copilot</strong> for guiding users after a bad send using real tx/hash analysis.</p>
+          <p class="lead">PayeeProof adds two practical layers: <strong>Pre-Send Check</strong> for blocking preventable transfer mistakes before funds move, and <strong>Mistake Recovery Copilot</strong> for guiding users after a bad send using live transaction analysis.</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="#preflight">Open Pre-Send Check →</a>
             <a class="btn btn-secondary" href="#recovery">Open Recovery Copilot</a>
@@ -262,23 +262,23 @@
         <div class="card panel">
           <div class="panel-head">
             <div>
-              <div class="panel-badge">Why this version matters</div>
+              <div class="panel-badge">What PayeeProof does</div>
             </div>
           </div>
           <div class="list">
-            <div class="list-item"><strong>1.</strong><span>Partners can test a <strong>real working flow</strong>, not just read positioning copy.</span></div>
-            <div class="list-item"><strong>2.</strong><span>Users get value before and after a mistake: prevention first, recovery second.</span></div>
-            <div class="list-item"><strong>3.</strong><span>The same product story works for buyers, exchanges, ops teams, payroll flows, and treasury teams.</span></div>
-            <div class="list-item"><strong>4.</strong><span>The backend is modular: EVM + Solana now, deeper chain coverage and partner APIs next.</span></div>
+            <div class="list-item"><strong>1.</strong><span>Checks expected vs provided transfer details before approval.</span></div>
+            <div class="list-item"><strong>2.</strong><span>Helps block mismatched network, asset, address, memo, or destination details.</span></div>
+            <div class="list-item"><strong>3.</strong><span>Analyzes completed transactions and returns practical next steps after a mistake.</span></div>
+            <div class="list-item"><strong>4.</strong><span>Starts with core supported networks today and expands coverage over time.</span></div>
           </div>
-          <p class="note" style="margin-top:14px;">PayeeProof should look less like “we may build this” and more like “here is the control layer, try it.”</p>
+          <p class="note" style="margin-top:14px;">Built to reduce preventable transfer errors before they become support cases or lost funds.</p>
         </div>
       </div>
     </section>
 
     <section id="preflight" class="section">
       <div class="container">
-        <div class="eyebrow">Window 1</div>
+        <div class="eyebrow">Before sending</div>
         <h2>Pre-Send Check</h2>
         <p class="lead" style="max-width:900px; margin-top:14px;">Use this before funds move. The service compares expected and provided transfer details, validates the address format, and performs a live on-chain destination classification.</p>
 
@@ -286,7 +286,7 @@
           <div class="panel-head">
             <div>
               <h3 style="font-size:24px; margin-bottom:8px;">Run a live verification</h3>
-              <p class="muted">Expected vs provided chain, asset, address, and memo/tag. The result is built for blocking bad sends before approval.</p>
+              <p class="muted">Expected vs provided chain, asset, address, and memo/tag. Demo assets in this interface are USDC and USDT. More assets and networks will be added over time.</p>
             </div>
             <div class="panel-badge">/api/preflight-check</div>
           </div>
@@ -303,8 +303,7 @@
                     <option value="base">Base</option>
                     <option value="polygon">Polygon</option>
                     <option value="bsc">BNB Chain</option>
-                    <option value="solana">Solana</option>
-                  </select>
+                                      </select>
                 </div>
                 <div class="field">
                   <label for="pfExpectedAsset">Asset</label>
@@ -315,7 +314,7 @@
                 </div>
                 <div class="field wide">
                   <label for="pfExpectedAddress">Expected address</label>
-                  <input id="pfExpectedAddress" placeholder="0x... or Solana address" />
+                  <input id="pfExpectedAddress" placeholder="0x..." />
                 </div>
                 <div class="field wide">
                   <label for="pfExpectedMemo">Expected memo / tag (optional)</label>
@@ -335,8 +334,7 @@
                     <option value="base">Base</option>
                     <option value="polygon">Polygon</option>
                     <option value="bsc">BNB Chain</option>
-                    <option value="solana">Solana</option>
-                  </select>
+                                      </select>
                 </div>
                 <div class="field">
                   <label for="pfProvidedAsset">Asset</label>
@@ -347,7 +345,7 @@
                 </div>
                 <div class="field wide">
                   <label for="pfProvidedAddress">Provided address</label>
-                  <input id="pfProvidedAddress" placeholder="0x... or Solana address" />
+                  <input id="pfProvidedAddress" placeholder="0x..." />
                 </div>
                 <div class="field wide">
                   <label for="pfProvidedMemo">Provided memo / tag (optional)</label>
@@ -386,7 +384,7 @@
 
     <section id="recovery" class="section soft-section">
       <div class="container">
-        <div class="eyebrow">Window 2</div>
+        <div class="eyebrow">After a mistake</div>
         <h2>Mistake Recovery Copilot</h2>
         <p class="lead" style="max-width:900px; margin-top:14px;">Use this after something already went wrong. The service looks up the live transaction and returns practical recovery guidance based on chain, tx status, destination type, and issue type.</p>
 
@@ -394,7 +392,7 @@
           <div class="panel-head">
             <div>
               <h3 style="font-size:24px; margin-bottom:8px;">Analyze a real tx/hash</h3>
-              <p class="muted">EVM chains: live transaction + receipt + token transfer extraction. Solana: live transaction lookup and parsed account view.</p>
+              <p class="muted">Paste a real transaction hash to get live status, destination analysis, and practical recovery guidance. More networks will be added over time.</p>
             </div>
             <div class="panel-badge">/api/recovery-copilot</div>
           </div>
@@ -411,8 +409,7 @@
                     <option value="base">Base</option>
                     <option value="polygon">Polygon</option>
                     <option value="bsc">BNB Chain</option>
-                    <option value="solana">Solana</option>
-                  </select>
+                                      </select>
                 </div>
                 <div class="field">
                   <label for="rcIssueType">Issue type</label>
@@ -426,7 +423,7 @@
                 </div>
                 <div class="field wide">
                   <label for="rcHash">Transaction hash / signature</label>
-                  <input id="rcHash" placeholder="0x... or Solana signature" />
+                  <input id="rcHash" placeholder="0x..." />
                 </div>
                 <div class="field wide">
                   <label for="rcIntendedAddress">Intended destination (optional)</label>
@@ -441,8 +438,7 @@
                     <option value="base">Base</option>
                     <option value="polygon">Polygon</option>
                     <option value="bsc">BNB Chain</option>
-                    <option value="solana">Solana</option>
-                  </select>
+                                      </select>
                 </div>
               </div>
             </div>
@@ -469,7 +465,7 @@
               <div>
                 <div class="result-status" id="rcResultStatus">Waiting</div>
                 <div class="result-title" id="rcResultTitle">No transaction analyzed yet.</div>
-                <div class="result-text" id="rcResultText">Paste a real tx/hash or Solana signature to get a live result.</div>
+                <div class="result-text" id="rcResultText">Paste a real transaction hash to get a live result.</div>
               </div>
               <div class="panel-badge" id="rcReason">—</div>
             </div>
@@ -499,7 +495,7 @@
           </article>
           <article class="card panel">
             <h3 style="font-size:22px; margin-bottom:12px;">Live chain checks</h3>
-            <p class="muted">This version uses live RPC lookups for destination classification and transaction analysis instead of purely static form logic.</p>
+            <p class="muted">Uses live RPC lookups for destination classification and transaction analysis instead of purely static form logic.</p>
           </article>
         </div>
       </div>
@@ -508,16 +504,16 @@
     <section id="api" class="section soft-section">
       <div class="container">
         <div class="eyebrow">API shape</div>
-        <h2>Two public-facing product surfaces. One backend.</h2>
+        <h2>Two product surfaces. One backend.</h2>
         <div class="grid two-col" style="margin-top:34px; grid-template-columns: .95fr 1.05fr;">
           <div class="card panel">
-            <h3 style="font-size:24px; margin-bottom:14px;">What the backend now does</h3>
+            <h3 style="font-size:24px; margin-bottom:14px;">What the backend does</h3>
             <div class="list" style="margin-top:0;">
               <div class="list-item"><strong>Preflight</strong><span>Address validation, expected-vs-provided comparison, live on-chain destination classification.</span></div>
               <div class="list-item"><strong>Recovery</strong><span>Transaction lookup, receipt/status analysis, destination-type checks, practical recovery guidance.</span></div>
               <div class="list-item"><strong>Pilot leads</strong><span>Stores pilot requests in SQLite and can email them to hello@payeeproof.com.</span></div>
             </div>
-            <p class="note" style="margin-top:16px;">Honest limitation: private exchange-account verification still requires exchange-side APIs or partnership access. This MVP solves the public-chain part for real.</p>
+            <p class="note" style="margin-top:16px;">Private exchange-account verification still requires exchange-side APIs or partnership access. Current coverage focuses on public-chain verification and recovery workflows.</p>
           </div>
           <div class="card panel" style="background: rgba(0,0,0,.22);">
 <pre style="margin:0; white-space:pre-wrap; color:#d4d4d8; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; line-height:1.7;">POST /api/preflight-check
@@ -551,7 +547,7 @@ POST /api/recovery-copilot
         <div>
           <div class="eyebrow">Pilot</div>
           <h2>Request a pilot review</h2>
-          <p class="lead" style="max-width:760px; margin-top:14px;">This version is designed to prove capability: real checks, real lookup logic, real product direction. Use the form to describe the payout or recovery flow you want to protect.</p>
+          <p class="lead" style="max-width:760px; margin-top:14px;">Use the form to describe the payout or recovery flow you want to protect. PayeeProof is built for teams that need an extra control layer before transfer approval and after transfer mistakes.</p>
           <div class="list" style="margin-top:24px;">
             <div class="list-item"><strong>Best fit</strong><span>Treasury teams, payroll flows, payout ops, exchanges, marketplaces, OTC desks.</span></div>
             <div class="list-item"><strong>What you get</strong><span>A practical fit check and a clear next step for pilot scope.</span></div>
@@ -754,7 +750,7 @@ POST /api/recovery-copilot
       box.classList.remove('ok', 'bad');
       el('rcResultStatus').textContent = 'Waiting';
       el('rcResultTitle').textContent = 'No transaction analyzed yet.';
-      el('rcResultText').textContent = 'Paste a real tx/hash or Solana signature to get a live result.';
+      el('rcResultText').textContent = 'Paste a real transaction hash to get a live result.';
       el('rcReason').textContent = '—';
       el('rcRecoverability').textContent = '—';
       el('rcDestination').textContent = '—';
