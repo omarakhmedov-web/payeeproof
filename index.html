@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PayeeProof — Verify stablecoin payout details before funds move</title>
-  <meta name="description" content="PayeeProof helps teams verify wallet ownership, network, asset, and payout details before sending stablecoins — with security-first controls, clear mismatch reasons, and an audit trail." />
-  <meta property="og:title" content="PayeeProof — Verify stablecoin payout details before funds move" />
-  <meta property="og:description" content="Security-first stablecoin payout verification layer for wallet ownership, network and asset matching, mismatch detection, and audit trail." />
+  <title>PayeeProof — live transfer safety for stablecoin payouts</title>
+  <meta name="description" content="PayeeProof adds a real pre-send verification layer and a real post-error recovery copilot for stablecoin transfers." />
+  <meta property="og:title" content="PayeeProof — live transfer safety for stablecoin payouts" />
+  <meta property="og:description" content="Pre-send verification and post-error recovery, backed by live chain lookups and tx/hash analysis." />
   <meta property="og:type" content="website" />
-  <meta name="theme-color" content="#06080d" />
-  <meta name="websitelaunches-verification" content="f5230d27a4535ac7ce5dc40ff1c1d3e7" />
   <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://payeeproof.com/payeeproof-logo.png" />
+  <meta name="theme-color" content="#06080d" />
+  <meta name="websitelaunches-verification" content="f5230d27a4535ac7ce5dc40ff1c1d3e7" />
   <link rel="icon" type="image/png" sizes="32x32" href="./payeeproof-favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="./payeeproof-favicon-192.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="./payeeproof-favicon-180.png" />
@@ -26,18 +26,20 @@
       --text: #f4f4f5;
       --muted: #a1a1aa;
       --white: #ffffff;
-      --ok-bg: rgba(16, 185, 129, .10);
-      --ok-line: rgba(16, 185, 129, .20);
-      --warn-bg: rgba(245, 158, 11, .10);
-      --warn-line: rgba(245, 158, 11, .20);
-      --bad-bg: rgba(239, 68, 68, .10);
-      --bad-line: rgba(239, 68, 68, .20);
+      --ok: #86efac;
+      --warn: #fcd34d;
+      --bad: #fca5a5;
+      --ok-bg: rgba(16,185,129,.10);
+      --warn-bg: rgba(245,158,11,.10);
+      --bad-bg: rgba(239,68,68,.10);
+      --ok-line: rgba(16,185,129,.22);
+      --warn-line: rgba(245,158,11,.22);
+      --bad-line: rgba(239,68,68,.22);
       --radius-xl: 28px;
       --radius-lg: 24px;
       --radius-md: 18px;
       --shadow: 0 20px 60px rgba(0,0,0,.35);
     }
-
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
@@ -47,563 +49,167 @@
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       line-height: 1.5;
     }
-
     a { color: inherit; text-decoration: none; }
-    .container { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
-    .section { padding: 88px 0; }
-    .section-sm { padding: 64px 0; }
+    .container { width: min(1200px, calc(100% - 32px)); margin: 0 auto; }
+    .section { padding: 84px 0; }
+    .section-sm { padding: 62px 0; }
     .grid { display: grid; gap: 24px; }
+    .two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .three-col { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .card {
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow);
     }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid var(--line);
-      background: var(--panel);
-      color: #e4e4e7;
-      padding: 9px 14px;
-      border-radius: 999px;
-      font-size: 12px;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-    .btn-row { display: flex; flex-wrap: wrap; gap: 12px; }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 15px 20px;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      font-weight: 700;
-      font-size: 15px;
-      transition: .18s ease;
-      cursor: pointer;
-      text-align: center;
-    }
-    .btn:hover { transform: translateY(-1px); }
-    .btn-primary {
-      background: var(--white);
-      color: #000;
-      border-color: transparent;
-    }
-    .btn-secondary {
-      background: transparent;
-      color: var(--text);
-    }
-    .btn-ghost {
-      background: rgba(255,255,255,.03);
-      color: #d4d4d8;
-    }
-    .muted { color: var(--muted); }
-    .eyebrow {
-      color: #a1a1aa;
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .22em;
-      margin-bottom: 12px;
-    }
-    h1, h2, h3, p { margin: 0; }
-    h1 {
-      font-size: clamp(40px, 7vw, 72px);
-      line-height: .98;
-      letter-spacing: -0.04em;
-      max-width: 920px;
-    }
-    h2 {
-      font-size: clamp(30px, 4vw, 46px);
-      line-height: 1.04;
-      letter-spacing: -0.03em;
-    }
-    h3 { font-size: 28px; line-height: 1.1; letter-spacing: -0.02em; }
-    .lead {
-      font-size: clamp(18px, 2.2vw, 22px);
-      color: var(--muted);
-      max-width: 780px;
-      line-height: 1.7;
-    }
-    .trustline {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      width: fit-content;
-      padding: 10px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      color: #d4d4d8;
-      font-size: 14px;
-      font-weight: 600;
-    }
-    .trustline strong { color: var(--white); }
-    .hero {
-      position: relative;
-      overflow: hidden;
-      border-bottom: 1px solid var(--line);
-      background:
-        radial-gradient(circle at 12% 0%, rgba(255,255,255,.08), transparent 26%),
-        radial-gradient(circle at 82% 8%, rgba(59,130,246,.15), transparent 16%),
-        var(--bg);
-    }
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.02fr .98fr;
-      gap: 36px;
-      align-items: start;
-      min-height: 86vh;
-      padding: 56px 0;
-    }
-    .hero-copy { display: grid; gap: 22px; align-content: center; }
-    .tag-row { display: flex; flex-wrap: wrap; gap: 10px; }
-    .tag {
-      border: 1px solid var(--line);
-      background: var(--panel);
-      color: #d4d4d8;
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-size: 13px;
-    }
     .topbar {
       position: sticky;
       top: 0;
       z-index: 50;
       border-bottom: 1px solid var(--line);
-      background: rgba(6,8,13,.8);
+      background: rgba(6,8,13,.82);
       backdrop-filter: blur(16px);
     }
     .topbar-inner {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
+      gap: 18px;
       padding: 16px 0;
     }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .brand { display: flex; align-items: center; gap: 12px; }
     .logo {
-      width: 42px;
-      height: 42px;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: var(--panel);
-      display: grid;
-      place-items: center;
-      font-size: 18px;
-      overflow: hidden;
-      flex: 0 0 42px;
+      width: 42px; height: 42px; border-radius: 14px; overflow: hidden;
+      border: 1px solid var(--line); background: var(--panel); flex: 0 0 42px;
+      display: grid; place-items: center;
     }
-    .logo img {
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: cover;
-    }
-    .brand-title { font-weight: 700; letter-spacing: -0.02em; }
-    .brand-sub { color: #71717a; font-size: 12px; }
-    nav { display: flex; gap: 24px; }
+    .logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .brand-title { font-weight: 700; letter-spacing: -.02em; }
+    .brand-sub { font-size: 12px; color: #71717a; }
+    nav { display: flex; gap: 22px; }
     nav a { color: var(--muted); font-size: 14px; }
     nav a:hover { color: var(--white); }
+    .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 14px 18px; border-radius: 16px; border: 1px solid var(--line);
+      font-weight: 700; font-size: 14px; cursor: pointer; transition: .18s ease;
+      text-align: center;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--white); color: #000; border-color: transparent; }
+    .btn-secondary { background: transparent; color: var(--text); }
+    .btn-ghost { background: rgba(255,255,255,.03); color: #d4d4d8; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px; width: fit-content;
+      border: 1px solid var(--line); background: var(--panel); color: #e4e4e7;
+      padding: 9px 14px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+    }
+    .eyebrow { color: #a1a1aa; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .22em; margin-bottom: 12px; }
+    h1,h2,h3,p { margin: 0; }
+    h1 { font-size: clamp(40px, 7vw, 72px); line-height: .98; letter-spacing: -.04em; max-width: 980px; }
+    h2 { font-size: clamp(30px, 4vw, 46px); line-height: 1.04; letter-spacing: -.03em; }
+    h3 { font-size: 26px; line-height: 1.1; letter-spacing: -.02em; }
+    .lead {
+      font-size: clamp(18px, 2.15vw, 22px); color: var(--muted); max-width: 860px; line-height: 1.7;
+    }
+    .hero {
+      position: relative; overflow: hidden; border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255,255,255,.08), transparent 26%),
+        radial-gradient(circle at 86% 8%, rgba(59,130,246,.14), transparent 16%),
+        var(--bg);
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: 1.05fr .95fr; gap: 32px; align-items: start;
+      min-height: 84vh; padding: 54px 0;
+    }
+    .hero-copy { display: grid; gap: 22px; align-content: center; }
+    .muted { color: var(--muted); }
+    .tag-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .tag {
+      border: 1px solid var(--line); background: rgba(255,255,255,.03); color: #d4d4d8;
+      padding: 10px 14px; border-radius: 999px; font-size: 13px;
+    }
+    .status-strip {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;
+    }
+    .status-chip {
+      padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line);
+      background: rgba(255,255,255,.03); color: #d4d4d8; font-size: 13px;
+    }
+    .live-indicator { color: var(--ok); font-weight: 700; }
+    .offline-indicator { color: var(--bad); font-weight: 700; }
 
-    .demo-card { padding: 24px; }
-    .demo-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding-bottom: 18px;
-      border-bottom: 1px solid var(--line);
-      margin-bottom: 20px;
+    .panel { padding: 24px; }
+    .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .panel-badge {
+      color: #cbd5e1; border: 1px solid var(--line); background: rgba(255,255,255,.04);
+      border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 700;
     }
-    .badge-ok {
-      color: #86efac;
-      border: 1px solid rgba(134,239,172,.2);
-      background: rgba(34,197,94,.10);
-      border-radius: 999px;
-      font-size: 12px;
-      padding: 8px 12px;
-      font-weight: 600;
-    }
-    .field-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
     .field { display: grid; gap: 8px; }
     .field.wide { grid-column: 1 / -1; }
-    .demo-group {
-      padding: 16px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.18);
-      border-radius: 18px;
+    .group {
+      padding: 16px; border: 1px solid var(--line); background: rgba(0,0,0,.18); border-radius: 18px;
     }
-    .demo-group h4 {
-      margin: 0 0 14px 0;
-      font-size: 14px;
-      letter-spacing: .03em;
-      color: #e4e4e7;
-    }
+    .group h4 { margin: 0 0 14px 0; font-size: 14px; letter-spacing: .04em; color: #e4e4e7; }
     label { font-size: 13px; color: var(--muted); }
     input, textarea, select {
-      width: 100%;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.22);
-      color: var(--white);
-      border-radius: 14px;
-      padding: 13px 14px;
-      font: inherit;
-      outline: none;
+      width: 100%; border: 1px solid var(--line); background: rgba(0,0,0,.22); color: var(--white);
+      border-radius: 14px; padding: 13px 14px; font: inherit; outline: none;
     }
-    textarea { min-height: 140px; resize: vertical; }
+    textarea { min-height: 124px; resize: vertical; }
     input:focus, textarea:focus, select:focus {
-      border-color: rgba(255,255,255,.28);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.04);
+      border-color: rgba(255,255,255,.28); box-shadow: 0 0 0 4px rgba(255,255,255,.04);
     }
-
-    .preset-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 16px 0 4px;
+    .panel-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+    .note { font-size: 12px; color: #a1a1aa; }
+    .result {
+      margin-top: 16px; border-radius: 18px; padding: 18px;
+      border: 1px solid var(--warn-line); background: var(--warn-bg);
     }
-    .preset-btn {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      color: #d4d4d8;
-      border-radius: 14px;
-      padding: 10px 12px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: .18s ease;
-    }
-    .preset-btn.active,
-    .preset-btn:hover {
-      background: rgba(255,255,255,.08);
-      color: var(--white);
-    }
-
-    .demo-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 18px;
-      align-items: center;
-    }
-
-    .outcome {
-      margin-top: 18px;
-      border-radius: 18px;
-      padding: 18px;
-      border: 1px solid var(--warn-line);
-      background: var(--warn-bg);
-    }
-    .outcome.ok {
-      border-color: var(--ok-line);
-      background: var(--ok-bg);
-    }
-    .outcome.bad {
-      border-color: var(--bad-line);
-      background: var(--bad-bg);
-    }
-    .outcome-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 16px;
-    }
-    .statusline { font-size: 14px; color: #d4d4d8; font-weight: 600; }
-    .outcome-title { margin-top: 6px; font-size: 20px; font-weight: 700; }
-    .outcome-note { margin-top: 8px; font-size: 14px; color: #d4d4d8; }
-    .audit-pill {
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.20);
-      color: var(--muted);
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-size: 12px;
-      white-space: nowrap;
-    }
-    .result-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 16px;
-    }
+    .result.ok { border-color: var(--ok-line); background: var(--ok-bg); }
+    .result.bad { border-color: var(--bad-line); background: var(--bad-bg); }
+    .result-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .result-status { font-size: 14px; font-weight: 700; color: #d4d4d8; }
+    .result-title { margin-top: 6px; font-size: 20px; font-weight: 700; }
+    .result-text { margin-top: 10px; font-size: 14px; color: #d4d4d8; }
+    .result-kv-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
     .result-kv {
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.20);
-      border-radius: 14px;
-      padding: 12px;
+      border: 1px solid var(--line); background: rgba(0,0,0,.20); border-radius: 14px; padding: 12px;
     }
-    .result-kv .k {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      color: #a1a1aa;
-      margin-bottom: 8px;
+    .result-k { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #a1a1aa; margin-bottom: 8px; }
+    .result-v { font-size: 13px; color: #f4f4f5; word-break: break-word; }
+    .list {
+      display: grid; gap: 10px; margin-top: 14px;
     }
-    .result-kv .v {
-      font-size: 13px;
-      color: #f4f4f5;
-      word-break: break-word;
+    .list-item {
+      display: flex; gap: 12px; padding: 14px; border: 1px solid var(--line);
+      background: rgba(0,0,0,.20); border-radius: 16px; color: #d4d4d8;
     }
-    .demo-footnote {
-      margin-top: 12px;
-      font-size: 12px;
-      color: #a1a1aa;
-    }
-    .demo-error {
-      margin-top: 14px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--bad-line);
-      background: var(--bad-bg);
-      color: #fecaca;
-      font-size: 13px;
-      display: none;
-    }
-
-    .demo-truststrip {
-      margin-top: 14px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      color: #d4d4d8;
-      font-size: 12px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .demo-truststrip strong { color: var(--white); }
-    .explain-box {
-      margin-top: 16px;
-      padding: 14px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.18);
-    }
-    .explain-box .k {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      color: #a1a1aa;
-      margin-bottom: 8px;
-    }
-    .explain-box .v {
-      font-size: 13px;
-      color: #e4e4e7;
-      line-height: 1.7;
-    }
-    .demo-cta {
-      margin-top: 16px;
-      display: grid;
-      gap: 10px;
-    }
-    .demo-cta-note {
-      font-size: 12px;
-      color: #a1a1aa;
-    }
-
-    .three-col { grid-template-columns: repeat(3, 1fr); }
-    .two-col { grid-template-columns: repeat(2, 1fr); }
-    .feature-card { padding: 26px; }
-    .iconbox {
-      width: 44px; height: 44px;
-      display: grid; place-items: center;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.20);
-      margin-bottom: 16px;
-      font-size: 18px;
-    }
-    .feature-card p, .section-copy { color: var(--muted); }
-    .section-copy { margin-top: 16px; max-width: 860px; font-size: 18px; line-height: 1.8; }
-
-    .tabs { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
-    .tab {
-      padding: 14px 16px;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.20);
-      color: #d4d4d8;
-      text-align: left;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    .tab.active {
-      background: #fff;
-      color: #000;
-      border-color: transparent;
-    }
-    .bullet-list { display: grid; gap: 12px; }
-    .bullet {
-      display: flex;
-      gap: 12px;
-      padding: 16px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.20);
-      border-radius: 18px;
-      color: #d4d4d8;
-    }
-
+    .list-item strong { color: var(--white); }
     .soft-section {
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      background: var(--panel-2);
+      border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--panel-2);
     }
-
-    .mismatch-card { padding: 22px; }
-    .mismatch-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-    .mismatch-badge {
-      border: 1px solid var(--line);
-      background: var(--panel);
-      color: #d4d4d8;
-      border-radius: 999px;
-      padding: 8px 12px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .codebox {
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.24);
-      border-radius: var(--radius-lg);
-      padding: 22px;
-      overflow-x: auto;
-    }
-    pre {
-      margin: 0;
-      white-space: pre;
-      color: #d4d4d8;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 13px;
-      line-height: 1.7;
-    }
-
-    .footer {
-      border-top: 1px solid var(--line);
-      padding: 26px 0;
-      color: #71717a;
-      font-size: 14px;
-    }
-    .footer-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 18px;
-      flex-wrap: wrap;
-    }
-    .footer-brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .footer { border-top: 1px solid var(--line); padding: 26px 0; color: #71717a; font-size: 14px; }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; }
     .footer-links { display: flex; gap: 18px; flex-wrap: wrap; }
     .footer-links a:hover { color: #d4d4d8; }
 
-
-    .inline-cta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 22px;
-    }
-    .mini-note {
-      margin-top: 14px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .status-strip {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 6px;
-    }
-    .status-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      color: #d4d4d8;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #71717a;
-      flex: 0 0 8px;
-    }
-    .status-chip.ok .status-dot { background: #22c55e; }
-    .status-chip.bad .status-dot { background: #ef4444; }
-    .status-chip.warn .status-dot { background: #f59e0b; }
-    .pilot-form-msg {
-      margin-top: 12px;
-      padding: 14px 16px;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      font-size: 13px;
-      display: none;
-      white-space: pre-line;
-    }
-    .pilot-form-msg.success {
-      border-color: var(--ok-line);
-      background: var(--ok-bg);
-      color: #86efac;
-    }
-    .pilot-form-msg.error {
-      border-color: var(--bad-line);
-      background: var(--bad-bg);
-      color: #fecaca;
-    }
-    .pilot-form-msg.neutral {
-      border-color: var(--line);
-      background: rgba(255,255,255,.03);
-      color: #a6afbe;
-    }
-
-    @media (max-width: 980px) {
+    @media (max-width: 1020px) {
       nav { display: none; }
-      .hero-grid,
-      .three-col,
-      .two-col {
-        grid-template-columns: 1fr;
-      }
+      .hero-grid, .two-col, .three-col { grid-template-columns: 1fr; }
+      .hero-grid { min-height: auto; }
     }
     @media (max-width: 720px) {
-      .field-grid,
-      .tabs,
-      .result-grid {
-        grid-template-columns: 1fr;
-      }
-      .section { padding: 72px 0; }
-      .hero-grid { min-height: auto; padding: 34px 0 72px; }
-      .btn-row { flex-direction: column; align-items: stretch; }
+      .field-grid, .result-kv-grid { grid-template-columns: 1fr; }
+      .section { padding: 68px 0; }
+      .panel-actions, .btn-row { flex-direction: column; align-items: stretch; }
       .btn { width: 100%; }
-      .topbar-inner { padding: 14px 0; }
-      .audit-pill { white-space: normal; }
-      .outcome-top { flex-direction: column; }
+      .result-top { flex-direction: column; }
     }
-
   </style>
 </head>
 <body>
@@ -613,418 +219,308 @@
         <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
         <div>
           <div class="brand-title">PayeeProof</div>
-          <div class="brand-sub">Stablecoin payout verification layer</div>
+          <div class="brand-sub">Transfer safety for stablecoin payouts</div>
         </div>
       </div>
       <nav>
-        <a href="#live-demo">Live demo</a>
+        <a href="#preflight">Pre-Send Check</a>
+        <a href="#recovery">Mistake Recovery</a>
         <a href="#security">Security</a>
-        <a href="#workflow">Workflow</a>
-        <a href="#mismatch">Mismatch handling</a>
-        <a href="#api">Integrations</a>
-        <a href="#contact">Business contact</a>
+        <a href="#api">API</a>
+        <a href="#contact">Pilot</a>
       </nav>
       <div class="btn-row">
-        <a class="btn btn-secondary" href="#live-demo">Try live demo</a>
-        <a class="btn btn-primary" href="#contact">Request pilot review</a>
+        <a class="btn btn-secondary" href="#preflight">Run live check</a>
+        <a class="btn btn-primary" href="#contact">Request pilot</a>
       </div>
     </div>
   </header>
 
   <main>
-    <section id="live-demo" class="hero">
+    <section class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <div class="pill">Security-first payout verification</div>
-          <h1>Verify stablecoin payout details before funds move.</h1>
-          <p class="lead">PayeeProof is built as a security-first verification layer for stablecoin payouts — checking wallet ownership, network, asset, and destination details before release, with fail-closed logic, exact mismatch reasons, and an audit-friendly result trail.</p>
-          <div class="trustline"><strong>No custody.</strong> No wallet access. Fail-closed verification.</div>
+          <div class="pill">Real service · not a static mock</div>
+          <h1>Check before sending. Recover faster after mistakes.</h1>
+          <p class="lead">PayeeProof is moving from a pure landing page into a working service with two practical layers: <strong>Pre-Send Check</strong> for blocking preventable transfer mistakes, and <strong>Mistake Recovery Copilot</strong> for guiding users after a bad send using real tx/hash analysis.</p>
           <div class="btn-row">
-            <a class="btn btn-primary" href="#live-demo">Run live demo →</a>
-            <a class="btn btn-secondary" href="#workflow">View workflow</a>
+            <a class="btn btn-primary" href="#preflight">Open Pre-Send Check →</a>
+            <a class="btn btn-secondary" href="#recovery">Open Recovery Copilot</a>
           </div>
           <div class="tag-row">
-            <div class="tag">Security-first</div>
+            <div class="tag">Live on-chain destination checks</div>
+            <div class="tag">Real tx/hash lookup</div>
+            <div class="tag">Fail-closed decisions</div>
             <div class="tag">No custody</div>
-            <div class="tag">Fail-closed logic</div>
-            <div class="tag">Audit-ready responses</div>
           </div>
           <div class="status-strip">
-            <div class="status-chip warn" id="apiStatusChip"><span class="status-dot"></span><span id="apiStatusText">API status: checking…</span></div>
-            <div class="status-chip warn" id="rpcStatusChip"><span class="status-dot"></span><span id="rpcStatusText">RPC status: checking…</span></div>
-            <div class="status-chip warn" id="apiVersionChip"><span class="status-dot"></span><span id="apiVersionText">API build: checking…</span></div>
+            <div class="status-chip" id="apiStatus">API status: checking…</div>
+            <div class="status-chip" id="apiConfigured">RPC status: checking…</div>
           </div>
         </div>
 
-        <div class="card demo-card">
-          <div class="demo-head">
+        <div class="card panel">
+          <div class="panel-head">
             <div>
-              <div class="badge-ok">Live interactive demo</div>
+              <div class="panel-badge">Why this version matters</div>
             </div>
-            <div class="muted" style="font-size:12px;">Public preview · pilot form uses the live API</div>
+          </div>
+          <div class="list">
+            <div class="list-item"><strong>1.</strong><span>Partners can test a <strong>real working flow</strong>, not just read positioning copy.</span></div>
+            <div class="list-item"><strong>2.</strong><span>Users get value before and after a mistake: prevention first, recovery second.</span></div>
+            <div class="list-item"><strong>3.</strong><span>The same product story works for buyers, exchanges, ops teams, payroll flows, and treasury teams.</span></div>
+            <div class="list-item"><strong>4.</strong><span>The backend is modular: EVM + Solana now, deeper chain coverage and partner APIs next.</span></div>
+          </div>
+          <p class="note" style="margin-top:14px;">PayeeProof should look less like “we may build this” and more like “here is the control layer, try it.”</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="preflight" class="section">
+      <div class="container">
+        <div class="eyebrow">Window 1</div>
+        <h2>Pre-Send Check</h2>
+        <p class="lead" style="max-width:900px; margin-top:14px;">Use this before funds move. The service compares expected and provided transfer details, validates the address format, and performs a live on-chain destination classification.</p>
+
+        <div class="card panel" style="margin-top:32px;">
+          <div class="panel-head">
+            <div>
+              <h3 style="font-size:24px; margin-bottom:8px;">Run a live verification</h3>
+              <p class="muted">Expected vs provided chain, asset, address, and memo/tag. The result is built for blocking bad sends before approval.</p>
+            </div>
+            <div class="panel-badge">/api/preflight-check</div>
           </div>
 
-          <div class="field-grid">
-            <div class="demo-group">
-              <h4>Expected payout data</h4>
+          <div class="grid two-col">
+            <div class="group">
+              <h4>Expected by payer</h4>
               <div class="field-grid">
                 <div class="field">
-                  <label for="expectedNetwork">Network</label>
-                  <select id="expectedNetwork">
+                  <label for="pfExpectedChain">Network</label>
+                  <select id="pfExpectedChain">
                     <option value="ethereum">Ethereum</option>
-                    <option value="polygon">Polygon</option>
                     <option value="arbitrum">Arbitrum</option>
                     <option value="base">Base</option>
+                    <option value="polygon">Polygon</option>
                     <option value="bsc">BNB Chain</option>
                     <option value="solana">Solana</option>
                   </select>
                 </div>
                 <div class="field">
-                  <label for="expectedAsset">Asset</label>
-                  <select id="expectedAsset">
+                  <label for="pfExpectedAsset">Asset</label>
+                  <select id="pfExpectedAsset">
                     <option value="USDC">USDC</option>
                     <option value="USDT">USDT</option>
                   </select>
                 </div>
                 <div class="field wide">
-                  <label for="expectedWallet">Expected wallet</label>
-                  <input id="expectedWallet" value="0x1111111111111111111111111111111111111111" />
+                  <label for="pfExpectedAddress">Expected address</label>
+                  <input id="pfExpectedAddress" placeholder="0x... or Solana address" />
+                </div>
+                <div class="field wide">
+                  <label for="pfExpectedMemo">Expected memo / tag (optional)</label>
+                  <input id="pfExpectedMemo" placeholder="Optional memo or destination tag" />
                 </div>
               </div>
             </div>
 
-            <div class="demo-group">
+            <div class="group">
               <h4>Provided by payee</h4>
               <div class="field-grid">
                 <div class="field">
-                  <label for="providedNetwork">Network</label>
-                  <select id="providedNetwork">
+                  <label for="pfProvidedChain">Network</label>
+                  <select id="pfProvidedChain">
                     <option value="ethereum">Ethereum</option>
-                    <option value="polygon">Polygon</option>
                     <option value="arbitrum">Arbitrum</option>
                     <option value="base">Base</option>
+                    <option value="polygon">Polygon</option>
                     <option value="bsc">BNB Chain</option>
                     <option value="solana">Solana</option>
                   </select>
                 </div>
                 <div class="field">
-                  <label for="providedAsset">Asset</label>
-                  <select id="providedAsset">
+                  <label for="pfProvidedAsset">Asset</label>
+                  <select id="pfProvidedAsset">
                     <option value="USDC">USDC</option>
                     <option value="USDT">USDT</option>
                   </select>
                 </div>
                 <div class="field wide">
-                  <label for="providedWallet">Provided wallet</label>
-                  <input id="providedWallet" value="0x1111111111111111111111111111111111111111" />
+                  <label for="pfProvidedAddress">Provided address</label>
+                  <input id="pfProvidedAddress" placeholder="0x... or Solana address" />
+                </div>
+                <div class="field wide">
+                  <label for="pfProvidedMemo">Provided memo / tag (optional)</label>
+                  <input id="pfProvidedMemo" placeholder="Optional memo or destination tag" />
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="preset-row" id="presetRow">
-            <button class="preset-btn active" data-scenario="happy" type="button">Happy path</button>
-            <button class="preset-btn" data-scenario="wrong_asset" type="button">Wrong asset</button>
-            <button class="preset-btn" data-scenario="wrong_network" type="button">Wrong network</button>
-            <button class="preset-btn" data-scenario="address_mismatch" type="button">Address mismatch</button>
-            <button class="preset-btn" data-scenario="ownership_failed" type="button">Ownership failed</button>
-            <button class="preset-btn" data-scenario="expired" type="button">Expired</button>
+          <div class="panel-actions">
+            <button class="btn btn-primary" id="pfRunBtn" type="button">Run live check</button>
+            <button class="btn btn-secondary" id="pfHappyBtn" type="button">Load happy path</button>
+            <button class="btn btn-ghost" id="pfMismatchBtn" type="button">Load mismatch</button>
           </div>
+          <div class="note" id="pfState">Ready.</div>
 
-          <div class="demo-actions">
-            <button id="runDemoBtn" class="btn btn-primary" type="button">Run verification</button>
-            <button id="resetDemoBtn" class="btn btn-ghost" type="button">Reset</button>
-            <span id="demoState" class="muted" style="font-size:13px;">Ready to verify.</span>
-          </div>
-
-          <div class="demo-truststrip">
-            <strong>Public preview only</strong>
-            <span>· No funds move</span>
-            <span>· No API key in browser</span>
-            <span>· Browser-side simulation</span>
-            <span>· Pilot request uses live API</span>
-          </div>
-
-          <div id="demoError" class="demo-error"></div>
-
-          <div id="outcome" class="outcome ok">
-            <div class="outcome-top">
+          <div class="result ok" id="pfResult">
+            <div class="result-top">
               <div>
-                <div class="statusline" id="statusLine">Verified</div>
-                <div class="outcome-title" id="reasonTitle">All payout details match the request.</div>
-                <div class="outcome-note" id="nextAction">Safe to proceed to payout approval.</div>
+                <div class="result-status" id="pfResultStatus">Verified</div>
+                <div class="result-title" id="pfResultTitle">All submitted payout details match.</div>
+                <div class="result-text" id="pfResultText">The destination passed structural matching and basic on-chain classification.</div>
               </div>
-              <div class="audit-pill" id="auditPill">Demo response ready</div>
+              <div class="panel-badge" id="pfReason">OK</div>
             </div>
-
-            <div class="result-grid">
-              <div class="result-kv">
-                <div class="k">Reason code</div>
-                <div class="v" id="reasonCodeValue">OK</div>
-              </div>
-              <div class="result-kv">
-                <div class="k">Retry allowed</div>
-                <div class="v" id="retryAllowedValue">No</div>
-              </div>
-              <div class="result-kv">
-                <div class="k">Expected</div>
-                <div class="v" id="expectedResultValue">ethereum · USDC · 0x1111111111111111111111111111111111111111</div>
-              </div>
-              <div class="result-kv">
-                <div class="k">Provided</div>
-                <div class="v" id="providedResultValue">ethereum · USDC · 0x1111111111111111111111111111111111111111</div>
-              </div>
+            <div class="result-kv-grid">
+              <div class="result-kv"><div class="result-k">Next action</div><div class="result-v" id="pfNext">SAFE_TO_PROCEED</div></div>
+              <div class="result-kv"><div class="result-k">Risk flags</div><div class="result-v" id="pfFlags">None</div></div>
+              <div class="result-kv"><div class="result-k">Provided destination type</div><div class="result-v" id="pfDestType">unknown</div></div>
+              <div class="result-kv"><div class="result-k">Checks</div><div class="result-v" id="pfChecks">All green</div></div>
             </div>
-
-            <div class="explain-box">
-              <div class="k">What happened</div>
-              <div class="v" id="explainValue">All submitted payout details match the expected request. In pilot mode, the client would then validate the signed artifact before releasing funds.</div>
-            </div>
-
-            <div class="demo-cta">
-              <div class="btn-row">
-                <a class="btn btn-primary" href="#contact">Request pilot access</a>
-                <a class="btn btn-secondary" href="#workflow">See integration flow</a>
-              </div>
-              <div class="demo-cta-note">Pilot mode includes authenticated request/session flow, security-first approval gates, signed verification artifacts, and audit-ready responses.</div>
-            </div>
-
-            <div class="demo-footnote" id="demoFootnote">This public demo returns a safe preview response. Pilot mode uses the full request/session/artifact flow.</div>
           </div>
         </div>
       </div>
     </section>
 
+    <section id="recovery" class="section soft-section">
+      <div class="container">
+        <div class="eyebrow">Window 2</div>
+        <h2>Mistake Recovery Copilot</h2>
+        <p class="lead" style="max-width:900px; margin-top:14px;">Use this after something already went wrong. The service looks up the live transaction and returns practical recovery guidance based on chain, tx status, destination type, and issue type.</p>
 
-    <section id="security" class="section-sm soft-section">
+        <div class="card panel" style="margin-top:32px;">
+          <div class="panel-head">
+            <div>
+              <h3 style="font-size:24px; margin-bottom:8px;">Analyze a real tx/hash</h3>
+              <p class="muted">EVM chains: live transaction + receipt + token transfer extraction. Solana: live transaction lookup and parsed account view.</p>
+            </div>
+            <div class="panel-badge">/api/recovery-copilot</div>
+          </div>
+
+          <div class="grid two-col">
+            <div class="group">
+              <h4>Recovery input</h4>
+              <div class="field-grid">
+                <div class="field">
+                  <label for="rcChain">Network</label>
+                  <select id="rcChain">
+                    <option value="ethereum">Ethereum</option>
+                    <option value="arbitrum">Arbitrum</option>
+                    <option value="base">Base</option>
+                    <option value="polygon">Polygon</option>
+                    <option value="bsc">BNB Chain</option>
+                    <option value="solana">Solana</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="rcIssueType">Issue type</label>
+                  <select id="rcIssueType">
+                    <option value="wrong_network">Wrong network</option>
+                    <option value="wrong_address">Wrong address</option>
+                    <option value="sent_to_contract">Sent to contract / program</option>
+                    <option value="missing_memo">Missing memo / tag</option>
+                    <option value="unknown">General analysis</option>
+                  </select>
+                </div>
+                <div class="field wide">
+                  <label for="rcHash">Transaction hash / signature</label>
+                  <input id="rcHash" placeholder="0x... or Solana signature" />
+                </div>
+                <div class="field wide">
+                  <label for="rcIntendedAddress">Intended destination (optional)</label>
+                  <input id="rcIntendedAddress" placeholder="Original intended recipient" />
+                </div>
+                <div class="field wide">
+                  <label for="rcIntendedChain">Intended chain (optional)</label>
+                  <select id="rcIntendedChain">
+                    <option value="">Not specified</option>
+                    <option value="ethereum">Ethereum</option>
+                    <option value="arbitrum">Arbitrum</option>
+                    <option value="base">Base</option>
+                    <option value="polygon">Polygon</option>
+                    <option value="bsc">BNB Chain</option>
+                    <option value="solana">Solana</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="group">
+              <h4>What the copilot returns</h4>
+              <div class="list" style="margin-top:0;">
+                <div class="list-item"><strong>Status</strong><span>Found / failed / reverted / not found / unavailable</span></div>
+                <div class="list-item"><strong>Observed</strong><span>Chain, status, recipient, token transfer hints, contract/program classification</span></div>
+                <div class="list-item"><strong>Recoverability</strong><span>Possible / manual review / unlikely / depends</span></div>
+                <div class="list-item"><strong>Next actions</strong><span>Practical steps for the user or support team</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-actions">
+            <button class="btn btn-primary" id="rcRunBtn" type="button">Analyze tx/hash</button>
+            <button class="btn btn-secondary" id="rcClearBtn" type="button">Clear</button>
+          </div>
+          <div class="note" id="rcState">Ready.</div>
+
+          <div class="result" id="rcResult">
+            <div class="result-top">
+              <div>
+                <div class="result-status" id="rcResultStatus">Waiting</div>
+                <div class="result-title" id="rcResultTitle">No transaction analyzed yet.</div>
+                <div class="result-text" id="rcResultText">Paste a real tx/hash or Solana signature to get a live result.</div>
+              </div>
+              <div class="panel-badge" id="rcReason">—</div>
+            </div>
+            <div class="result-kv-grid">
+              <div class="result-kv"><div class="result-k">Recoverability</div><div class="result-v" id="rcRecoverability">—</div></div>
+              <div class="result-kv"><div class="result-k">Observed destination</div><div class="result-v" id="rcDestination">—</div></div>
+              <div class="result-kv"><div class="result-k">Observed status</div><div class="result-v" id="rcObservedStatus">—</div></div>
+              <div class="result-kv"><div class="result-k">Recommended next actions</div><div class="result-v" id="rcNextActions">—</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="security" class="section">
       <div class="container">
         <div class="eyebrow">Security model</div>
-        <h2>Security is not an add-on here — it is the control layer.</h2>
-        <p class="section-copy">PayeeProof is being built as a security-first verification layer for stablecoin payouts. It is not a wallet, not a custodian, and not a payment processor. Its role is to verify payout details before execution, minimize trust assumptions, and return a structured result that client systems can review, log, and use in approval flows.</p>
-
-        <div class="grid three-col" style="margin-top: 34px;">
-          <article class="card feature-card">
-            <div class="iconbox">S</div>
-            <h3 style="font-size:24px;">No custody. Minimal trust surface.</h3>
-            <p style="margin-top:12px;">PayeeProof does not hold customer funds and does not execute payouts. Verification is kept separate from fund movement to reduce exposure.</p>
+        <h2>PayeeProof should be a control layer, not a new trust problem.</h2>
+        <div class="grid three-col" style="margin-top:34px;">
+          <article class="card panel">
+            <h3 style="font-size:22px; margin-bottom:12px;">No custody</h3>
+            <p class="muted">PayeeProof does not hold funds and does not execute transfers. It exists to verify or analyze, not to move money.</p>
           </article>
-          <article class="card feature-card">
-            <div class="iconbox">F</div>
-            <h3 style="font-size:24px;">Fail-closed by design</h3>
-            <p style="margin-top:12px;">If verification is missing, expired, invalid, or mismatched, the safe outcome is block, reverify, or stop — not “continue anyway”.</p>
+          <article class="card panel">
+            <h3 style="font-size:22px; margin-bottom:12px;">Fail-closed</h3>
+            <p class="muted">If details are invalid, mismatched, or suspicious, the safe answer is block, reverify, or escalate — not “probably fine.”</p>
           </article>
-          <article class="card feature-card">
-            <div class="iconbox">T</div>
-            <h3 style="font-size:24px;">Short-lived verification windows</h3>
-            <p style="margin-top:12px;">Verification should be fresh. Short-lived sessions help reduce replay risk and keep approval tied to a live workflow.</p>
-          </article>
-          <article class="card feature-card">
-            <div class="iconbox">A</div>
-            <h3 style="font-size:24px;">Audit-friendly result trail</h3>
-            <p style="margin-top:12px;">Each outcome is structured for review and downstream controls, including status, exact mismatch reasons, expected vs provided values, and next action.</p>
-          </article>
-          <article class="card feature-card">
-            <div class="iconbox">V</div>
-            <h3 style="font-size:24px;">Verifiable artifact direction</h3>
-            <p style="margin-top:12px;">Pilot-mode architecture is being shaped toward signed verification artifacts and client-side validation, so approval logic can rely on verifiable results rather than blind trust.</p>
-          </article>
-          <article class="card feature-card">
-            <div class="iconbox">R</div>
-            <h3 style="font-size:24px;">Built for high-trust workflows</h3>
-            <p style="margin-top:12px;">The goal is not a generic address checker. It is a control layer for treasury, payroll, vendor, and crypto-native payout flows where mistakes are operationally expensive.</p>
+          <article class="card panel">
+            <h3 style="font-size:22px; margin-bottom:12px;">Live chain checks</h3>
+            <p class="muted">This version uses live RPC lookups for destination classification and transaction analysis instead of purely static form logic.</p>
           </article>
         </div>
+      </div>
+    </section>
 
-        <div class="card feature-card" style="margin-top: 28px;">
-          <div class="eyebrow" style="margin-bottom:10px;">Architecture direction</div>
-          <h3 style="font-size:24px; margin-bottom:12px;">Zero-trust payout verification</h3>
-          <p class="muted">PayeeProof should not become a new point of blind trust. It is being built toward a verifiable-control model: signed artifacts, short TTLs, clearer approval gates, tighter key handling, and stronger auditability for payout workflows that need serious controls.</p>
-        </div>
-
-        <div class="card feature-card" style="margin-top: 20px;">
-          <div class="eyebrow" style="margin-bottom:10px;">Independent validation</div>
-          <h3 style="font-size:24px; margin-bottom:12px;">Why teams can rely on the result</h3>
-          <p class="muted">Each verification result is signed, short-lived, and bound to the exact payout details being checked. Clients can validate the result independently before funds move. If anything fails, expires, or mismatches, PayeeProof defaults to block or re-verify — never silent approval.</p>
-          <div class="tag-row" style="margin-top:16px;">
-            <div class="tag">Signed artifact</div>
-            <div class="tag">Time-limited result</div>
-            <div class="tag">Fail-closed</div>
+    <section id="api" class="section soft-section">
+      <div class="container">
+        <div class="eyebrow">API shape</div>
+        <h2>Two public-facing product surfaces. One backend.</h2>
+        <div class="grid two-col" style="margin-top:34px; grid-template-columns: .95fr 1.05fr;">
+          <div class="card panel">
+            <h3 style="font-size:24px; margin-bottom:14px;">What the backend now does</h3>
+            <div class="list" style="margin-top:0;">
+              <div class="list-item"><strong>Preflight</strong><span>Address validation, expected-vs-provided comparison, live on-chain destination classification.</span></div>
+              <div class="list-item"><strong>Recovery</strong><span>Transaction lookup, receipt/status analysis, destination-type checks, practical recovery guidance.</span></div>
+              <div class="list-item"><strong>Pilot leads</strong><span>Stores pilot requests in SQLite and can email them to hello@payeeproof.com.</span></div>
+            </div>
+            <p class="note" style="margin-top:16px;">Honest limitation: private exchange-account verification still requires exchange-side APIs or partnership access. This MVP solves the public-chain part for real.</p>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="who-for" class="section-sm">
-      <div class="container">
-        <div class="eyebrow">Who this is for</div>
-        <h2>Built for teams sending stablecoin payouts where mistakes are expensive.</h2>
-        <p class="section-copy">PayeeProof fits finance, treasury, operations, payroll, OTC, and vendor payout workflows that need one last verification step before funds move.</p>
-
-        <div class="grid three-col" style="margin-top: 34px;">
-          <article class="card feature-card">
-            <h3 style="font-size:24px;">Finance & Treasury</h3>
-            <p style="margin-top:12px;">Reduce payout errors before USDC or USDT leaves your workflow.</p>
-          </article>
-          <article class="card feature-card">
-            <h3 style="font-size:24px;">Payroll & Vendor Ops</h3>
-            <p style="margin-top:12px;">Confirm network, asset, and wallet details before recurring payments are sent.</p>
-          </article>
-          <article class="card feature-card">
-            <h3 style="font-size:24px;">Crypto-native Platforms</h3>
-            <p style="margin-top:12px;">Add a verification layer before disbursements, settlements, or off-platform payouts.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="workflow" class="section">
-      <div class="container">
-        <div class="eyebrow">Workflow</div>
-        <h2>A short verification flow for payer and payee</h2>
-        <p class="section-copy">The PayeeProof verification flow is straightforward: landing page, client dashboard, verification page, result page, and webhook/API layer. The goal is clarity, not ceremony.</p>
-
-        <div class="grid three-col" style="margin-top: 34px;">
-          <article class="card feature-card">
-            <div class="iconbox">1</div>
-            <h3 style="font-size:24px;">Create request</h3>
-            <p style="margin-top:12px;">Set wallet, network, asset, reference, expiry, and payout policy rules.</p>
-          </article>
-          <article class="card feature-card">
-            <div class="iconbox">2</div>
-            <h3 style="font-size:24px;">Verify payee</h3>
-            <p style="margin-top:12px;">Payee confirms wallet ownership and payout details through a short session.</p>
-          </article>
-          <article class="card feature-card">
-            <div class="iconbox">3</div>
-            <h3 style="font-size:24px;">Decide safely</h3>
-            <p style="margin-top:12px;">Payer gets a pass / mismatch result with exact reason code and next action.</p>
-          </article>
-        </div>
-
-        <div class="grid two-col" style="margin-top: 28px; grid-template-columns: .42fr .58fr;">
-          <div class="card feature-card">
-            <h3 style="font-size:24px; margin-bottom:14px;">Role view</h3>
-            <p class="muted" style="margin-bottom:18px;">Switch perspective to explain the workflow in plain language.</p>
-            <div class="tabs">
-              <button class="tab active" data-role="payer">Payer team</button>
-              <button class="tab" data-role="payee">Payee</button>
-              <button class="tab" data-role="result">Result</button>
-            </div>
-          </div>
-
-          <div class="card feature-card">
-            <h3 id="roleTitle" style="font-size:24px; margin-bottom:14px;">Payer team</h3>
-            <p class="muted" style="margin-bottom:18px;">This is the exact workflow story used for outreach and demos.</p>
-            <div id="roleBullets" class="bullet-list"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="mismatch" class="section soft-section">
-      <div class="container">
-        <div class="eyebrow">Mismatch handling</div>
-        <h2>Mismatch is not a dead end</h2>
-        <p class="section-copy">PayeeProof should not just say “Mismatch detected.” It should explain what failed, compare expected vs provided values, and tell the user exactly what to do next.</p>
-
-        <div class="grid two-col" style="margin-top: 34px;">
-          <article class="card mismatch-card">
-            <div class="mismatch-top">
-              <strong>NETWORK_MISMATCH</strong>
-              <span class="mismatch-badge">Retry allowed</span>
-            </div>
-            <p class="muted">Provided wallet is on a different chain than requested.</p>
-            <p style="margin-top: 12px; color:#d4d4d8;">Next action: resubmit using the correct network.</p>
-          </article>
-          <article class="card mismatch-card">
-            <div class="mismatch-top">
-              <strong>ASSET_MISMATCH</strong>
-              <span class="mismatch-badge">Retry allowed</span>
-            </div>
-            <p class="muted">Requested asset does not match the provided asset.</p>
-            <p style="margin-top: 12px; color:#d4d4d8;">Next action: confirm the payout asset and retry.</p>
-          </article>
-          <article class="card mismatch-card">
-            <div class="mismatch-top">
-              <strong>ADDRESS_MISMATCH</strong>
-              <span class="mismatch-badge">Retry allowed</span>
-            </div>
-            <p class="muted">The submitted wallet differs from the expected destination.</p>
-            <p style="margin-top: 12px; color:#d4d4d8;">Next action: review destination details before approval.</p>
-          </article>
-          <article class="card mismatch-card">
-            <div class="mismatch-top">
-              <strong>OWNERSHIP_PROOF_FAILED</strong>
-              <span class="mismatch-badge">New request</span>
-            </div>
-            <p class="muted">Wallet ownership could not be verified.</p>
-            <p style="margin-top: 12px; color:#d4d4d8;">Next action: start a fresh request or complete proof again.</p>
-          </article>
-          <article class="card mismatch-card">
-            <div class="mismatch-top">
-              <strong>REQUEST_EXPIRED</strong>
-              <span class="mismatch-badge">New request</span>
-            </div>
-            <p class="muted">Verification session timed out.</p>
-            <p style="margin-top: 12px; color:#d4d4d8;">Next action: create a new verification request.</p>
-          </article>
-          <article class="card mismatch-card">
-            <div class="mismatch-top">
-              <strong>POLICY_BLOCKED</strong>
-              <span class="mismatch-badge">Escalate</span>
-            </div>
-            <p class="muted">Payout violated a configured payout rule.</p>
-            <p style="margin-top: 12px; color:#d4d4d8;">Next action: review policy settings and escalate internally.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="faq" class="section-sm">
-      <div class="container">
-        <div class="eyebrow">FAQ</div>
-        <h2>The fast answers buyers look for</h2>
-        <p class="section-copy">Small trust signals matter. These three answers remove the most common early objections.</p>
-
-        <div class="grid three-col" style="margin-top: 34px;">
-          <article class="card feature-card">
-            <h3 style="font-size:22px;">Does PayeeProof hold funds?</h3>
-            <p class="muted" style="margin-top:12px;">No. PayeeProof is a verification layer only. It does not custody assets and does not move funds.</p>
-          </article>
-          <article class="card feature-card">
-            <h3 style="font-size:22px;">Will this slow down payouts?</h3>
-            <p class="muted" style="margin-top:12px;">Designed to protect high-risk payout moments — without slowing routine transfers. Verification is intended for new, changed, or higher-risk payout details before funds move.</p>
-          </article>
-          <article class="card feature-card">
-            <h3 style="font-size:22px;">What happens on mismatch?</h3>
-            <p class="muted" style="margin-top:12px;">The result returns a clear status, exact reason code, expected vs provided values, and the next action.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="api" class="section">
-      <div class="container">
-        <div class="eyebrow">Example API flow</div>
-        <h2>Designed for ops teams, payouts, and internal tools</h2>
-        <p class="section-copy">The public website now includes a live demo preview. Pilot integrations still use the full request / session / artifact flow behind authenticated endpoints.</p>
-
-        <div class="grid two-col" style="margin-top: 34px; grid-template-columns: .9fr 1.1fr;">
-          <div class="card feature-card">
-            <h3 style="font-size:24px; margin-bottom:14px;">What this communicates</h3>
-            <p class="muted" style="margin-bottom:18px;">Enough structure to show how PayeeProof fits into a real payout workflow.</p>
-            <div class="bullet-list">
-              <div class="bullet"><strong>Request creation</strong><span class="muted">A payer system opens a verification request with expected wallet, chain, asset, and expiry.</span></div>
-              <div class="bullet"><strong>Verification session</strong><span class="muted">The payee completes a short ownership and payout-detail check.</span></div>
-              <div class="bullet"><strong>Status delivery</strong><span class="muted">Systems receive a verified / mismatch / expired result.</span></div>
-              <div class="bullet"><strong>Reason codes</strong><span class="muted">Mismatch results return exact failure type and next-action logic.</span></div>
-              <div class="bullet"><strong>Audit events</strong><span class="muted">Ops teams keep a searchable record for review and downstream workflows.</span></div>
-            </div>
-          </div>
-
-          <div class="codebox">
-<pre>// Public website demo
-POST /demo/verify
+          <div class="card panel" style="background: rgba(0,0,0,.22);">
+<pre style="margin:0; white-space:pre-wrap; color:#d4d4d8; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; line-height:1.7;">POST /api/preflight-check
 {
   "expected": {
     "network": "ethereum",
@@ -1033,99 +529,52 @@ POST /demo/verify
   },
   "provided": {
     "network": "ethereum",
-    "asset": "USDT",
+    "asset": "USDC",
     "address": "0x1111111111111111111111111111111111111111"
   }
 }
 
-200 OK
+POST /api/recovery-copilot
 {
-  "demo_only": true,
-  "status": "mismatch_detected",
-  "reason_code": "ASSET_MISMATCH",
-  "next_action": "BLOCK_AND_REVERIFY",
-  "retry_allowed": true
+  "chain": "polygon",
+  "tx_hash": "0x...",
+  "issue_type": "wrong_network",
+  "intended_chain": "ethereum"
 }</pre>
           </div>
         </div>
       </div>
     </section>
 
-
-    <section id="why-pilot" class="section-sm soft-section">
-      <div class="container">
-        <div class="eyebrow">Why pilot first</div>
-        <h2>Start with a controlled pilot before full integration.</h2>
-        <p class="section-copy">The public demo shows how verification decisions work. A pilot adds authenticated request flows, signed verification artifacts, audit-ready responses, and client-specific policies without forcing a full production rollout on day one.</p>
-
-        <div class="grid two-col" style="margin-top: 34px;">
-          <article class="card feature-card">
-            <h3 style="font-size:24px; margin-bottom:14px;">Public demo</h3>
-            <div class="bullet-list">
-              <div class="bullet"><strong>Interactive preview</strong><span class="muted">Run a safe verification scenario directly on the website.</span></div>
-              <div class="bullet"><strong>No credentials needed</strong><span class="muted">No client API key in the browser and no real payout request stored.</span></div>
-              <div class="bullet"><strong>Fast evaluation</strong><span class="muted">Useful for internal review, buyer education, and early screening.</span></div>
-            </div>
-          </article>
-
-          <article class="card feature-card">
-            <h3 style="font-size:24px; margin-bottom:14px;">Pilot mode</h3>
-            <div class="bullet-list">
-              <div class="bullet"><strong>Authenticated flow</strong><span class="muted">Request creation, verification session, and client-bound result handling.</span></div>
-              <div class="bullet"><strong>Signed artifacts</strong><span class="muted">Verification artifacts, clear status logic, and audit-ready responses.</span></div>
-              <div class="bullet"><strong>Client-specific rules</strong><span class="muted">Policy checks, expiry settings, and mismatch handling matched to your workflow.</span></div>
-            </div>
-
-            <div class="inline-cta">
-              <a href="#contact" class="btn btn-primary">Request pilot access</a>
-              <a href="#live-demo" class="btn btn-secondary">Run live demo</a>
-            </div>
-            <div class="mini-note">Pilot mode is the right next step for teams that want to validate a real workflow before full production rollout.</div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact" class="section soft-section">
+    <section id="contact" class="section">
       <div class="container grid two-col" style="grid-template-columns: .92fr 1.08fr; align-items:start;">
         <div>
-          <div class="eyebrow">Pilot access</div>
-          <h2>Request a pilot walkthrough</h2>
-          <p class="section-copy">Share your payout flow and evaluation goals. PayeeProof is positioned for early teams that want a clear verification layer before funds move — without custody risk or heavy implementation upfront.</p>
-          <div class="grid" style="margin-top:28px; gap:12px;">
-            <div class="bullet"><strong>Best for</strong><span class="muted">Treasury teams, finance ops, payroll flows, marketplaces, OTC desks, and B2B payout workflows.</span></div>
-            <div class="bullet"><strong>What you get</strong><span class="muted">A short fit check, recommended pilot scope, and a practical next step for integration or manual review.</span></div>
-            <div class="bullet"><strong>Pilot availability</strong><span class="muted">Currently onboarding a limited number of pilot teams.</span></div>
-            <div class="bullet"><strong>Business contact</strong><span class="muted"><span style="color:inherit; text-decoration: underline;">hello@payeeproof.com</span></span></div>
+          <div class="eyebrow">Pilot</div>
+          <h2>Request a pilot review</h2>
+          <p class="lead" style="max-width:760px; margin-top:14px;">This version is designed to prove capability: real checks, real lookup logic, real product direction. Use the form to describe the payout or recovery flow you want to protect.</p>
+          <div class="list" style="margin-top:24px;">
+            <div class="list-item"><strong>Best fit</strong><span>Treasury teams, payroll flows, payout ops, exchanges, marketplaces, OTC desks.</span></div>
+            <div class="list-item"><strong>What you get</strong><span>A practical fit check and a clear next step for pilot scope.</span></div>
+            <div class="list-item"><strong>Business contact</strong><span><span style="text-decoration:underline;">hello@payeeproof.com</span></span></div>
           </div>
-          <p class="muted" style="margin-top:16px; font-size:13px;">Pilot evaluations and first integrations are handled directly with the PayeeProof team.</p>
         </div>
 
-        <div class="card feature-card">
+        <div class="card panel">
           <h3 style="font-size:24px; margin-bottom:14px;">Request pilot review</h3>
-          <p class="muted" style="margin-bottom:18px;">Tell us who you are, what flow you need to protect, and roughly how often payouts happen. This is enough to start a serious conversation.</p>
-          <form class="grid" id="pilotRequestForm" novalidate>
+          <p class="muted" style="margin-bottom:18px;">Work email only. Personal mailboxes are blocked.</p>
+          <form class="grid" id="pilotForm" novalidate>
             <div class="field-grid">
-              <div class="field"><input id="pilotName" name="name" placeholder="Full name" autocomplete="name" /></div>
-              <div class="field"><input id="pilotCompany" name="company" placeholder="Company / team" autocomplete="organization" /></div>
-              <div class="field"><input id="pilotEmail" name="email" type="email" placeholder="Work email" autocomplete="email" /></div>
-              <div class="field"><input id="pilotVolume" name="volume" placeholder="Monthly payout volume (optional)" /></div>
-              <div class="field wide"><textarea id="pilotUseCase" name="use_case" placeholder="What payout or verification flow do you want to protect?"></textarea></div>
-              <div class="field wide"><div class="muted" style="font-size:12px; margin-top:-2px;">Work email required. Personal email domains are not accepted.</div></div>
+              <div class="field"><input id="pilotName" placeholder="Full name" autocomplete="name" /></div>
+              <div class="field"><input id="pilotCompany" placeholder="Company / team" autocomplete="organization" /></div>
+              <div class="field"><input id="pilotEmail" type="email" placeholder="Work email" autocomplete="email" /></div>
+              <div class="field"><input id="pilotVolume" placeholder="Monthly payout volume (optional)" /></div>
+              <div class="field wide"><textarea id="pilotNotes" placeholder="What payout or recovery flow do you want to protect?"></textarea></div>
             </div>
-            <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-              <button class="btn btn-primary" id="pilotRequestBtn" type="submit">Request pilot review</button>
-              <button class="btn btn-secondary" id="pilotCopyBtn" type="button">Copy request details</button>
+            <div class="panel-actions">
+              <button class="btn btn-primary" id="pilotSubmitBtn" type="submit">Request pilot</button>
+              <button class="btn btn-secondary" id="pilotCopyBtn" type="button">Copy request</button>
             </div>
-            <div class="card" style="margin-top:14px; padding:16px 18px; border-radius:18px; background:rgba(255,255,255,.03); box-shadow:none;">
-              <div style="font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#d4d4d8; margin-bottom:8px;">What happens next</div>
-              <div class="grid" style="gap:10px;">
-                <div class="bullet"><strong>1. Review</strong><span class="muted">We review your payout or verification flow.</span></div>
-                <div class="bullet"><strong>2. Fit check</strong><span class="muted">We confirm pilot scope and whether the workflow is a fit.</span></div>
-                <div class="bullet"><strong>3. Next step</strong><span class="muted">We reply with the next integration or manual review step.</span></div>
-              </div>
-            </div>
-            <div id="pilotFormMsg" class="pilot-form-msg neutral"></div>
+            <div class="note" id="pilotState">Ready.</div>
           </form>
         </div>
       </div>
@@ -1134,554 +583,260 @@ POST /demo/verify
 
   <footer class="footer">
     <div class="container footer-inner">
-      <div class="footer-brand"><div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div><div class="footer-brand-text">© 2026 PayeeProof</div></div>
+      <div class="brand">
+        <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
+        <div>© 2026 PayeeProof</div>
+      </div>
       <div class="footer-links">
-        <a href="#live-demo">Live demo</a>
+        <a href="#preflight">Pre-Send Check</a>
+        <a href="#recovery">Mistake Recovery</a>
         <a href="#security">Security</a>
-        <a href="#workflow">Workflow</a>
-        <a href="#mismatch">Mismatch handling</a>
-        <a href="#api">Integrations</a>
-        <a href="#contact">Business contact</a>
+        <a href="#api">API</a>
+        <a href="#contact">Pilot</a>
       </div>
     </div>
   </footer>
 
   <script>
-    const roles = {
-      payer: {
-        title: 'Payer team',
-        bullets: [
-          'Creates a request with expected wallet, chain, asset, and expiry.',
-          'Gets a clear pass / mismatch decision before funds move.',
-          'Stores an audit trail for ops, finance, and compliance.'
-        ]
-      },
-      payee: {
-        title: 'Payee',
-        bullets: [
-          'Opens a short verification link.',
-          'Confirms wallet ownership and payout details.',
-          'Sees the exact mismatch reason if something is off.'
-        ]
-      },
-      result: {
-        title: 'Result',
-        bullets: [
-          'Status: verified / mismatch / expired / blocked.',
-          'Exact reason code and expected vs provided values.',
-          'Webhook + dashboard log for downstream systems.'
-        ]
-      }
-    };
+    const API_BASE = window.PAYEEPROOF_API_BASE || 'https://payeeproof-api.onrender.com';
+    const PRECHECK_URL = `${API_BASE}/api/preflight-check`;
+    const RECOVERY_URL = `${API_BASE}/api/recovery-copilot`;
+    const PILOT_URL = `${API_BASE}/pilot-request`;
+    const HEALTH_URL = `${API_BASE}/health`;
 
-    const API_BASE_URL = window.PAYEEPROOF_API_BASE || 'https://payeeproof-api.onrender.com';
-    const HEALTH_URL = `${API_BASE_URL}/health`;
-    const PILOT_REQUEST_API_URL = `${API_BASE_URL}/pilot-request`;
-
-    const roleTitle = document.getElementById('roleTitle');
-    const roleBullets = document.getElementById('roleBullets');
-    const tabButtons = document.querySelectorAll('.tab');
-
-    const apiStatusChip = document.getElementById('apiStatusChip');
-    const rpcStatusChip = document.getElementById('rpcStatusChip');
-    const apiVersionChip = document.getElementById('apiVersionChip');
-    const apiStatusText = document.getElementById('apiStatusText');
-    const rpcStatusText = document.getElementById('rpcStatusText');
-    const apiVersionText = document.getElementById('apiVersionText');
-
-    function renderRole(key) {
-      const item = roles[key];
-      roleTitle.textContent = item.title;
-      roleBullets.innerHTML = item.bullets.map(b => `<div class="bullet"><strong>›</strong><span>${b}</span></div>`).join('');
-      tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.role === key));
-    }
-    renderRole('payer');
-    tabButtons.forEach(btn => btn.addEventListener('click', () => renderRole(btn.dataset.role)));
-
-    function setChipState(el, state, text) {
-      el.classList.remove('ok', 'bad', 'warn');
-      el.classList.add(state);
-      const span = el.querySelector('span:last-child');
-      if (span) span.textContent = text;
+    async function fetchJson(url, options = {}) {
+      const res = await fetch(url, {
+        cache: 'no-store',
+        credentials: 'omit',
+        headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+        ...options,
+      });
+      const text = await res.text();
+      let data = {};
+      try { data = text ? JSON.parse(text) : {}; } catch (e) {}
+      if (!res.ok) throw new Error(data.error || data.message || `Request failed (${res.status})`);
+      return data;
     }
 
-    async function fetchHealthStatus() {
+    function el(id) { return document.getElementById(id); }
+
+    function setResultBox(box, status) {
+      box.classList.remove('ok', 'bad');
+      if (status === 'verified' || status === 'found' || status === 'confirmed') box.classList.add('ok');
+      else if (status === 'blocked' || status === 'failed' || status === 'reverted' || status === 'not_found' || status === 'unavailable') box.classList.add('bad');
+    }
+
+    async function checkHealth() {
       try {
-        const response = await fetch(HEALTH_URL, { method: 'GET', cache: 'no-store' });
-        const data = await response.json();
-        if (!response.ok || !data || !data.ok) {
-          throw new Error((data && (data.message || data.error)) || `Health check failed (${response.status})`);
-        }
+        const data = await fetchJson(HEALTH_URL, { method: 'GET' });
+        el('apiStatus').innerHTML = `API status: <span class="live-indicator">live</span>`;
         const configured = data.rpc_configured || {};
-        const missing = Object.entries(configured).filter(([, value]) => !value).map(([key]) => key);
-        setChipState(apiStatusChip, 'ok', 'API status: live');
-        setChipState(rpcStatusChip, missing.length ? 'warn' : 'ok', missing.length ? `RPC status: partial (${missing.join(', ')})` : 'RPC status: configured');
-        setChipState(apiVersionChip, 'ok', `API build: ${data.version || 'unknown'}`);
-      } catch (error) {
-        setChipState(apiStatusChip, 'bad', 'API status: unavailable');
-        setChipState(rpcStatusChip, 'warn', 'RPC status: unknown');
-        setChipState(apiVersionChip, 'warn', 'API build: unavailable');
+        const ready = Object.entries(configured).filter(([,v]) => v).map(([k]) => k);
+        el('apiConfigured').textContent = ready.length ? `RPC status: ${ready.join(', ')}` : 'RPC status: no RPC configured';
+      } catch (err) {
+        el('apiStatus').innerHTML = `API status: <span class="offline-indicator">offline</span>`;
+        el('apiConfigured').textContent = 'RPC status: backend not reachable';
       }
     }
 
-    const expectedNetwork = document.getElementById('expectedNetwork');
-    const expectedAsset = document.getElementById('expectedAsset');
-    const expectedWallet = document.getElementById('expectedWallet');
-    const providedNetwork = document.getElementById('providedNetwork');
-    const providedAsset = document.getElementById('providedAsset');
-    const providedWallet = document.getElementById('providedWallet');
-    const runDemoBtn = document.getElementById('runDemoBtn');
-    const resetDemoBtn = document.getElementById('resetDemoBtn');
-    const presetButtons = document.querySelectorAll('.preset-btn');
-
-    const outcome = document.getElementById('outcome');
-    const statusLine = document.getElementById('statusLine');
-    const reasonTitle = document.getElementById('reasonTitle');
-    const nextAction = document.getElementById('nextAction');
-    const auditPill = document.getElementById('auditPill');
-    const reasonCodeValue = document.getElementById('reasonCodeValue');
-    const retryAllowedValue = document.getElementById('retryAllowedValue');
-    const expectedResultValue = document.getElementById('expectedResultValue');
-    const providedResultValue = document.getElementById('providedResultValue');
-    const demoFootnote = document.getElementById('demoFootnote');
-    const explainValue = document.getElementById('explainValue');
-    const demoState = document.getElementById('demoState');
-    const demoError = document.getElementById('demoError');
-
-    const state = {
-      scenario: 'happy',
-      ownershipProofStatus: 'verified',
-      simulateExpired: false
-    };
-
-    const defaults = {
-      network: 'ethereum',
-      asset: 'USDC',
-      wallet: '0x1111111111111111111111111111111111111111'
-    };
-
-    function setActivePreset(scenario) {
-      state.scenario = scenario;
-      presetButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.scenario === scenario));
+    function pfLoadHappy() {
+      el('pfExpectedChain').value = 'ethereum';
+      el('pfExpectedAsset').value = 'USDC';
+      el('pfExpectedAddress').value = '0x1111111111111111111111111111111111111111';
+      el('pfExpectedMemo').value = '';
+      el('pfProvidedChain').value = 'ethereum';
+      el('pfProvidedAsset').value = 'USDC';
+      el('pfProvidedAddress').value = '0x1111111111111111111111111111111111111111';
+      el('pfProvidedMemo').value = '';
+      el('pfState').textContent = 'Happy path loaded.';
     }
 
-    function applyScenario(scenario) {
-      expectedNetwork.value = defaults.network;
-      expectedAsset.value = defaults.asset;
-      expectedWallet.value = defaults.wallet;
-      providedNetwork.value = defaults.network;
-      providedAsset.value = defaults.asset;
-      providedWallet.value = defaults.wallet;
-      state.ownershipProofStatus = 'verified';
-      state.simulateExpired = false;
-
-      if (scenario === 'wrong_asset') {
-        providedAsset.value = 'USDT';
-      } else if (scenario === 'wrong_network') {
-        providedNetwork.value = 'polygon';
-      } else if (scenario === 'address_mismatch') {
-        providedWallet.value = '0x2222222222222222222222222222222222222222';
-      } else if (scenario === 'ownership_failed') {
-        state.ownershipProofStatus = 'failed';
-      } else if (scenario === 'expired') {
-        state.simulateExpired = true;
-      }
-
-      setActivePreset(scenario);
-      clearError();
+    function pfLoadMismatch() {
+      el('pfExpectedChain').value = 'ethereum';
+      el('pfExpectedAsset').value = 'USDC';
+      el('pfExpectedAddress').value = '0x1111111111111111111111111111111111111111';
+      el('pfExpectedMemo').value = '';
+      el('pfProvidedChain').value = 'polygon';
+      el('pfProvidedAsset').value = 'USDT';
+      el('pfProvidedAddress').value = '0x2222222222222222222222222222222222222222';
+      el('pfProvidedMemo').value = '';
+      el('pfState').textContent = 'Mismatch scenario loaded.';
     }
 
-    function readPayload() {
-      return {
-        expected: {
-          network: expectedNetwork.value,
-          asset: expectedAsset.value,
-          address: expectedWallet.value.trim()
-        },
-        provided: {
-          network: providedNetwork.value,
-          asset: providedAsset.value,
-          address: providedWallet.value.trim()
-        },
-        ownership_proof_status: state.ownershipProofStatus,
-        simulate_expired: state.simulateExpired
-      };
-    }
-
-    function fmtTriplet(item) {
-      return `${item.network} · ${item.asset} · ${item.address}`;
-    }
-
-    function buildPreviewResponse(payload) {
-      const now = new Date().toISOString();
-      const base = {
-        demo_only: true,
-        expected: payload.expected,
-        provided: payload.provided,
-        audit_preview: { created_at: now }
-      };
-
-      if (payload.simulate_expired) {
-        return {
-          ...base,
-          status: 'expired',
-          summary: 'Verification request expired before completion.',
-          reason_code: 'REQUEST_EXPIRED',
-          next_action: 'Create a new verification request.',
-          retry_allowed: false
-        };
-      }
-
-      if (payload.ownership_proof_status === 'failed') {
-        return {
-          ...base,
-          status: 'blocked',
-          summary: 'Wallet ownership could not be verified.',
-          reason_code: 'OWNERSHIP_PROOF_FAILED',
-          next_action: 'Do not pay. Start a fresh request or complete proof again.',
-          retry_allowed: false
-        };
-      }
-
-      if (payload.expected.network !== payload.provided.network) {
-        return {
-          ...base,
-          status: 'mismatch_detected',
-          summary: 'Provided network does not match the requested chain.',
-          reason_code: 'NETWORK_MISMATCH',
-          next_action: 'BLOCK_AND_REVERIFY',
-          retry_allowed: true
-        };
-      }
-
-      if (payload.expected.asset !== payload.provided.asset) {
-        return {
-          ...base,
-          status: 'mismatch_detected',
-          summary: 'Provided asset does not match the requested payout asset.',
-          reason_code: 'ASSET_MISMATCH',
-          next_action: 'BLOCK_AND_REVERIFY',
-          retry_allowed: true
-        };
-      }
-
-      if (payload.expected.address.toLowerCase() !== payload.provided.address.toLowerCase()) {
-        return {
-          ...base,
-          status: 'mismatch_detected',
-          summary: 'Provided destination wallet differs from the expected address.',
-          reason_code: 'ADDRESS_MISMATCH',
-          next_action: 'BLOCK_AND_REVERIFY',
-          retry_allowed: true
-        };
-      }
-
-      return {
-        ...base,
-        status: 'verified',
-        summary: 'All payout details match the request.',
-        reason_code: 'OK',
-        next_action: 'Safe to proceed to payout approval.',
-        retry_allowed: false
-      };
-    }
-
-    function renderOutcome(data) {
-      outcome.classList.remove('ok', 'bad');
-
-      if (data.status === 'verified') {
-        outcome.classList.add('ok');
-        statusLine.textContent = 'Verified';
-      } else if (data.status === 'blocked' || data.status === 'expired') {
-        outcome.classList.add('bad');
-        statusLine.textContent = data.status === 'expired' ? 'Expired' : 'Blocked';
-      } else {
-        statusLine.textContent = 'Mismatch detected';
-      }
-
-      reasonTitle.textContent = data.summary || data.reason_code || data.status;
-      nextAction.textContent = data.next_action || 'Review the result before payout approval.';
-      reasonCodeValue.textContent = data.reason_code || '—';
-      retryAllowedValue.textContent = data.retry_allowed ? 'Yes' : 'No';
-      expectedResultValue.textContent = fmtTriplet(data.expected);
-      providedResultValue.textContent = fmtTriplet(data.provided);
-      auditPill.textContent = data.audit_preview && data.audit_preview.created_at
-        ? `Preview response · ${data.audit_preview.created_at}`
-        : 'Preview response ready';
-      demoFootnote.textContent = data.demo_only
-        ? 'Public preview only. Pilot request submission and API status use the live backend.'
-        : 'Pilot mode response.';
-
-      explainValue.textContent = buildExplanation(data);
-    }
-
-    function buildExplanation(data) {
-      const code = data.reason_code || '';
-      if (data.status === 'verified') {
-        return 'All submitted payout details match the expected request. In pilot mode, the client would then validate the signed artifact before releasing funds.';
-      }
-      if (code === 'ASSET_MISMATCH') {
-        return 'The submitted asset does not match the expected payout asset. Recommended action: block payout, correct the asset, and re-run verification.';
-      }
-      if (code === 'NETWORK_MISMATCH') {
-        return 'The submitted network differs from the requested network. Recommended action: block payout, confirm the correct chain, and retry.';
-      }
-      if (code === 'ADDRESS_MISMATCH') {
-        return 'The submitted destination wallet does not match the expected payout address. Recommended action: stop payout approval and review the destination details.';
-      }
-      if (code === 'OWNERSHIP_PROOF_FAILED') {
-        return 'Wallet ownership could not be verified. Recommended action: do not pay, and start a fresh verification request or complete proof again.';
-      }
-      if (code === 'REQUEST_EXPIRED') {
-        return 'The verification request expired before completion. Recommended action: create a new request and verify again within the allowed time window.';
-      }
-      if (data.status === 'blocked') {
-        return 'The verification result is blocked by policy or proof failure. Recommended action: do not release funds until the issue is resolved.';
-      }
-      if (data.status === 'expired') {
-        return 'The verification window has expired. Recommended action: create a fresh request and repeat verification.';
-      }
-      return 'The submitted payout details do not match the expected request. Recommended action: block payout, review the mismatch reason, and re-run verification if allowed.';
-    }
-
-    function showError(message) {
-      demoError.style.display = 'block';
-      demoError.textContent = message;
-    }
-
-    function clearError() {
-      demoError.style.display = 'none';
-      demoError.textContent = '';
-    }
-
-    async function runDemo() {
-      clearError();
-      demoState.textContent = 'Running preview…';
-      runDemoBtn.disabled = true;
-
+    async function runPreflight() {
+      el('pfState').textContent = 'Running live pre-send check…';
       try {
-        await new Promise(resolve => setTimeout(resolve, 220));
-        const data = buildPreviewResponse(readPayload());
-        renderOutcome(data);
-        demoState.textContent = 'Preview complete.';
-      } catch (error) {
-        showError('Could not generate the preview response. Please retry.');
-        demoState.textContent = 'Preview failed.';
-      } finally {
-        runDemoBtn.disabled = false;
+        const payload = {
+          expected: {
+            network: el('pfExpectedChain').value,
+            asset: el('pfExpectedAsset').value,
+            address: el('pfExpectedAddress').value.trim(),
+            memo: el('pfExpectedMemo').value.trim(),
+          },
+          provided: {
+            network: el('pfProvidedChain').value,
+            asset: el('pfProvidedAsset').value,
+            address: el('pfProvidedAddress').value.trim(),
+            memo: el('pfProvidedMemo').value.trim(),
+          },
+        };
+        const data = await fetchJson(PRECHECK_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const box = el('pfResult');
+        setResultBox(box, data.status);
+        el('pfResultStatus').textContent = data.status;
+        el('pfResultTitle').textContent = data.summary || data.reason_code || 'Preflight result';
+        el('pfResultText').textContent = data.explanation || 'No explanation returned.';
+        el('pfReason').textContent = data.reason_code || '—';
+        el('pfNext').textContent = data.next_action || '—';
+        el('pfFlags').textContent = (data.risk_flags && data.risk_flags.length) ? data.risk_flags.join(', ') : 'None';
+        el('pfDestType').textContent = (((data.onchain || {}).provided || {}).address_type) || 'unknown';
+        const checks = data.checks || {};
+        el('pfChecks').textContent = Object.entries(checks).map(([k,v]) => `${k}:${v ? 'yes' : 'no'}`).join(' · ');
+        el('pfState').textContent = 'Pre-send check complete.';
+      } catch (err) {
+        const box = el('pfResult');
+        setResultBox(box, 'blocked');
+        el('pfResultStatus').textContent = 'error';
+        el('pfResultTitle').textContent = 'Pre-send check failed.';
+        el('pfResultText').textContent = err.message || 'Could not reach backend.';
+        el('pfReason').textContent = 'REQUEST_FAILED';
+        el('pfNext').textContent = 'CHECK_BACKEND';
+        el('pfFlags').textContent = '—';
+        el('pfDestType').textContent = '—';
+        el('pfChecks').textContent = '—';
+        el('pfState').textContent = 'Backend request failed.';
       }
     }
 
-    function resetDemo() {
-      applyScenario('happy');
-      renderOutcome({
-        status: 'verified',
-        summary: 'All payout details match the request.',
-        reason_code: 'OK',
-        next_action: 'Safe to proceed to payout approval.',
-        retry_allowed: false,
-        expected: {
-          network: defaults.network,
-          asset: defaults.asset,
-          address: defaults.wallet
-        },
-        provided: {
-          network: defaults.network,
-          asset: defaults.asset,
-          address: defaults.wallet
-        },
-        demo_only: true,
-        audit_preview: {
-          created_at: 'ready'
-        }
-      });
-      demoState.textContent = 'Ready to verify.';
-      clearError();
+    async function runRecovery() {
+      el('rcState').textContent = 'Analyzing transaction…';
+      try {
+        const payload = {
+          chain: el('rcChain').value,
+          tx_hash: el('rcHash').value.trim(),
+          issue_type: el('rcIssueType').value,
+          intended_address: el('rcIntendedAddress').value.trim(),
+          intended_chain: el('rcIntendedChain').value,
+        };
+        const data = await fetchJson(RECOVERY_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const observed = data.observed || {};
+        const box = el('rcResult');
+        setResultBox(box, data.status);
+        el('rcResultStatus').textContent = data.status || 'found';
+        el('rcResultTitle').textContent = data.summary || 'Recovery analysis ready.';
+        el('rcResultText').textContent = `Reason code: ${data.reason_code || '—'}`;
+        el('rcReason').textContent = data.reason_code || '—';
+        el('rcRecoverability').textContent = data.recoverability || '—';
+        el('rcDestination').textContent = observed.destination ? `${observed.destination} (${observed.destination_type || 'unknown'})` : '—';
+        el('rcObservedStatus').textContent = observed.tx_status || data.status || '—';
+        el('rcNextActions').textContent = (data.next_actions || []).join(' | ') || '—';
+        el('rcState').textContent = 'Recovery analysis complete.';
+      } catch (err) {
+        const box = el('rcResult');
+        setResultBox(box, 'failed');
+        el('rcResultStatus').textContent = 'error';
+        el('rcResultTitle').textContent = 'Recovery analysis failed.';
+        el('rcResultText').textContent = err.message || 'Could not reach backend.';
+        el('rcReason').textContent = 'REQUEST_FAILED';
+        el('rcRecoverability').textContent = '—';
+        el('rcDestination').textContent = '—';
+        el('rcObservedStatus').textContent = '—';
+        el('rcNextActions').textContent = 'Check backend deployment and RPC configuration.';
+        el('rcState').textContent = 'Backend request failed.';
+      }
     }
 
-    presetButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        applyScenario(btn.dataset.scenario);
-      });
-    });
+    function clearRecovery() {
+      el('rcHash').value = '';
+      el('rcIntendedAddress').value = '';
+      el('rcIntendedChain').value = '';
+      const box = el('rcResult');
+      box.classList.remove('ok', 'bad');
+      el('rcResultStatus').textContent = 'Waiting';
+      el('rcResultTitle').textContent = 'No transaction analyzed yet.';
+      el('rcResultText').textContent = 'Paste a real tx/hash or Solana signature to get a live result.';
+      el('rcReason').textContent = '—';
+      el('rcRecoverability').textContent = '—';
+      el('rcDestination').textContent = '—';
+      el('rcObservedStatus').textContent = '—';
+      el('rcNextActions').textContent = '—';
+      el('rcState').textContent = 'Cleared.';
+    }
 
-    [expectedNetwork, expectedAsset, expectedWallet, providedNetwork, providedAsset, providedWallet].forEach(el => {
-      el.addEventListener('input', () => {
-        state.ownershipProofStatus = 'verified';
-        state.simulateExpired = false;
-        setActivePreset('happy');
-        clearError();
-      });
-      el.addEventListener('change', () => {
-        state.ownershipProofStatus = 'verified';
-        state.simulateExpired = false;
-        setActivePreset('happy');
-        clearError();
-      });
-    });
-
-    runDemoBtn.addEventListener('click', runDemo);
-    resetDemoBtn.addEventListener('click', resetDemo);
-
-    applyScenario('happy');
-    resetDemo();
-    fetchHealthStatus();
-
-    const pilotRequestForm = document.getElementById('pilotRequestForm');
-    const pilotRequestBtn = document.getElementById('pilotRequestBtn');
-    const pilotCopyBtn = document.getElementById('pilotCopyBtn');
-    const pilotFormMsg = document.getElementById('pilotFormMsg');
-    const pilotName = document.getElementById('pilotName');
-    const pilotCompany = document.getElementById('pilotCompany');
-    const pilotEmail = document.getElementById('pilotEmail');
-    const pilotVolume = document.getElementById('pilotVolume');
-    const pilotUseCase = document.getElementById('pilotUseCase');
-
-    setPilotFormMessage('');
-
-    const PERSONAL_EMAIL_DOMAINS = new Set([
-      'gmail.com', 'googlemail.com', 'outlook.com', 'hotmail.com', 'live.com', 'msn.com',
-      'yahoo.com', 'ymail.com', 'rocketmail.com', 'icloud.com', 'me.com', 'mac.com',
-      'proton.me', 'protonmail.com', 'pm.me', 'mail.com', 'aol.com', 'gmx.com',
-      'yandex.ru', 'yandex.com', 'ya.ru', 'bk.ru', 'inbox.ru', 'list.ru', 'mail.ru'
+    const PERSONAL_DOMAINS = new Set([
+      'gmail.com','googlemail.com','outlook.com','hotmail.com','live.com','msn.com','yahoo.com','ymail.com','rocketmail.com',
+      'icloud.com','me.com','mac.com','proton.me','protonmail.com','pm.me','mail.com','aol.com','gmx.com','yandex.ru','yandex.com','ya.ru','bk.ru','inbox.ru','list.ru','mail.ru'
     ]);
 
-    function isValidEmail(value) {
-      const email = String(value || '').trim().toLowerCase();
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    function validEmail(value) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim().toLowerCase());
     }
-
-    function isPersonalEmailDomain(value) {
-      const email = String(value || '').trim().toLowerCase();
-      const parts = email.split('@');
-      if (parts.length !== 2) return false;
-      return PERSONAL_EMAIL_DOMAINS.has(parts[1]);
-    }
-
-    function setPilotFormMessage(message = '', type = 'neutral') {
-      const hasMessage = Boolean(message && String(message).trim());
-      pilotFormMsg.textContent = hasMessage ? message : '';
-      pilotFormMsg.style.display = hasMessage ? 'block' : 'none';
-      pilotFormMsg.className = `pilot-form-msg ${type}`;
+    function personalEmail(value) {
+      const parts = String(value || '').trim().toLowerCase().split('@');
+      return parts.length === 2 && PERSONAL_DOMAINS.has(parts[1]);
     }
 
     function buildPilotPayload() {
       const payload = {
-        name: pilotName.value.trim(),
-        company: pilotCompany.value.trim(),
-        email: pilotEmail.value.trim(),
-        volume: pilotVolume.value.trim(),
-        notes: pilotUseCase.value.trim()
+        name: el('pilotName').value.trim(),
+        company: el('pilotCompany').value.trim(),
+        email: el('pilotEmail').value.trim(),
+        volume: el('pilotVolume').value.trim(),
+        notes: el('pilotNotes').value.trim(),
       };
-
-      if (!payload.name || !payload.company || !payload.email || !payload.notes) {
-        setPilotFormMessage('Please complete Full name, Company / team, Work email, and the payout or verification flow field before submitting.', 'error');
-        return null;
-      }
-
-      if (!isValidEmail(payload.email)) {
-        setPilotFormMessage('Please enter a valid work email address.', 'error');
-        return null;
-      }
-
-      if (isPersonalEmailDomain(payload.email)) {
-        setPilotFormMessage('Please use your work email. Personal email domains are not accepted.', 'error');
-        return null;
-      }
-
+      if (!payload.name || !payload.company || !payload.email || !payload.notes) throw new Error('Complete name, company, work email, and use case first.');
+      if (!validEmail(payload.email)) throw new Error('Please enter a valid work email.');
+      if (personalEmail(payload.email)) throw new Error('Please use a work email. Personal email domains are blocked.');
       return payload;
     }
 
-    function buildPilotCopyText(payload) {
-      return [
-        'PayeeProof pilot request',
-        '',
-        `Name: ${payload.name}`,
-        `Company / team: ${payload.company}`,
-        `Work email: ${payload.email}`,
-        `Monthly payout volume: ${payload.volume || 'Not provided'}`,
-        '',
-        'Protected payout / verification flow:',
-        payload.notes,
-        '',
-        'Sent from: https://payeeproof.com'
-      ].join('\n');
-    }
-
-    async function copyPilotDraft(body) {
-      try {
-        await navigator.clipboard.writeText(body);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    }
-
-    async function handlePilotRequest(event) {
+    async function submitPilot(event) {
       event.preventDefault();
-      const payload = buildPilotPayload();
-      if (!payload) return;
-
-      pilotRequestBtn.disabled = true;
-      pilotCopyBtn.disabled = true;
-      pilotRequestBtn.textContent = 'Sending…';
-      setPilotFormMessage('Sending your request to the live PayeeProof API…');
-
       try {
-        const response = await fetch(PILOT_REQUEST_API_URL, {
-          method: 'POST',
-          mode: 'cors',
-          cache: 'no-store',
-          credentials: 'omit',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        const rawText = await response.text();
-        let data = {};
-        try {
-          data = rawText ? JSON.parse(rawText) : {};
-        } catch (parseError) {}
-
-        if (!response.ok) {
-          const message = data.message || data.error || `Pilot request failed (${response.status})`;
-          setPilotFormMessage(message, 'error');
-          return;
-        }
-
-        pilotRequestForm.reset();
-        setPilotFormMessage('Request received.\n\nWe’ll review your payout or verification flow and reply by email.\nTypical response time: within 1 business day.\n\nSubmitted securely to the PayeeProof team.', 'success');
-      } catch (error) {
-        setPilotFormMessage(`Could not send your request right now. ${error && error.message ? error.message : 'Please try again in a moment.'}`, 'error');
-      } finally {
-        pilotRequestBtn.disabled = false;
-        pilotCopyBtn.disabled = false;
-        pilotRequestBtn.textContent = 'Request pilot review';
+        const payload = buildPilotPayload();
+        el('pilotState').textContent = 'Sending pilot request…';
+        const data = await fetchJson(PILOT_URL, { method: 'POST', body: JSON.stringify(payload) });
+        el('pilotState').textContent = data.message
+          ? `${data.message}${data.email_notification ? ` Email: ${data.email_notification}.` : ''}${data.submitted_at ? ` Submitted at ${data.submitted_at}` : ''}`
+          : 'Pilot request received.';
+        event.target.reset();
+      } catch (err) {
+        el('pilotState').textContent = err.message || 'Pilot request failed.';
       }
     }
 
-    async function handlePilotCopy() {
-      const payload = buildPilotPayload();
-      if (!payload) return;
-
-      pilotCopyBtn.disabled = true;
-      const copied = await copyPilotDraft(buildPilotCopyText(payload));
-      setPilotFormMessage(
-        copied
-          ? 'Request details copied to your clipboard.'
-          : 'Clipboard copy was blocked. Please allow clipboard access and retry.',
-        copied ? 'success' : 'error'
-      );
-      pilotCopyBtn.disabled = false;
+    async function copyPilot() {
+      try {
+        const payload = buildPilotPayload();
+        const text = [
+          'PayeeProof pilot request',
+          '',
+          `Name: ${payload.name}`,
+          `Company: ${payload.company}`,
+          `Work email: ${payload.email}`,
+          `Monthly payout volume: ${payload.volume || 'Not provided'}`,
+          '',
+          'Use case:',
+          payload.notes,
+        ].join('\n');
+        await navigator.clipboard.writeText(text);
+        el('pilotState').textContent = 'Pilot request copied to clipboard.';
+      } catch (err) {
+        el('pilotState').textContent = err.message || 'Clipboard copy failed.';
+      }
     }
 
-    if (pilotRequestForm) {
-      pilotRequestForm.addEventListener('submit', handlePilotRequest);
-    }
-    if (pilotCopyBtn) {
-      pilotCopyBtn.addEventListener('click', handlePilotCopy);
-    }
+    el('pfRunBtn').addEventListener('click', runPreflight);
+    el('pfHappyBtn').addEventListener('click', pfLoadHappy);
+    el('pfMismatchBtn').addEventListener('click', pfLoadMismatch);
+    el('rcRunBtn').addEventListener('click', runRecovery);
+    el('rcClearBtn').addEventListener('click', clearRecovery);
+    el('pilotForm').addEventListener('submit', submitPilot);
+    el('pilotCopyBtn').addEventListener('click', copyPilot);
 
+    pfLoadHappy();
+    clearRecovery();
+    checkHealth();
   </script>
 </body>
 </html>
