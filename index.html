@@ -97,6 +97,8 @@
       text-align: center;
     }
     .btn:hover { transform: translateY(-1px); }
+    .btn:disabled { opacity: .62; cursor: not-allowed; transform: none; }
+    .btn:disabled:hover { transform: none; }
     .btn-primary { background: var(--white); color: #000; border-color: transparent; }
     .btn-secondary { background: transparent; color: var(--text); }
     .btn-ghost { background: rgba(255,255,255,.03); color: #d4d4d8; }
@@ -366,8 +368,8 @@
 
           <div class="panel-actions">
             <button class="btn btn-primary" id="pfRunBtn" type="button">Run live check</button>
-            <button class="btn btn-secondary" id="pfHappyBtn" type="button">Load valid example</button>
-            <button class="btn btn-ghost" id="pfMismatchBtn" type="button">Load mismatch example</button>
+            <button class="btn btn-secondary" id="pfHappyBtn" type="button">Run valid example</button>
+            <button class="btn btn-ghost" id="pfMismatchBtn" type="button">Run mismatch example</button>
           </div>
           <div class="note" id="pfState">Ready.</div>
 
@@ -611,17 +613,30 @@ POST Recovery API
     const HEALTH_URL = `${API_BASE}/health`;
 
     async function fetchJson(url, options = {}) {
-      const res = await fetch(url, {
-        cache: 'no-store',
-        credentials: 'omit',
-        headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
-        ...options,
-      });
-      const text = await res.text();
-      let data = {};
-      try { data = text ? JSON.parse(text) : {}; } catch (e) {}
-      if (!res.ok) throw new Error(data.error || data.message || `Request failed (${res.status})`);
-      return data;
+      const { timeoutMs = 15000, ...fetchOptions } = options;
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const res = await fetch(url, {
+          cache: 'no-store',
+          credentials: 'omit',
+          headers: { 'Content-Type': 'application/json', ...((fetchOptions && fetchOptions.headers) || {}) },
+          ...fetchOptions,
+          signal: controller.signal,
+        });
+        const text = await res.text();
+        let data = {};
+        try { data = text ? JSON.parse(text) : {}; } catch (e) {}
+        if (!res.ok) throw new Error(data.error || data.message || `Request failed (${res.status})`);
+        return data;
+      } catch (err) {
+        if (err && err.name === 'AbortError') {
+          throw new Error('The live check took too long. Please try again in a few seconds.');
+        }
+        throw err;
+      } finally {
+        clearTimeout(timer);
+      }
     }
 
     function el(id) { return document.getElementById(id); }
@@ -741,6 +756,54 @@ POST Recovery API
       box.classList.toggle('compact', !isExpanded);
     }
 
+    function setPreflightButtonsBusy(isBusy) {
+      const runBtn = el('pfRunBtn');
+      const happyBtn = el('pfHappyBtn');
+      const mismatchBtn = el('pfMismatchBtn');
+      runBtn.disabled = isBusy;
+      happyBtn.disabled = isBusy;
+      mismatchBtn.disabled = isBusy;
+      runBtn.textContent = isBusy ? 'Checking…' : 'Run live check';
+    }
+
+    function setPreflightPreviewState(mode) {
+      const box = el('pfResult');
+      box.classList.remove('ok', 'bad');
+      if (mode === 'valid') {
+        el('pfResultStatus').textContent = 'Example loaded';
+        el('pfResultTitle').textContent = 'Valid example is ready.';
+        el('pfResultText').textContent = 'Fields were filled in. Click “Run live check” to verify them against the live service.';
+        el('pfReason').textContent = 'Preview';
+        el('pfNext').textContent = 'Click Run live check';
+        el('pfFlags').textContent = 'Not checked yet';
+        el('pfDestType').textContent = 'Will be checked live';
+      } else if (mode === 'mismatch') {
+        el('pfResultStatus').textContent = 'Example loaded';
+        el('pfResultTitle').textContent = 'Mismatch example is ready.';
+        el('pfResultText').textContent = 'This example is intentionally wrong. Click “Run live check” to see how the service blocks it.';
+        el('pfReason').textContent = 'Preview';
+        el('pfNext').textContent = 'Click Run live check';
+        el('pfFlags').textContent = 'Not checked yet';
+        el('pfDestType').textContent = 'Will be checked live';
+      } else if (mode === 'running') {
+        el('pfResultStatus').textContent = 'Checking';
+        el('pfResultTitle').textContent = 'Running a live pre-send check…';
+        el('pfResultText').textContent = 'Comparing the submitted payout details and asking the live service to validate the recipient.';
+        el('pfReason').textContent = 'Live';
+        el('pfNext').textContent = 'Please wait';
+        el('pfFlags').textContent = 'Checking…';
+        el('pfDestType').textContent = 'Checking…';
+      } else {
+        el('pfResultStatus').textContent = 'Ready';
+        el('pfResultTitle').textContent = 'Enter details or load an example.';
+        el('pfResultText').textContent = 'Then click “Run live check” to validate the payout details.';
+        el('pfReason').textContent = 'Ready';
+        el('pfNext').textContent = 'Run live check';
+        el('pfFlags').textContent = '—';
+        el('pfDestType').textContent = 'Not checked yet';
+      }
+      el('pfChecks').innerHTML = '<div class="check-row"><span>Live verification</span><span>Waiting</span></div>';
+    }
 
     function setResultBox(box, status) {
       box.classList.remove('ok', 'bad');
@@ -761,7 +824,7 @@ POST Recovery API
       }
     }
 
-    function pfLoadHappy() {
+    async function pfLoadHappy() {
       el('pfExpectedChain').value = 'ethereum';
       el('pfExpectedAsset').value = 'USDC';
       el('pfExpectedAddress').value = '0x1111111111111111111111111111111111111111';
@@ -770,10 +833,12 @@ POST Recovery API
       el('pfProvidedAsset').value = 'USDC';
       el('pfProvidedAddress').value = '0x1111111111111111111111111111111111111111';
       el('pfProvidedMemo').value = '';
-      el('pfState').textContent = 'Valid example loaded.';
+      setPreflightPreviewState('valid');
+      el('pfState').textContent = 'Valid example loaded. Running live check…';
+      await runPreflight();
     }
 
-    function pfLoadMismatch() {
+    async function pfLoadMismatch() {
       el('pfExpectedChain').value = 'ethereum';
       el('pfExpectedAsset').value = 'USDC';
       el('pfExpectedAddress').value = '0x1111111111111111111111111111111111111111';
@@ -782,10 +847,14 @@ POST Recovery API
       el('pfProvidedAsset').value = 'USDT';
       el('pfProvidedAddress').value = '0x2222222222222222222222222222222222222222';
       el('pfProvidedMemo').value = '';
-      el('pfState').textContent = 'Mismatch example loaded.';
+      setPreflightPreviewState('mismatch');
+      el('pfState').textContent = 'Mismatch example loaded. Running live check…';
+      await runPreflight();
     }
 
     async function runPreflight() {
+      setPreflightButtonsBusy(true);
+      setPreflightPreviewState('running');
       el('pfState').textContent = 'Running live pre-send check…';
       try {
         const payload = {
@@ -802,7 +871,7 @@ POST Recovery API
             memo: el('pfProvidedMemo').value.trim(),
           },
         };
-        const data = await fetchJson(PRECHECK_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const data = await fetchJson(PRECHECK_URL, { method: 'POST', body: JSON.stringify(payload), timeoutMs: 15000 });
         const box = el('pfResult');
         setResultBox(box, data.status);
         el('pfResultStatus').textContent = formatStatusLabel(data.status);
@@ -819,14 +888,16 @@ POST Recovery API
         const box = el('pfResult');
         setResultBox(box, 'blocked');
         el('pfResultStatus').textContent = 'Error';
-        el('pfResultTitle').textContent = 'Pre-Send Check failed.';
+        el('pfResultTitle').textContent = 'Pre-Send check failed.';
         el('pfResultText').textContent = err.message || 'Could not reach the service.';
         el('pfReason').textContent = formatReasonLabel('REQUEST_FAILED');
         el('pfNext').textContent = formatNextActionLabel('CHECK_BACKEND');
         el('pfFlags').textContent = '—';
         el('pfDestType').textContent = '—';
         el('pfChecks').innerHTML = '<div class="check-row"><span>Checks unavailable</span><span>—</span></div>';
-        el('pfState').textContent = 'Backend request failed.';
+        el('pfState').textContent = 'Live request failed.';
+      } finally {
+        setPreflightButtonsBusy(false);
       }
     }
 
@@ -952,8 +1023,10 @@ POST Recovery API
     }
 
     el('pfRunBtn').addEventListener('click', runPreflight);
-    el('pfHappyBtn').addEventListener('click', pfLoadHappy);
-    el('pfMismatchBtn').addEventListener('click', pfLoadMismatch);
+    el('pfHappyBtn').addEventListener('click', () => { void pfLoadHappy(); });
+    el('pfMismatchBtn').addEventListener('click', () => { void pfLoadMismatch(); });
+    setPreflightPreviewState('ready');
+    el('pfState').textContent = 'Ready. Load an example or enter details, then run a live check.';
     el('rcRunBtn').addEventListener('click', runRecovery);
     el('rcClearBtn').addEventListener('click', clearRecovery);
     el('pilotForm').addEventListener('submit', submitPilot);
