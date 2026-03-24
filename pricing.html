@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PayeeProof — pricing & pilot packages</title>
+  <meta name="description" content="Buyer-facing pilot packages and commercial paths for PayeeProof across pilot evaluation, custom integration, and ongoing operational use." />
+  <meta property="og:title" content="PayeeProof — pricing & pilot packages" />
+  <meta property="og:description" content="Pilot evaluation, custom integration, and enterprise rollout paths for teams evaluating PayeeProof." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="./og-cover.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./payeeproof-favicon-192.png" />
+  <style>
+    :root {
+      --bg: #09090b;
+      --bg-soft: #111114;
+      --panel: rgba(255,255,255,0.04);
+      --panel-strong: rgba(255,255,255,0.07);
+      --text: #f4f4f5;
+      --muted: #b4b4bc;
+      --line: rgba(255,255,255,0.10);
+      --gold: #d4af37;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --shadow: 0 26px 70px rgba(0,0,0,0.35);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1200px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(212,175,55,0.16), transparent 26%),
+        linear-gradient(180deg, #09090b 0%, #0d0d11 46%, #09090b 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(calc(100% - 40px), var(--max)); margin: 0 auto; }
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: blur(16px);
+      background: rgba(9,9,11,0.74);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .topbar-inner {
+      min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; font-weight: 600; letter-spacing: 0.01em; }
+    .logo {
+      width: 42px; height: 42px; border-radius: 14px;
+      background: linear-gradient(145deg, rgba(212,175,55,0.24), rgba(255,255,255,0.06));
+      border: 1px solid rgba(212,175,55,0.32);
+      display: grid; place-items: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 18px 42px rgba(0,0,0,0.24);
+      overflow: hidden;
+    }
+    .logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    nav { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+    nav a, .footer a { color: var(--muted); font-size: 14px; transition: color .2s ease, opacity .2s ease; }
+    nav a:hover, .footer a:hover { color: var(--text); }
+    .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; min-height: 48px; padding: 0 18px; border-radius: 999px;
+      border: 1px solid var(--line); font-weight: 600; font-size: 15px;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(212,175,55,0.22), rgba(212,175,55,0.08));
+      border-color: rgba(212,175,55,0.40);
+    }
+    .btn-secondary { background: rgba(255,255,255,0.03); }
+    .hero { padding: 88px 0 44px; }
+    .hero-grid { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: 28px; align-items: stretch; }
+    .hero-copy h1 { margin: 14px 0 18px; font-size: clamp(40px, 5vw, 68px); line-height: 1.03; letter-spacing: -0.03em; }
+    .lead { color: var(--muted); font-size: 19px; max-width: 860px; }
+    .pill {
+      display: inline-flex; gap: 10px; align-items: center;
+      min-height: 36px; padding: 0 14px; border-radius: 999px;
+      border: 1px solid rgba(212,175,55,0.24);
+      background: rgba(212,175,55,0.10);
+      color: #f5deb0; font-size: 14px;
+    }
+    .hero-card, .card {
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      box-shadow: var(--shadow);
+    }
+    .hero-card { padding: 24px; }
+    .metric-list, .boundary-list, .faq-list { display: grid; gap: 14px; }
+    .metric {
+      padding: 16px 18px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+    .metric h3, .card h3 { margin: 0 0 8px; font-size: 18px; }
+    .metric p, .card p, li { margin: 0; color: var(--muted); }
+    .section { padding: 76px 0; }
+    .section.soft { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-top: 1px solid rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .eyebrow { color: #f5deb0; text-transform: uppercase; letter-spacing: .18em; font-size: 12px; font-weight: 700; }
+    h2 { font-size: clamp(30px, 4vw, 48px); line-height: 1.08; letter-spacing: -0.03em; margin: 12px 0 0; }
+    .grid { display: grid; gap: 22px; }
+    .three-col { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .two-col { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .card { padding: 24px; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .tag {
+      display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px;
+      border-radius: 999px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03);
+      color: #d4d4d8; font-size: 13px;
+    }
+    .boundary-list { padding-left: 18px; }
+    .boundary-list li { margin-bottom: 10px; }
+    .check { color: var(--green); font-weight: 700; }
+    .cross { color: var(--amber); font-weight: 700; }
+    .cta {
+      padding: 28px; border-radius: var(--radius-xl);
+      border: 1px solid rgba(212,175,55,0.22);
+      background: linear-gradient(145deg, rgba(212,175,55,0.10), rgba(255,255,255,0.03));
+      box-shadow: var(--shadow);
+    }
+    .footer { padding: 28px 0 42px; color: #71717a; font-size: 14px; }
+    .footer-inner { display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap; }
+    .footer-links { display:flex; gap:18px; flex-wrap:wrap; }
+    @media (max-width: 1020px) {
+      nav { display:none; }
+      .hero-grid, .three-col, .two-col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .section { padding: 68px 0; }
+      .btn-row { flex-direction: column; align-items: stretch; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
+        <span>PayeeProof</span>
+      </div>
+      <nav>
+        <a href="#overview">Overview</a>
+        <a href="#packages">Packages</a>
+        <a href="#scope">Scope</a>
+        <a href="#commercial">Commercial model</a>
+        <a href="#faq">FAQ</a>
+        <a href="./use-cases.html">Use cases</a>
+        <a href="./trust-security.html">Trust &amp; security</a>
+        <a href="./policy-examples.html">Policy examples</a>
+        <a href="./technical-sample.html">Technical sample</a>
+        <a href="./pilot-flow.html">Pilot flow</a>
+      </nav>
+      <div class="btn-row">
+        <a class="btn btn-secondary" href="./index.html">Back to main site</a>
+        <a class="btn btn-primary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20request">Request pilot</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="overview">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="pill">Pricing &amp; pilot packages · buyer-facing · scope-based</div>
+          <h1>Commercial paths for pilot evaluation, custom integration, and ongoing use.</h1>
+          <p class="lead">PayeeProof is a decision layer for transfer safety, so commercial fit depends on workflow scope, review depth, supported networks, and how operationally strict the team needs the decision record to be. The cleanest path is usually a narrow pilot first, then expansion only if the workflow proves useful.</p>
+          <div class="btn-row" style="margin-top:22px;">
+            <a class="btn btn-primary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20request">Request pilot</a>
+            <a class="btn btn-secondary" href="./use-cases.html">Open use cases</a>
+            <a class="btn btn-ghost" href="./pilot-flow.html">See pilot flow</a>
+          </div>
+          <div class="tag-row">
+            <span class="tag">Pilot evaluation</span>
+            <span class="tag">Custom integration</span>
+            <span class="tag">Enterprise rollout</span>
+            <span class="tag">Email-first review</span>
+          </div>
+        </div>
+        <aside class="hero-card">
+          <div class="metric-list">
+            <div class="metric">
+              <h3>Best starting point</h3>
+              <p>One workflow, one operator pain point, and one clear success criterion. Narrow pilots close faster and produce better review signal.</p>
+            </div>
+            <div class="metric">
+              <h3>Commercial principle</h3>
+              <p>Pricing follows scope, policy depth, and rollout complexity rather than a random seat count that says nothing about operational risk.</p>
+            </div>
+            <div class="metric">
+              <h3>What buyers get</h3>
+              <p>A defined evaluation path, clear next actions, and a commercial discussion anchored to a real workflow instead of a vague demo impression.</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section soft" id="packages">
+      <div class="container">
+        <div class="eyebrow">Packages</div>
+        <h2>Three practical commercial paths.</h2>
+        <div class="grid three-col" style="margin-top:34px;">
+          <article class="card">
+            <h3>Pilot evaluation</h3>
+            <p>For teams that want to test one narrow flow before committing to deeper integration.</p>
+            <ul class="boundary-list">
+              <li>One selected workflow or transfer path</li>
+              <li>Defined networks and assets in scope</li>
+              <li>Review of verdict language and destination classes</li>
+              <li>Initial pilot summary with recommendations</li>
+            </ul>
+            <div class="btn-row" style="margin-top:18px;"><a class="btn btn-primary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20evaluation">Request pilot evaluation</a></div>
+          </article>
+          <article class="card">
+            <h3>Custom integration</h3>
+            <p>For teams that already know the workflow and want PayeeProof aligned to real payout or support operations.</p>
+            <ul class="boundary-list">
+              <li>Workflow mapping to decision points</li>
+              <li>Policy and reason-code alignment</li>
+              <li>Supported network and asset review</li>
+              <li>API and implementation path discussion</li>
+            </ul>
+            <div class="btn-row" style="margin-top:18px;"><a class="btn btn-secondary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20custom%20integration">Discuss custom integration</a></div>
+          </article>
+          <article class="card">
+            <h3>Enterprise / ongoing use</h3>
+            <p>For teams planning repeated operational usage, broader coverage, and a longer-term commercial relationship.</p>
+            <ul class="boundary-list">
+              <li>Expanded workflow or business-unit scope</li>
+              <li>Ongoing review of operational fit</li>
+              <li>Policy refinement over time</li>
+              <li>Commercial discussion aligned to volume and depth</li>
+            </ul>
+            <div class="btn-row" style="margin-top:18px;"><a class="btn btn-ghost" href="mailto:hello@payeeproof.com?subject=PayeeProof%20enterprise%20discussion">Discuss enterprise path</a></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="scope">
+      <div class="container">
+        <div class="eyebrow">Scope drivers</div>
+        <h2>What usually affects pricing and pilot scope.</h2>
+        <div class="grid two-col" style="margin-top:34px;">
+          <article class="card">
+            <h3>Operational complexity</h3>
+            <ul class="boundary-list">
+              <li>How many workflows need verification</li>
+              <li>Whether the operator needs strict routing or escalation logic</li>
+              <li>How many destination patterns or exception paths matter</li>
+              <li>Whether the team needs support-style recovery handling too</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Coverage and rollout</h3>
+            <ul class="boundary-list">
+              <li>Networks, assets, and destination classes in scope</li>
+              <li>Depth of pilot review and example coverage</li>
+              <li>Email-first review versus implementation-heavy rollout</li>
+              <li>Need for repeated operational use beyond a narrow pilot</li>
+            </ul>
+          </article>
+        </div>
+        <div class="grid three-col" style="margin-top:28px;">
+          <article class="card">
+            <h3>Best low-friction path</h3>
+            <p>Start with one workflow and a short success definition. A narrow pilot is usually faster to approve internally.</p>
+          </article>
+          <article class="card">
+            <h3>Best buyer signal</h3>
+            <p>The strongest commercial conversations happen after buyers review real records, policy examples, trust boundaries, and one scoped workflow.</p>
+          </article>
+          <article class="card">
+            <h3>What not to do</h3>
+            <p>Do not start with a giant “platform rollout” discussion before confirming that the decision layer is valuable in one real operational step.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="commercial">
+      <div class="container">
+        <div class="eyebrow">Commercial model</div>
+        <h2>Commercial terms follow workflow reality, not generic SaaS theater.</h2>
+        <div class="grid three-col" style="margin-top:34px;">
+          <article class="card">
+            <h3>No public fixed price yet</h3>
+            <p>At this stage, the more serious approach is to price around a defined workflow, review depth, and rollout path instead of publishing arbitrary numbers too early.</p>
+          </article>
+          <article class="card">
+            <h3>Why that helps buyers</h3>
+            <p>Buyers pay for an operationally useful scope: what gets verified, what gets classified, how records look, and what action the team can take.</p>
+          </article>
+          <article class="card">
+            <h3>What happens next</h3>
+            <p>After a fit review, the commercial discussion can move to a scoped pilot, a custom integration path, or a broader ongoing relationship.</p>
+          </article>
+        </div>
+        <div class="btn-row" style="margin-top:24px;">
+          <a class="btn btn-primary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20commercial%20discussion">Discuss commercial scope</a>
+          <a class="btn btn-secondary" href="./technical-sample.html">Open technical sample</a>
+          <a class="btn btn-ghost" href="./trust-security.html">Read trust &amp; security</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="container">
+        <div class="eyebrow">FAQ</div>
+        <h2>Common buyer questions.</h2>
+        <div class="faq-list" style="margin-top:34px;">
+          <article class="card">
+            <h3>Do we need a call before starting?</h3>
+            <p>No. A pilot fit review can start by email if you share the workflow, networks, assets, and the decision you want before approval.</p>
+          </article>
+          <article class="card">
+            <h3>Can we start small?</h3>
+            <p>Yes. The best starting point is one workflow, one problem, and one success criterion. Expansion comes after the pilot proves useful.</p>
+          </article>
+          <article class="card">
+            <h3>Why are public prices not fixed yet?</h3>
+            <p>Because the product is bought as an operational control for a workflow, not as a generic self-serve widget. Scope quality matters more than a decorative price table.</p>
+          </article>
+          <article class="card">
+            <h3>What should we send for a serious review?</h3>
+            <p>Current payout or support flow, networks and assets in scope, destination types, where errors happen today, and what action your team needs from the verdict.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="brand">
+        <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
+        <div>© 2026 PayeeProof</div>
+      </div>
+      <div class="footer-links">
+        <a href="#overview">Overview</a>
+        <a href="#packages">Packages</a>
+        <a href="#scope">Scope</a>
+        <a href="#commercial">Commercial model</a>
+        <a href="#faq">FAQ</a>
+        <a href="./use-cases.html">Use cases</a>
+        <a href="./trust-security.html">Trust &amp; security</a>
+        <a href="./policy-examples.html">Policy examples</a>
+        <a href="./technical-sample.html">Technical sample</a>
+        <a href="./pilot-flow.html">Pilot flow</a>
+        <a href="./index.html">Main site</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
