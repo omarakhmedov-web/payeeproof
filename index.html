@@ -301,6 +301,35 @@
     .detect-pill.warn { color: var(--warn); border-color: var(--warn-line); background: var(--warn-bg); }
     .detect-pill.bad { color: var(--bad); border-color: var(--bad-line); background: var(--bad-bg); }
 
+    .soft-detect {
+      margin-top: 8px;
+      min-height: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #a1a1aa;
+    }
+    .soft-detect-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: #d4d4d8;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .soft-detect-pill.ok { color: var(--ok); border-color: var(--ok-line); background: var(--ok-bg); }
+    .soft-detect-pill.warn { color: var(--warn); border-color: var(--warn-line); background: var(--warn-bg); }
+    .soft-detect-pill.bad { color: var(--bad); border-color: var(--bad-line); background: var(--bad-bg); }
+    .soft-detect-pill.neutral { color: #d4d4d8; }
+
   </style>
 </head>
 <body>
@@ -496,6 +525,7 @@
                   <label for="pfExpectedAddress">Expected address</label>
                   <input id="pfExpectedAddress" placeholder="0x..." />
                   <div class="detect-note" id="pfExpectedDetect"></div>
+                  <div class="soft-detect" id="pfExpectedSoft"></div>
                 </div>
                 <div class="field wide">
                   <label for="pfExpectedMemo">Expected memo / tag (optional)</label>
@@ -529,6 +559,7 @@
                   <label for="pfProvidedAddress">Provided address</label>
                   <input id="pfProvidedAddress" placeholder="0x..." />
                   <div class="detect-note" id="pfProvidedDetect"></div>
+                  <div class="soft-detect" id="pfProvidedSoft"></div>
                 </div>
                 <div class="field wide">
                   <label for="pfProvidedMemo">Provided memo / tag (optional)</label>
@@ -1071,6 +1102,105 @@ POST /api/recovery-copilot
       return `<span class="detect-pill ${tone || ''}">${escapeHtml(label)}</span>${noteHtml}`;
     }
 
+    function softHintHtml(tone, label, note) {
+      const noteHtml = note ? `<span>${escapeHtml(note)}</span>` : '';
+      return `<span class="soft-detect-pill ${tone || 'neutral'}">${escapeHtml(label)}</span>${noteHtml}`;
+    }
+
+    function setSoftHint(targetId, tone, label, note) {
+      const target = el(targetId);
+      if (!target) return;
+      target.innerHTML = label ? softHintHtml(tone, label, note) : '';
+    }
+
+    function getSoftHintKey(chain, asset, address) {
+      return `${String(chain || '').toLowerCase()}|${String(asset || '').toUpperCase()}|${String(address || '').trim()}`;
+    }
+
+    const LIVE_ADDRESS_HINT_CACHE = new Map();
+    const LIVE_ADDRESS_HINT_SEQ = {};
+
+    function debounce(fn, wait = 500) {
+      let timer = null;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), wait);
+      };
+    }
+
+    function classifySoftHintFromResult(data) {
+      const reason = String(data?.reason_code || '').toUpperCase();
+      const addressType = String(data?.onchain?.provided?.address_type || data?.onchain?.expected?.address_type || '').toLowerCase();
+      if (reason === 'INVALID_ADDRESS') {
+        return { tone: 'bad', label: 'Invalid address', note: 'The format does not match the selected network.' };
+      }
+      if (['DESTINATION_IS_CONTRACT_OR_APP','DESTINATION_IS_CONTRACT','DESTINATION_IS_PROGRAM'].includes(reason) || ['contract','program','app_contract','smart_contract','contract_or_app','executable'].includes(addressType)) {
+        return { tone: 'warn', label: 'Likely contract / app', note: 'Use a small test first unless this destination is explicitly expected.' };
+      }
+      if (['DESTINATION_IS_BRIDGE_ROUTER'].includes(reason) || ['bridge_router','router','bridge','bridge_or_router'].includes(addressType)) {
+        return { tone: 'warn', label: 'Likely bridge / router', note: 'Infrastructure destination. Confirm route details before sending.' };
+      }
+      if (['DESTINATION_REQUIRES_MEMO_OR_VENUE_CHECK'].includes(reason) || ['exchange_deposit','deposit_address','exchange_like_deposit'].includes(addressType)) {
+        return { tone: 'warn', label: 'Likely deposit destination', note: 'Double-check venue, network, asset, and memo/tag.' };
+      }
+      if (reason === 'OK' || ['eoa','wallet','personal_wallet','externally_owned_account','account'].includes(addressType)) {
+        return { tone: 'ok', label: 'Likely personal wallet', note: 'Looks like a normal wallet address from public chain signals.' };
+      }
+      return { tone: 'neutral', label: 'Live hint unavailable', note: 'Public signals were not strong enough to classify this address yet.' };
+    }
+
+    async function runAddressSoftHint(addressInputId, chainSelectId, assetSelectId, targetId) {
+      const address = el(addressInputId)?.value.trim() || '';
+      const chain = el(chainSelectId)?.value || '';
+      const asset = el(assetSelectId)?.value || 'USDC';
+      const detected = detectAddressFormat(address);
+      const seqKey = `${targetId}`;
+      LIVE_ADDRESS_HINT_SEQ[seqKey] = (LIVE_ADDRESS_HINT_SEQ[seqKey] || 0) + 1;
+      const mySeq = LIVE_ADDRESS_HINT_SEQ[seqKey];
+
+      if (!address) {
+        setSoftHint(targetId, '', '', '');
+        return;
+      }
+      if (detected.kind === 'invalid_evm' || detected.kind === 'unknown') {
+        setSoftHint(targetId, 'bad', 'Invalid or unrecognized', 'Correct the address before trying a live classification.');
+        return;
+      }
+      if (detected.kind === 'evm' && !EVM_CHAINS.includes(chain)) {
+        setSoftHint(targetId, 'warn', 'Choose an EVM network', 'The address format is valid, but the exact EVM chain must be selected manually.');
+        return;
+      }
+      if (detected.kind !== 'evm' && detected.kind !== 'solana') {
+        setSoftHint(targetId, '', '', '');
+        return;
+      }
+
+      const cacheKey = getSoftHintKey(chain, asset, address);
+      if (LIVE_ADDRESS_HINT_CACHE.has(cacheKey)) {
+        const cached = LIVE_ADDRESS_HINT_CACHE.get(cacheKey);
+        setSoftHint(targetId, cached.tone, cached.label, cached.note);
+        return;
+      }
+
+      setSoftHint(targetId, 'neutral', 'Checking live signals…', 'This runs a lightweight destination classification before submit.');
+      try {
+        const payload = {
+          expected: { network: chain, asset, address, memo: '' },
+          provided: { network: chain, asset, address, memo: '' },
+        };
+        const data = await fetchJson(PRECHECK_URL, { method: 'POST', body: JSON.stringify(payload), timeoutMs: 4500 });
+        const hint = classifySoftHintFromResult(data);
+        LIVE_ADDRESS_HINT_CACHE.set(cacheKey, hint);
+        if (LIVE_ADDRESS_HINT_SEQ[seqKey] === mySeq) {
+          setSoftHint(targetId, hint.tone, hint.label, hint.note);
+        }
+      } catch (err) {
+        if (LIVE_ADDRESS_HINT_SEQ[seqKey] === mySeq) {
+          setSoftHint(targetId, 'neutral', 'Live hint unavailable', 'The form can still run the full check when you submit.');
+        }
+      }
+    }
+
     function updateAddressDetection(addressInputId, chainSelectId, hintId) {
       const address = el(addressInputId).value.trim();
       const chainSelect = el(chainSelectId);
@@ -1099,13 +1229,19 @@ POST /api/recovery-copilot
       hint.innerHTML = detectionHtml('bad', 'Unrecognized format', 'Check the address and selected network before sending.');
     }
 
-    function bindAddressDetection(addressInputId, chainSelectId, hintId) {
+    function bindAddressDetection(addressInputId, chainSelectId, assetSelectId, hintId, softHintId) {
       const addressInput = el(addressInputId);
       const chainSelect = el(chainSelectId);
-      const refresh = () => updateAddressDetection(addressInputId, chainSelectId, hintId);
+      const assetSelect = el(assetSelectId);
+      const debouncedSoftHint = debounce(() => runAddressSoftHint(addressInputId, chainSelectId, assetSelectId, softHintId), 550);
+      const refresh = () => {
+        updateAddressDetection(addressInputId, chainSelectId, hintId);
+        debouncedSoftHint();
+      };
       addressInput.addEventListener('input', refresh);
       addressInput.addEventListener('paste', () => setTimeout(refresh, 0));
       chainSelect.addEventListener('change', refresh);
+      if (assetSelect) assetSelect.addEventListener('change', refresh);
       refresh();
     }
 
@@ -1739,6 +1875,12 @@ POST /api/recovery-copilot
         el('pilotState').textContent = err.message || 'Clipboard copy failed.';
       }
     }
+
+    bindAddressDetection('pfExpectedAddress', 'pfExpectedChain', 'pfExpectedAsset', 'pfExpectedDetect', 'pfExpectedSoft');
+    bindAddressDetection('pfProvidedAddress', 'pfProvidedChain', 'pfProvidedAsset', 'pfProvidedDetect', 'pfProvidedSoft');
+    el('rcHash').addEventListener('input', updateRecoveryHashHint);
+    el('rcHash').addEventListener('paste', () => setTimeout(updateRecoveryHashHint, 0));
+    el('rcChain').addEventListener('change', updateRecoveryHashHint);
 
     el('pfRunBtn').addEventListener('click', runPreflight);
     el('pfHappyBtn').addEventListener('click', () => { void pfLoadHappy(); });
