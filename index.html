@@ -365,7 +365,7 @@
         <div class="hero-copy">
           <div class="pill">Live pre-send verification · no custody</div>
           <h1>Prevent stablecoin payout mistakes before funds move.</h1>
-          <p class="lead">PayeeProof gives payout teams one clear answer before approval: <strong>SAFE</strong>, <strong>BLOCK</strong>, <strong>REVERIFY</strong>, or <strong>TEST FIRST</strong>. Recovery guidance remains available as a secondary module after a bad send.</p>
+          <p class="lead">PayeeProof gives payout teams one clear answer before approval: <strong>SAFE</strong>, <strong>BLOCK</strong>, or <strong>REVERIFY</strong>. Recovery guidance remains available as a secondary module after a bad send.</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="#preflight">Run pre-send check →</a>
             <a class="btn btn-secondary" href="#record">View sample record</a>
@@ -388,7 +388,7 @@
           <div class="list">
             <div class="list-item"><strong>Coverage</strong><span>Ethereum, Arbitrum, Base, Polygon, BNB Chain, and Solana.</span></div>
             <div class="list-item"><strong>Public checker assets</strong><span>USDC and USDT in the live public interface.</span></div>
-            <div class="list-item"><strong>Output standard</strong><span>SAFE / BLOCK / REVERIFY / TEST FIRST — one public product language.</span></div>
+            <div class="list-item"><strong>Output standard</strong><span>SAFE / BLOCK / REVERIFY — one clear public product language.</span></div>
             <div class="list-item"><strong>Secondary module</strong><span>Recovery guidance for completed transfers that already went wrong.</span></div>
           </div>
           <p class="note" style="margin-top:14px;">Designed for treasury ops, payout teams, exchanges, marketplaces, and OTC desks.</p>
@@ -428,7 +428,7 @@
           </div>
           <div class="ops-card">
             <h3>Exchange-like deposits</h3>
-            <p>Apply TEST FIRST or REVERIFY when a destination looks custodial, route-sensitive, or operationally risky.</p>
+            <p>Use REVERIFY when a destination looks custodial, route-sensitive, or operationally risky.</p>
           </div>
           <div class="ops-card">
             <h3>Support and recovery</h3>
@@ -456,7 +456,7 @@
           <div class="card panel">
             <h3 style="font-size:24px; margin-bottom:14px;">What the record captures</h3>
             <div class="list" style="margin-top:0;">
-              <div class="list-item"><strong>Stable verdict</strong><span>SAFE, BLOCK, REVERIFY, or TEST FIRST — no mixed internal status language.</span></div>
+              <div class="list-item"><strong>Stable verdict</strong><span>SAFE, BLOCK, or REVERIFY — no mixed internal status language.</span></div>
               <div class="list-item"><strong>Proof fields</strong><span>Checked at, confidence, reason code, destination class, source, and next action.</span></div>
               <div class="list-item"><strong>Operational context</strong><span>Short explanation for why the decision was returned and how an ops team should react.</span></div>
               <div class="list-item"><strong>Reviewability</strong><span>A result that can be pasted into an internal workflow, ticket, or approval log without rewriting it.</span></div>
@@ -769,7 +769,7 @@
           <div class="flow-step">
             <div class="flow-step-num">Step 3</div>
             <h3>Clear verdict</h3>
-            <p>The result returns one public language standard: SAFE, BLOCK, REVERIFY, or TEST FIRST.</p>
+            <p>The result returns one public language standard: SAFE, BLOCK, or REVERIFY.</p>
           </div>
           <div class="flow-step">
             <div class="flow-step-num">Step 4</div>
@@ -866,13 +866,13 @@ POST /api/recovery-copilot
           <article class="scenario-card card">
             <div class="scenario-top">
               <div class="scenario-type">Pre-Send</div>
-              <div class="scenario-badge testfirst">TEST FIRST</div>
+              <div class="scenario-badge reverify">REVERIFY</div>
             </div>
             <h3>Exchange-like deposit destination</h3>
-            <p>Some addresses behave more like service endpoints than self-custody wallets. A small test transfer is often safer than immediate full-size approval.</p>
+            <p>Some addresses behave more like service endpoints than self-custody wallets. They should be confirmed before a full transfer is approved.</p>
             <div class="scenario-meta">
               <div class="scenario-meta-row"><strong>Reason</strong><span>Destination type suggests platform-style handling.</span></div>
-              <div class="scenario-meta-row"><strong>Ops action</strong><span>Use a test transfer or direct recipient confirmation first.</span></div>
+              <div class="scenario-meta-row"><strong>Ops action</strong><span>Re-confirm the venue, network, asset, and destination before sending.</span></div>
             </div>
           </article>
 
@@ -1146,7 +1146,7 @@ POST /api/recovery-copilot
         return { tone: 'bad', label: 'Invalid address', note: 'The format does not match the selected network.' };
       }
       if (['DESTINATION_IS_CONTRACT_OR_APP','DESTINATION_IS_CONTRACT','DESTINATION_IS_PROGRAM'].includes(reason) || ['contract','program','app_contract','smart_contract','contract_or_app','executable'].includes(addressType)) {
-        return { tone: 'warn', label: 'Likely contract / app', note: 'Use a small test first unless this destination is explicitly expected.' };
+        return { tone: 'warn', label: 'Likely contract / app', note: 'Confirm that this is the intended destination before sending.' };
       }
       if (['DESTINATION_IS_BRIDGE_ROUTER'].includes(reason) || ['bridge_router','router','bridge','bridge_or_router'].includes(addressType)) {
         return { tone: 'warn', label: 'Likely bridge / router', note: 'Infrastructure destination. Confirm route details before sending.' };
@@ -1253,47 +1253,38 @@ POST /api/recovery-copilot
         .map((item) => ({ ...item, score: getHintStrength(item.hint), category: getHintCategory(item.hint) }))
         .sort((a, b) => b.score - a.score || a.chain.localeCompare(b.chain));
       const positive = scored.filter((item) => item.score > 0);
-      const noSignal = scored.filter((item) => item.score === 0).map((item) => item.chain);
       const selected = scored.find((item) => item.chain === selectedChain);
       const top = positive[0];
       const second = positive[1];
       const level = getEvmGuidanceLevel(positive);
-      const tone = getEvmGuidanceTone(level);
       const html = [];
 
       if (!positive.length) {
-        html.push(`<span class="soft-detect-pill neutral">No strong chain signal yet</span>`);
-      } else if (level === 'low') {
-        const tied = positive.slice(0, 3).map((item) => `${formatNetworkName(item.chain)} (${getHintShortLabel(item.hint)})`);
-        html.push(`<span class="soft-detect-pill neutral">Top candidates: ${escapeHtml(tied.join(' / '))}</span>`);
-      } else {
-        html.push(`<span class="soft-detect-pill ${escapeHtml(tone)}">Recommended: ${escapeHtml(formatNetworkName(top.chain))}</span>`);
-        html.push(`<span class="soft-detect-pill ${escapeHtml(tone)}">Confidence: ${escapeHtml(level === 'high' ? 'high' : 'medium')}</span>`);
+        html.push(`<span class="soft-detect-pill neutral">Need network confirmation</span>`);
+        html.push(`<span>${escapeHtml('This EVM address can exist across multiple chains. Ask the recipient which network to use.')}</span>`);
+        return html.join('');
       }
 
-      if (selected) {
-        const selectedLabel = `${formatNetworkName(selected.chain)} → ${getHintShortLabel(selected.hint)}`;
-        const selectedTone = selected.score > 0 ? selected.hint?.tone || 'neutral' : 'neutral';
-        html.push(`<span class="soft-detect-pill ${escapeHtml(selectedTone)}">Current: ${escapeHtml(selectedLabel)}</span>`);
-        if (top && level !== 'low' && selected.chain !== top.chain) {
-          html.push(`<span>${escapeHtml(`Suggested switch: ${formatNetworkName(selected.chain)} → ${formatNetworkName(top.chain)}`)}</span>`);
+      if (level === 'low') {
+        const candidates = positive.slice(0, 3).map((item) => formatNetworkName(item.chain));
+        html.push(`<span class="soft-detect-pill neutral">Need network confirmation</span>`);
+        html.push(`<span>${escapeHtml(`This address looks plausible on multiple EVM chains${candidates.length ? ` (${candidates.join(', ')})` : ''}. Ask the recipient which network to use.`)}</span>`);
+        return html.join('');
+      }
+
+      if (selected && selected.chain === top.chain) {
+        if (['contract', 'bridge', 'deposit', 'soft_warn'].includes(top.category)) {
+          html.push(`<span class="soft-detect-pill warn">REVERIFY</span>`);
+          html.push(`<span>${escapeHtml(`${formatNetworkName(top.chain)} looks like the right network, but the destination is not a plain personal wallet. Confirm the receiver and route before sending.`)}</span>`);
+        } else {
+          html.push(`<span class="soft-detect-pill ok">Selected network looks right</span>`);
+          html.push(`<span>${escapeHtml(`${formatNetworkName(top.chain)} currently looks like the best match for this address.`)}</span>`);
         }
-      } else if (selectedChain && !EVM_CHAINS.includes(selectedChain)) {
-        html.push(`<span class="soft-detect-pill bad">Current: ${escapeHtml(formatNetworkName(selectedChain))}</span>`);
+        return html.join('');
       }
 
-      html.push(`<span>${escapeHtml(buildEvmGuidanceReason(top, second, level))}</span>`);
-
-      const alternatives = positive
-        .filter((item) => !top || item.chain !== top.chain)
-        .slice(0, 3)
-        .map((item) => `${formatNetworkName(item.chain)} (${getHintShortLabel(item.hint)})`);
-      if (alternatives.length) {
-        html.push(`<span>${escapeHtml(`${level === 'low' ? 'Other candidates' : 'Also seen on'}: ${alternatives.join(', ')}`)}</span>`);
-      }
-      if (noSignal.length) {
-        html.push(`<span>${escapeHtml(`No signal yet: ${noSignal.map(formatNetworkName).join(', ')}`)}</span>`);
-      }
+      html.push(`<span class="soft-detect-pill warn">Need network confirmation</span>`);
+      html.push(`<span>${escapeHtml(`${formatNetworkName(top.chain)} currently looks more likely than ${selected ? formatNetworkName(selected.chain) : 'the selected network'}. Confirm the exact network with the recipient before sending.`)}</span>`);
       return html.join('');
     }
 
@@ -1387,8 +1378,8 @@ POST /api/recovery-copilot
       }
       if (detected.kind === 'evm') {
         const note = EVM_CHAINS.includes(chainSelect.value)
-          ? 'Checking supported EVM chains now. The result will suggest a likely network only when the live signal is clearly stronger, without silently switching it.'
-          : 'Pick an EVM network. PayeeProof will suggest a likely chain only when the signal is clear, but it will not switch it silently.';
+          ? 'We will check whether the selected EVM network looks right for this address.'
+          : 'Pick an EVM network to verify this address.';
         hint.innerHTML = detectionHtml('warn', 'EVM address', note);
         return;
       }
@@ -1497,7 +1488,8 @@ POST /api/recovery-copilot
         SAFE_TO_PROCEED: 'Proceed with the payment',
         BLOCK_AND_REVERIFY: 'Stop and re-check the details',
         CHECK_BACKEND: 'Retry when the live service is available',
-        TEST_FIRST: 'Send a small test first',
+        TEST_FIRST: 'Confirm the destination before sending',
+        CONFIRM_DESTINATION: 'Confirm network and destination',
         ESCALATE: 'Escalate for manual review',
         DO_NOT_SEND: 'Do not send',
         REVIEW_REQUEST_TEMPLATE: 'Correct the approved payout instructions',
@@ -1519,7 +1511,7 @@ POST /api/recovery-copilot
         return { label: 'Exchange-like deposit', note: 'Confirm the exact venue, network, asset, and memo/tag before sending.' };
       }
       if (['bridge_router', 'router', 'bridge', 'bridge_or_router'].includes(raw)) {
-        return { label: 'Bridge / router', note: 'Infrastructure address. Test first unless this destination is explicitly expected.' };
+        return { label: 'Bridge / router', note: 'Infrastructure address. Confirm the route and receiver before sending.' };
       }
       if (['invalid'].includes(raw)) {
         return { label: 'Invalid address', note: 'The address format does not match the selected network.' };
@@ -1597,33 +1589,35 @@ POST /api/recovery-copilot
       if (reasonCode === 'INVALID_ADDRESS') {
         return { label: 'BLOCK', why: data?.explanation || 'The destination address format is invalid.' };
       }
-      if (['NETWORK_MISMATCH', 'ASSET_MISMATCH', 'ADDRESS_MISMATCH', 'MEMO_MISMATCH'].includes(reasonCode) || status === 'mismatch_detected') {
-        return { label: 'BLOCK', why: data?.explanation || 'Submitted payout details do not match the expected ones.' };
+      if (['NETWORK_MISMATCH', 'ASSET_MISMATCH', 'ADDRESS_MISMATCH', 'MEMO_MISMATCH', 'UNSUPPORTED_ASSET', 'UNSUPPORTED_NETWORK', 'UNSUPPORTED_ASSET_OR_NETWORK'].includes(reasonCode) || status === 'mismatch_detected') {
+        return { label: 'BLOCK', why: data?.explanation || 'The selected network, asset, or destination details do not match.' };
       }
       if (status === 'verified') {
-        if (destination.label === 'Contract or app' || destination.label === 'Bridge / router') {
-          return { label: 'TEST FIRST', why: data?.explanation || 'The details match, but the destination looks like infrastructure or a contract.' };
+        if (destination.label === 'Personal wallet' && !hasRiskFlags) {
+          return { label: 'SAFE', why: data?.explanation || 'The selected network, asset, and destination matched cleanly.' };
+        }
+        if (destination.label === 'Contract or app') {
+          return { label: 'REVERIFY', why: data?.explanation || 'The destination is not a plain personal wallet. Confirm that this receiver is intentionally correct before sending.' };
+        }
+        if (destination.label === 'Bridge / router') {
+          return { label: 'REVERIFY', why: data?.explanation || 'The destination looks like infrastructure. Confirm the exact route and receiving flow before sending.' };
         }
         if (destination.label === 'Exchange-like deposit') {
-          return { label: 'REVERIFY', why: data?.explanation || 'The address looks like a deposit destination. Confirm venue, network, asset, and memo/tag first.' };
+          return { label: 'REVERIFY', why: data?.explanation || 'Confirm the venue, network, asset, and any memo or tag before sending.' };
         }
-        if (destination.label === 'Unknown' || hasRiskFlags) {
-          return { label: 'REVERIFY', why: data?.explanation || 'The core details match, but the destination still needs manual confirmation.' };
-        }
-        return { label: 'SAFE', why: data?.explanation || 'Network, asset, address, and memo checks matched cleanly.' };
+        return { label: 'REVERIFY', why: data?.explanation || 'The address needs confirmation before sending on the selected network.' };
       }
       if (['error', 'unavailable'].includes(status)) {
         return { label: 'UNAVAILABLE', why: data?.explanation || 'Live verification is temporarily unavailable.' };
       }
-      return { label: 'REVERIFY', why: data?.explanation || 'Use a small test or confirm the payout details manually before sending.' };
+      return { label: 'REVERIFY', why: data?.explanation || 'Confirm the exact network and destination before sending.' };
     }
 
     function preflightTitleFromVerdict(verdict) {
       const labels = {
-        SAFE: 'Clear to proceed.',
-        BLOCK: 'Do not send until the details are corrected.',
-        REVERIFY: 'Re-check the destination before sending.',
-        'TEST FIRST': 'Use a small test transaction first.',
+        SAFE: 'You can proceed.',
+        BLOCK: 'Do not send in the current form.',
+        REVERIFY: 'Confirm the destination before sending.',
         UNAVAILABLE: 'Live verification is unavailable.',
       };
       return labels[verdict] || 'Review the payout details.';
@@ -1633,7 +1627,7 @@ POST /api/recovery-copilot
       if (data && data._confidence) return data._confidence;
       if (data && data.confidence) return data.confidence;
       if (verdictLabel === 'SAFE' || verdictLabel === 'BLOCK') return 'High';
-      if (verdictLabel === 'TEST FIRST' || verdictLabel === 'REVERIFY') return 'Medium';
+      if (verdictLabel === 'REVERIFY') return 'Medium';
       return 'Limited';
     }
 
@@ -1675,7 +1669,7 @@ POST /api/recovery-copilot
       }
       el('pfResultStatus').textContent = 'READY';
       el('pfResultTitle').textContent = 'No verification record yet.';
-      el('pfResultText').textContent = 'Run a live check to generate a proof-style result card. Pilot review scenarios stay available below if you need examples.';
+      el('pfResultText').textContent = 'Run a live check to get one clear answer for the selected network and destination.';
       el('pfReason').textContent = 'READY';
       el('pfNext').textContent = 'Run live check';
       el('pfCheckedAt').textContent = '—';
@@ -1693,7 +1687,7 @@ POST /api/recovery-copilot
       const checks = data?.checks || {};
       const checkedAt = data?._checked_at_label || data?.checked_at || new Date().toISOString();
       const reasonCode = formatReasonCodeRaw(data?.reason_code);
-      const nextAction = data?._next_action_label || formatNextActionLabel(data?.next_action || (verdict.label === 'TEST FIRST' ? 'TEST_FIRST' : verdict.label === 'BLOCK' ? 'BLOCK_AND_REVERIFY' : verdict.label === 'UNAVAILABLE' ? 'CHECK_BACKEND' : 'SAFE_TO_PROCEED'));
+      const nextAction = data?._next_action_label || formatNextActionLabel(data?.next_action || (verdict.label === 'BLOCK' ? 'BLOCK_AND_REVERIFY' : verdict.label === 'REVERIFY' ? 'CONFIRM_DESTINATION' : verdict.label === 'UNAVAILABLE' ? 'CHECK_BACKEND' : 'SAFE_TO_PROCEED'));
 
       setResultBox(el('pfResult'), verdict.label);
       el('pfResultStatus').textContent = verdict.label;
@@ -1772,14 +1766,14 @@ POST /api/recovery-copilot
       };
       const scenarios = {
         contract: {
-          _verdict: 'TEST FIRST',
+          _verdict: 'REVERIFY',
           _confidence: 'Medium',
           status: 'verified',
-          reason_code: 'OK',
-          next_action: 'TEST_FIRST',
+          reason_code: 'DESTINATION_IS_CONTRACT_OR_APP',
+          next_action: 'CONFIRM_DESTINATION',
           summary: 'Details match, but the destination looks like a contract or app.',
           explanation: 'This sample shows a case where the network, asset, and address all match, but the address is infrastructure rather than a personal wallet.',
-          _why: 'Matching details are not enough here. Contract destinations can behave differently from a personal wallet and deserve a small test first.',
+          _why: 'The selected network may be correct, but the destination is not a plain personal wallet. Confirm the receiver before sending.',
           checked_at: now,
           risk_flags: ['contract_destination'],
           onchain: { provided: { address_type: 'contract' } },
