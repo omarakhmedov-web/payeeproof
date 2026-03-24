@@ -212,6 +212,18 @@
     .code-shell summary { cursor: pointer; list-style: none; padding: 16px 18px; font-size: 14px; font-weight: 700; color: #e4e4e7; }
     .code-shell summary::-webkit-details-marker { display: none; }
     .code-shell pre { margin: 0; padding: 0 18px 18px 18px; white-space: pre-wrap; color:#d4d4d8; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; line-height:1.7; }
+    .proof-grid { display: grid; gap: 24px; grid-template-columns: 1.05fr .95fr; margin-top: 32px; }
+    .proof-record { border: 1px solid var(--line); border-radius: 22px; background: rgba(0,0,0,.22); padding: 22px; }
+    .proof-row { display: flex; justify-content: space-between; gap: 18px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .proof-row:last-child { border-bottom: 0; }
+    .proof-label { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #a1a1aa; }
+    .proof-value { font-size: 14px; color: #f4f4f5; text-align: right; }
+    .artifact-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+    .mini-note { font-size: 12px; color: #8b8b95; margin-top: 12px; }
+    .ops-grid { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 28px; }
+    .ops-card { padding: 20px; border: 1px solid var(--line); border-radius: 20px; background: rgba(255,255,255,.03); }
+    .ops-card h3 { font-size: 20px; margin-bottom: 8px; }
+    .ops-card p { color: #d4d4d8; font-size: 14px; }
     .soft-section {
       border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--panel-2);
     }
@@ -222,7 +234,7 @@
 
     @media (max-width: 1020px) {
       nav { display: none; }
-      .hero-grid, .two-col, .three-col, .flow-grid, .demo-grid { grid-template-columns: 1fr; }
+      .hero-grid, .two-col, .three-col, .flow-grid, .demo-grid, .proof-grid, .ops-grid { grid-template-columns: 1fr; }
       .hero-grid { min-height: auto; }
     }
     @media (max-width: 720px) {
@@ -245,14 +257,15 @@
         </div>
       </div>
       <nav>
-        <a href="#preflight">Pre-Send Check</a>
-        <a href="#recovery">Mistake Recovery</a>
+        <a href="#preflight">Pre-Send</a>
+        <a href="#recovery">Recovery</a>
         <a href="#security">Security</a>
-        <a href="#api">API</a>
+        <a href="#record">Record</a>
+        <a href="#integration">Integration</a>
         <a href="#contact">Pilot</a>
       </nav>
       <div class="btn-row">
-        <a class="btn btn-secondary" href="#preflight">Run live check</a>
+        <a class="btn btn-secondary" href="#record">See sample record</a>
         <a class="btn btn-primary" href="#contact">Request pilot</a>
       </div>
     </div>
@@ -262,18 +275,19 @@
     <section class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <div class="pill">Live checks · no custody</div>
-          <h1>Check before sending. Recover faster after mistakes.</h1>
-          <p class="lead">PayeeProof adds two practical layers: <strong>Pre-Send Check</strong> for blocking preventable transfer mistakes before funds move, and <strong>Mistake Recovery Guide</strong> for helping users after a bad send using live transaction analysis.</p>
+          <div class="pill">Live pre-send verification · no custody</div>
+          <h1>Prevent stablecoin payout mistakes before funds move.</h1>
+          <p class="lead">PayeeProof gives payout teams one clear answer before approval: <strong>SAFE</strong>, <strong>BLOCK</strong>, <strong>REVERIFY</strong>, or <strong>TEST FIRST</strong>. Recovery guidance remains available as a secondary module after a bad send.</p>
           <div class="btn-row">
-            <a class="btn btn-primary" href="#preflight">Open Pre-Send Check →</a>
-            <a class="btn btn-secondary" href="#recovery">Open Recovery Guide</a>
+            <a class="btn btn-primary" href="#preflight">Run pre-send check →</a>
+            <a class="btn btn-secondary" href="#record">View sample record</a>
+            <a class="btn btn-ghost" href="#contact">Request pilot by email</a>
           </div>
           <div class="tag-row">
-            <div class="tag">Live recipient-type checks</div>
-            <div class="tag">Real transaction lookup</div>
-            <div class="tag">Block when details do not match</div>
-            <div class="tag">No custody</div>
+            <div class="tag">Unified verdict language</div>
+            <div class="tag">Destination classification</div>
+            <div class="tag">Proof-style result cards</div>
+            <div class="tag">Six networks live</div>
           </div>
           <div class="status-strip hidden" id="statusStrip">
             <div class="status-chip" id="apiStatus">API status</div>
@@ -284,16 +298,72 @@
         <div class="card panel">
           <div class="panel-head">
             <div>
-              <div class="panel-badge">What PayeeProof does</div>
+              <div class="panel-badge">Production scope today</div>
             </div>
           </div>
           <div class="list">
-            <div class="list-item"><strong>1.</strong><span>Checks expected vs provided transfer details before approval.</span></div>
-            <div class="list-item"><strong>2.</strong><span>Helps block mismatched network, asset, address, memo, or destination details.</span></div>
-            <div class="list-item"><strong>3.</strong><span>Analyzes completed transactions and returns practical next steps after a mistake.</span></div>
-            <div class="list-item"><strong>4.</strong><span>Starts with core supported networks today and expands coverage over time.</span></div>
+            <div class="list-item"><strong>Coverage</strong><span>Ethereum, Arbitrum, Base, Polygon, BNB Chain, and Solana.</span></div>
+            <div class="list-item"><strong>Public checker assets</strong><span>USDC and USDT in the live public interface.</span></div>
+            <div class="list-item"><strong>Output standard</strong><span>SAFE / BLOCK / REVERIFY / TEST FIRST — one public product language.</span></div>
+            <div class="list-item"><strong>Secondary module</strong><span>Recovery guidance for completed transfers that already went wrong.</span></div>
           </div>
-          <p class="note" style="margin-top:14px;">Built to reduce preventable transfer errors before they become support cases or lost funds.</p>
+          <p class="note" style="margin-top:14px;">Designed for treasury ops, payout teams, exchanges, marketplaces, and OTC desks.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-sm">
+      <div class="container">
+        <div class="ops-grid">
+          <div class="ops-card">
+            <h3>Built for approval workflows</h3>
+            <p>Use PayeeProof at the last pause before funds move, when one wrong detail becomes a support case or a loss event.</p>
+          </div>
+          <div class="ops-card">
+            <h3>Explainable for operations</h3>
+            <p>Results are designed to read like an operational record: verdict, reason code, confidence, timing, destination class, and next step.</p>
+          </div>
+          <div class="ops-card">
+            <h3>Email-first pilot intake</h3>
+            <p>Pilot discussions can start asynchronously by email. No call is required just to review the fit or the initial workflow.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="record" class="section soft-section">
+      <div class="container">
+        <div class="eyebrow">Proof format</div>
+        <h2>A verification result should read like a record, not a chatbot answer.</h2>
+        <p class="lead" style="max-width:900px; margin-top:14px;">This sample shows the format the product is moving toward: a compact verification record with a stable verdict, reason code, confidence level, destination class, and operational next step.</p>
+
+        <div class="proof-grid">
+          <div class="card panel">
+            <h3 style="font-size:24px; margin-bottom:14px;">What the record captures</h3>
+            <div class="list" style="margin-top:0;">
+              <div class="list-item"><strong>Stable verdict</strong><span>SAFE, BLOCK, REVERIFY, or TEST FIRST — no mixed internal status language.</span></div>
+              <div class="list-item"><strong>Proof fields</strong><span>Checked at, confidence, reason code, destination class, source, and next action.</span></div>
+              <div class="list-item"><strong>Operational context</strong><span>Short explanation for why the decision was returned and how an ops team should react.</span></div>
+              <div class="list-item"><strong>Reviewability</strong><span>A result that can be pasted into an internal workflow, ticket, or approval log without rewriting it.</span></div>
+            </div>
+            <div class="artifact-links">
+              <a class="btn btn-primary" href="./sample-verification-record.html">Open sample record</a>
+              <a class="btn btn-secondary" href="./sample-verification-record.json" download>Download sample JSON</a>
+            </div>
+            <p class="mini-note">Illustrative sample only. It shows the intended record format, not a signed legal artifact.</p>
+          </div>
+
+          <div class="proof-record">
+            <div class="proof-row"><div class="proof-label">Record id</div><div class="proof-value">ppf_demo_2026_03_24_001</div></div>
+            <div class="proof-row"><div class="proof-label">Checked at</div><div class="proof-value">2026-03-24T19:12:08Z</div></div>
+            <div class="proof-row"><div class="proof-label">Verdict</div><div class="proof-value">SAFE</div></div>
+            <div class="proof-row"><div class="proof-label">Reason code</div><div class="proof-value">OK</div></div>
+            <div class="proof-row"><div class="proof-label">Confidence</div><div class="proof-value">High</div></div>
+            <div class="proof-row"><div class="proof-label">Destination class</div><div class="proof-value">Personal wallet</div></div>
+            <div class="proof-row"><div class="proof-label">Source</div><div class="proof-value">Live RPC lookup</div></div>
+            <div class="proof-row"><div class="proof-label">Next action</div><div class="proof-value">SAFE_TO_PROCEED</div></div>
+            <div class="proof-row"><div class="proof-label">Why this verdict</div><div class="proof-value">Network, asset, address, and memo checks matched. The destination classified as a personal wallet.</div></div>
+          </div>
         </div>
       </div>
     </section>
@@ -301,16 +371,16 @@
     <section id="preflight" class="section">
       <div class="container">
         <div class="eyebrow">Before sending</div>
-        <h2>Pre-Send Check</h2>
-        <p class="lead" style="max-width:900px; margin-top:14px;">Use this before funds move. The service compares expected and provided transfer details, validates the address format, and runs a live check to understand what kind of recipient address was entered.</p>
+        <h2>Pre-Send Verification</h2>
+        <p class="lead" style="max-width:900px; margin-top:14px;">Use this at the approval step before funds move. The service compares expected and provided transfer details, validates the address format, and runs a live lookup to classify the destination and return one operational verdict.</p>
 
         <div class="card panel" style="margin-top:32px;">
           <div class="panel-head">
             <div>
-              <h3 style="font-size:24px; margin-bottom:8px;">Run a live verification</h3>
-              <p class="muted">Expected vs provided chain, asset, address, and memo/tag. Demo assets in this interface are USDC and USDT. More assets and networks will be added over time.</p>
+              <h3 style="font-size:24px; margin-bottom:8px;">Run a live pre-send verification</h3>
+              <p class="muted">Expected vs provided chain, asset, address, and memo/tag. The current public checker supports USDC and USDT across six live networks.</p>
             </div>
-            <div class="panel-badge">Live checker</div>
+            <div class="panel-badge">Live verification</div>
           </div>
 
           <div class="grid two-col">
@@ -381,24 +451,24 @@
 
           <div class="panel-actions">
             <button class="btn btn-primary" id="pfRunBtn" type="button">Run live check</button>
-            <button class="btn btn-secondary" id="pfHappyBtn" type="button">Run valid example</button>
-            <button class="btn btn-ghost" id="pfMismatchBtn" type="button">Run mismatch example</button>
+            <button class="btn btn-secondary" id="pfHappyBtn" type="button">Load wallet-match test</button>
+            <button class="btn btn-ghost" id="pfMismatchBtn" type="button">Load mismatch test</button>
           </div>
-          <div class="note" style="margin-top:10px;">Preview scenarios below are local demos for common payout cases. They do not call the live API.</div>
+          <div class="note" style="margin-top:10px;">Sample scenario library. Some buttons run live checks, while the edge-case buttons below render local sample results so teams can inspect the handling immediately.</div>
           <div class="demo-grid">
-            <button class="btn btn-ghost demo-btn" id="pfContractDemoBtn" type="button">Preview contract destination</button>
-            <button class="btn btn-ghost demo-btn" id="pfExchangeDemoBtn" type="button">Preview exchange-like deposit</button>
-            <button class="btn btn-ghost demo-btn" id="pfInvalidDemoBtn" type="button">Preview invalid address</button>
-            <button class="btn btn-ghost demo-btn" id="pfUnsupportedDemoBtn" type="button">Preview unsupported asset / network</button>
+            <button class="btn btn-ghost demo-btn" id="pfContractDemoBtn" type="button">Load contract destination</button>
+            <button class="btn btn-ghost demo-btn" id="pfExchangeDemoBtn" type="button">Load exchange-like deposit</button>
+            <button class="btn btn-ghost demo-btn" id="pfInvalidDemoBtn" type="button">Load invalid address</button>
+            <button class="btn btn-ghost demo-btn" id="pfUnsupportedDemoBtn" type="button">Load unsupported asset / network</button>
           </div>
-          <div class="note" id="pfState">Ready.</div>
+          <div class="note" id="pfState">Ready for a live check.</div>
 
           <div class="result" id="pfResult">
             <div class="result-top">
               <div>
-                <div class="result-status" id="pfResultStatus">READY</div>
-                <div class="result-title" id="pfResultTitle">Enter payout details or run an example.</div>
-                <div class="result-text" id="pfResultText">The card below is designed as proof: one external verdict, one reason code, one next step.</div>
+                <div class="result-status" id="pfResultStatus">WAITING</div>
+                <div class="result-title" id="pfResultTitle">No verification record yet.</div>
+                <div class="result-text" id="pfResultText">Run a live check or load a sample scenario to generate a proof-style result card.</div>
               </div>
               <div class="panel-badge" id="pfReason">READY</div>
             </div>
@@ -407,7 +477,7 @@
               <div class="result-kv"><div class="result-k">Checked at</div><div class="result-v" id="pfCheckedAt">—</div></div>
               <div class="result-kv"><div class="result-k">Confidence</div><div class="result-v" id="pfConfidence">—</div></div>
               <div class="result-kv"><div class="result-k">Reason code</div><div class="result-v" id="pfReasonCode">—</div></div>
-              <div class="result-kv wide"><div class="result-k">Why this verdict</div><div class="result-v" id="pfWhy">Waiting for a live or preview result.</div></div>
+              <div class="result-kv wide"><div class="result-k">Why this verdict</div><div class="result-v" id="pfWhy">Waiting for a live or sample result.</div></div>
               <div class="result-kv"><div class="result-k">Destination class</div><div class="result-v" id="pfDestType">Unknown</div></div>
               <div class="result-kv"><div class="result-k">Risk flags</div><div class="result-v" id="pfFlags">—</div></div>
               <div class="result-kv wide"><div class="result-k">Checks</div><div class="result-v check-list" id="pfChecks"><div class="check-row"><span>Live verification</span><span>Waiting</span></div></div></div>
@@ -420,14 +490,14 @@
     <section id="recovery" class="section soft-section">
       <div class="container">
         <div class="eyebrow">After a mistake</div>
-        <h2>Mistake Recovery Guide</h2>
-        <p class="lead" style="max-width:900px; margin-top:14px;">Use this after something already went wrong. The service looks up the live transaction and returns practical recovery guidance based on the network, transaction status, recipient type, and issue type.</p>
+        <h2>Recovery guidance after a bad send</h2>
+        <p class="lead" style="max-width:900px; margin-top:14px;">Use this after something already went wrong. Recovery is the secondary module: it looks up the live transaction and returns practical next steps based on the network, transaction status, recipient type, and issue type.</p>
 
         <div class="card panel" style="margin-top:32px;">
           <div class="panel-head">
             <div>
               <h3 style="font-size:24px; margin-bottom:8px;">Analyze a real transaction</h3>
-              <p class="muted">Paste a real transaction hash to get live status, recipient analysis, and practical recovery guidance. More networks will be added over time.</p>
+              <p class="muted">Paste a real transaction hash to get live status, recipient analysis, and practical recovery guidance across the current public network scope.</p>
             </div>
             <div class="panel-badge">Live analysis</div>
           </div>
@@ -493,16 +563,16 @@
           <div class="panel-actions">
             <button class="btn btn-primary" id="rcRunBtn" type="button">Analyze transaction</button>
             <button class="btn btn-secondary" id="rcClearBtn" type="button">Clear</button>
-            <button class="btn btn-ghost" id="rcNotFoundDemoBtn" type="button">Preview tx not found</button>
+            <button class="btn btn-ghost" id="rcNotFoundDemoBtn" type="button">Load tx not found case</button>
           </div>
-          <div class="note" id="rcState">Ready.</div>
+          <div class="note" id="rcState">Ready for recovery analysis.</div>
 
           <div class="result compact" id="rcResult">
             <div class="result-top">
               <div>
                 <div class="result-status" id="rcResultStatus">WAITING</div>
                 <div class="result-title" id="rcResultTitle">No transaction analyzed yet.</div>
-                <div class="result-text" id="rcResultText">Paste a real transaction hash to get a live recovery result.</div>
+                <div class="result-text" id="rcResultText">Paste a real transaction hash to generate a recovery record.</div>
               </div>
               <div class="panel-badge" id="rcReason">—</div>
             </div>
@@ -513,7 +583,7 @@
               <div class="result-kv"><div class="result-k">Checked at</div><div class="result-v" id="rcCheckedAt">—</div></div>
               <div class="result-kv"><div class="result-k">Confidence</div><div class="result-v" id="rcConfidence">—</div></div>
               <div class="result-kv"><div class="result-k">Reason code</div><div class="result-v" id="rcReasonCode">—</div></div>
-              <div class="result-kv wide"><div class="result-k">Why this result</div><div class="result-v" id="rcWhy">Waiting for a live or preview result.</div></div>
+              <div class="result-kv wide"><div class="result-k">Why this result</div><div class="result-v" id="rcWhy">Waiting for a live or sample result.</div></div>
               <div class="result-kv wide"><div class="result-k">Recommended next actions</div><div class="result-v" id="rcNextActions">—</div></div>
             </div>
           </div>
@@ -525,6 +595,7 @@
       <div class="container">
         <div class="eyebrow">Security model</div>
         <h2>PayeeProof should be a control layer, not a new trust problem.</h2>
+        <p class="lead" style="max-width:900px; margin-top:14px;">The safest version of this product is the one that explains its answer clearly, does not hold funds, and blocks mismatches instead of trying to guess through them.</p>
         <div class="grid three-col" style="margin-top:34px;">
           <article class="card panel">
             <h3 style="font-size:22px; margin-bottom:12px;">No custody</h3>
@@ -542,7 +613,7 @@
       </div>
     </section>
 
-    <section id="api" class="section soft-section">
+    <section id="integration" class="section soft-section">
       <div class="container">
         <div class="eyebrow">Integration flow</div>
         <h2>How PayeeProof fits into a payout workflow.</h2>
@@ -575,11 +646,16 @@
           <div class="card panel">
             <h3 style="font-size:24px; margin-bottom:14px;">Current production scope</h3>
             <div class="list" style="margin-top:0;">
-              <div class="list-item"><strong>Pre-Send Check</strong><span>Live validation for network, asset, address, memo or tag, and destination classification.</span></div>
-              <div class="list-item"><strong>Mistake Recovery Guide</strong><span>Live transaction lookup with recoverability guidance and next actions.</span></div>
-              <div class="list-item"><strong>Pilot intake</strong><span>Teams can submit their flow and get a practical pilot fit review.</span></div>
+              <div class="list-item"><strong>Pre-Send verification</strong><span>Live validation for network, asset, address, memo or tag, and destination classification.</span></div>
+              <div class="list-item"><strong>Recovery guidance</strong><span>Live transaction lookup with recoverability guidance and next actions.</span></div>
+              <div class="list-item"><strong>Pilot intake</strong><span>Teams can submit their flow and get a practical pilot fit review by email.</span></div>
             </div>
             <p class="note" style="margin-top:16px;">Exchange-side verification still depends on direct partner integrations. Public chain checks and guided recovery are already live.</p>
+            <div class="artifact-links">
+              <a class="btn btn-primary" href="#contact">Request pilot</a>
+              <a class="btn btn-secondary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20request">Email integration brief</a>
+              <a class="btn btn-ghost" href="./sample-verification-record.html">See sample record</a>
+            </div>
           </div>
           <div class="card panel" style="background: rgba(0,0,0,.22);">
             <h3 style="font-size:24px; margin-bottom:14px;">Technical details, kept out of the hero</h3>
@@ -617,17 +693,17 @@ POST /api/recovery-copilot
       <div class="container grid two-col" style="grid-template-columns: .92fr 1.08fr; align-items:start;">
         <div>
           <div class="eyebrow">Pilot</div>
-          <h2>Request a pilot review</h2>
-          <p class="lead" style="max-width:760px; margin-top:14px;">Use the form to describe the payout or recovery flow you want to protect. PayeeProof is built for teams that need an extra control layer before transfer approval and after transfer mistakes.</p>
+          <h2>Request a pilot</h2>
+          <p class="lead" style="max-width:760px; margin-top:14px;">Use the form to describe the payout or recovery flow you want to protect. Pilot intake is email-first, and an introductory call is not required to start the fit review.</p>
           <div class="list" style="margin-top:24px;">
             <div class="list-item"><strong>Best fit</strong><span>Treasury teams, payroll flows, payout ops, exchanges, marketplaces, OTC desks.</span></div>
-            <div class="list-item"><strong>What you get</strong><span>A practical fit check and a clear next step for pilot scope.</span></div>
+            <div class="list-item"><strong>What you get</strong><span>A practical fit check, a next step for pilot scope, and a clear email thread to continue from.</span></div>
             <div class="list-item"><strong>Business contact</strong><span><span style="text-decoration:underline;">hello@payeeproof.com</span></span></div>
           </div>
         </div>
 
         <div class="card panel">
-          <h3 style="font-size:24px; margin-bottom:14px;">Request pilot review</h3>
+          <h3 style="font-size:24px; margin-bottom:14px;">Request pilot</h3>
           <p class="muted" style="margin-bottom:18px;">Work email required.</p>
           <form class="grid" id="pilotForm" novalidate>
             <div class="field-grid">
@@ -639,9 +715,10 @@ POST /api/recovery-copilot
             </div>
             <div class="panel-actions">
               <button class="btn btn-primary" id="pilotSubmitBtn" type="submit">Request pilot</button>
+              <a class="btn btn-secondary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20request">Email hello@payeeproof.com</a>
               <button class="btn btn-secondary" id="pilotCopyBtn" type="button">Copy request</button>
             </div>
-            <div class="note" id="pilotState">Ready.</div>
+            <div class="note" id="pilotState">Ready. Email-first pilot intake.</div>
           </form>
         </div>
       </div>
@@ -655,10 +732,11 @@ POST /api/recovery-copilot
         <div>© 2026 PayeeProof</div>
       </div>
       <div class="footer-links">
-        <a href="#preflight">Pre-Send Check</a>
-        <a href="#recovery">Mistake Recovery</a>
+        <a href="#preflight">Pre-Send</a>
+        <a href="#recovery">Recovery</a>
         <a href="#security">Security</a>
-        <a href="#api">API</a>
+        <a href="#record">Record</a>
+        <a href="#integration">Integration</a>
         <a href="#contact">Pilot</a>
       </div>
     </div>
@@ -769,12 +847,25 @@ POST /api/recovery-copilot
         ADDRESS_MISMATCH: 'Wrong address',
         MEMO_MISMATCH: 'Memo or tag mismatch',
         INVALID_ADDRESS: 'Invalid address',
+        ZERO_ADDRESS: 'Zero address',
         REQUEST_FAILED: 'Service unavailable',
         TX_NOT_FOUND: 'Transaction not found',
         GENERAL_ONCHAIN_GUIDANCE: 'Recovery guidance',
         UNSUPPORTED_ASSET: 'Unsupported asset',
         UNSUPPORTED_NETWORK: 'Unsupported network',
         UNSUPPORTED_ASSET_OR_NETWORK: 'Unsupported setup',
+        DESTINATION_IS_CONTRACT_OR_APP: 'Contract or app destination',
+        DESTINATION_IS_BRIDGE_ROUTER: 'Bridge or router destination',
+        DESTINATION_REQUIRES_MEMO_OR_VENUE_CHECK: 'Deposit-style destination',
+        DESTINATION_LOOKUP_UNAVAILABLE: 'Live destination lookup unavailable',
+        DESTINATION_NOT_CLASSIFIED: 'Destination not classified',
+        DESTINATION_IS_CONTRACT: 'Contract destination',
+        DESTINATION_IS_PROGRAM: 'Program destination',
+        WRONG_NETWORK_CONFIRMED: 'Wrong network confirmed',
+        WRONG_ADDRESS_CONFIRMED: 'Wrong address confirmed',
+        TX_REVERTED: 'Transaction reverted',
+        TX_FAILED: 'Transaction failed',
+        RPC_UNAVAILABLE: 'Service unavailable',
       };
       return labels[String(value || '').toUpperCase()] || humanizeCode(value || '—');
     }
@@ -783,19 +874,23 @@ POST /api/recovery-copilot
       const labels = {
         SAFE_TO_PROCEED: 'Proceed with the payment',
         BLOCK_AND_REVERIFY: 'Stop and re-check the details',
-        CHECK_BACKEND: 'Check service availability',
+        CHECK_BACKEND: 'Retry when the live service is available',
         TEST_FIRST: 'Send a small test first',
         ESCALATE: 'Escalate for manual review',
+        DO_NOT_SEND: 'Do not send',
+        REVIEW_REQUEST_TEMPLATE: 'Correct the approved payout instructions',
+        RECHECK_MEMO_OR_TAG: 'Re-check the memo or destination tag',
+        MANUAL_REVIEW: 'Escalate for manual review',
       };
       return labels[String(value || '').toUpperCase()] || humanizeCode(value || '—');
     }
 
     function getDestinationProfile(value) {
       const raw = String(value || 'unknown').toLowerCase();
-      if (['eoa', 'wallet', 'personal_wallet', 'externally_owned_account'].includes(raw)) {
+      if (['eoa', 'wallet', 'personal_wallet', 'externally_owned_account', 'account'].includes(raw)) {
         return { label: 'Personal wallet', note: 'Looks like a self-custody style wallet address.' };
       }
-      if (['contract', 'program', 'app_contract', 'smart_contract'].includes(raw)) {
+      if (['contract', 'program', 'app_contract', 'smart_contract', 'contract_or_app', 'executable'].includes(raw)) {
         return { label: 'Contract or app', note: 'Funds may arrive, but recovery depends on contract logic and ownership.' };
       }
       if (['exchange_deposit', 'deposit_address', 'exchange_like_deposit'].includes(raw)) {
@@ -803,6 +898,12 @@ POST /api/recovery-copilot
       }
       if (['bridge_router', 'router', 'bridge', 'bridge_or_router'].includes(raw)) {
         return { label: 'Bridge / router', note: 'Infrastructure address. Test first unless this destination is explicitly expected.' };
+      }
+      if (['invalid'].includes(raw)) {
+        return { label: 'Invalid address', note: 'The address format does not match the selected network.' };
+      }
+      if (['not_found'].includes(raw)) {
+        return { label: 'Not found on-chain', note: 'No live account data was found for this destination.' };
       }
       return { label: 'Unknown', note: 'Public signals were not strong enough to classify this destination.' };
     }
@@ -860,7 +961,10 @@ POST /api/recovery-copilot
 
     function preflightVerdictFromData(data) {
       if (data && data._verdict) {
-        return { label: data._verdict, why: data._why || data.explanation || 'Preview scenario.' };
+        return { label: data._verdict, why: data._why || data.explanation || 'Sample scenario.' };
+      }
+      if (data && data.verdict) {
+        return { label: data.verdict, why: data.why_this_verdict || data.explanation || 'Live verification result.' };
       }
       const status = String(data?.status || '').toLowerCase();
       const reasonCode = formatReasonCodeRaw(data?.reason_code);
@@ -905,6 +1009,7 @@ POST /api/recovery-copilot
 
     function inferPreflightConfidence(data, verdictLabel) {
       if (data && data._confidence) return data._confidence;
+      if (data && data.confidence) return data.confidence;
       if (verdictLabel === 'SAFE' || verdictLabel === 'BLOCK') return 'High';
       if (verdictLabel === 'TEST FIRST' || verdictLabel === 'REVERIFY') return 'Medium';
       return 'Limited';
@@ -947,17 +1052,17 @@ POST /api/recovery-copilot
         return;
       }
       el('pfResultStatus').textContent = 'READY';
-      el('pfResultTitle').textContent = 'Enter payout details or run an example.';
-      el('pfResultText').textContent = 'The card below is designed as proof: one external verdict, one reason code, one next step.';
+      el('pfResultTitle').textContent = 'No verification record yet.';
+      el('pfResultText').textContent = 'Run a live check or load a sample scenario to generate a proof-style result card.';
       el('pfReason').textContent = 'READY';
       el('pfNext').textContent = 'Run live check';
       el('pfCheckedAt').textContent = '—';
       el('pfConfidence').textContent = '—';
       el('pfReasonCode').textContent = '—';
-      el('pfWhy').textContent = 'Waiting for a live or preview result.';
+      el('pfWhy').textContent = 'Waiting for a live or sample result.';
       el('pfDestType').textContent = 'Unknown';
       el('pfFlags').textContent = '—';
-      el('pfChecks').innerHTML = '<div class="check-row"><span>Live verification</span><span>Waiting</span></div>';
+      el('pfChecks').innerHTML = '<div class="check-row"><span>Live verification</span><span>Not run yet</span></div>';
     }
 
     function applyPreflightResult(data, source = 'live') {
@@ -972,7 +1077,7 @@ POST /api/recovery-copilot
       el('pfResultStatus').textContent = verdict.label;
       el('pfResultTitle').textContent = data?.summary || preflightTitleFromVerdict(verdict.label);
       el('pfResultText').textContent = source === 'demo'
-        ? (data?.explanation || 'Preview scenario loaded. This is a local demo result.')
+        ? (data?.explanation || 'Sample scenario loaded. This is illustrative local data.')
         : (data?.explanation || verdict.why);
       el('pfReason').textContent = formatReasonLabel(data?.reason_code || verdict.label);
       el('pfNext').textContent = nextAction;
@@ -987,6 +1092,7 @@ POST /api/recovery-copilot
 
     function recoveryOutcomeLabel(data) {
       if (data && data._outcome) return data._outcome;
+      if (data && data.outcome) return data.outcome;
       const status = String(data?.status || '').toLowerCase();
       const reasonCode = formatReasonCodeRaw(data?.reason_code);
       if (status === 'not_found' || reasonCode === 'TX_NOT_FOUND') return 'NOT FOUND';
@@ -996,6 +1102,7 @@ POST /api/recovery-copilot
 
     function inferRecoveryConfidence(data) {
       if (data && data._confidence) return data._confidence;
+      if (data && data.confidence) return data.confidence;
       const status = String(data?.status || '').toLowerCase();
       const observedStatus = String((data?.observed || {}).tx_status || '').toLowerCase();
       if (status === 'not_found') return 'High';
@@ -1008,22 +1115,23 @@ POST /api/recovery-copilot
       const observed = data?.observed || {};
       const outcome = recoveryOutcomeLabel(data);
       const reasonCode = formatReasonCodeRaw(data?.reason_code);
-      const destinationType = observed.destination_type || data?._destination_type || 'unknown';
-      const destinationAddress = observed.destination || data?._destination || '';
-      const why = data?._why || data?.explanation || `Guidance type: ${formatReasonLabel(data?.reason_code)}`;
+      const destinationType = data?.destination?.classification || observed.destination_classification || observed.destination_type || data?._destination_type || 'unknown';
+      const destinationAddress = data?.destination?.address || observed.destination || data?._destination || '';
+      const destinationNote = data?.destination?.explanation || '';
+      const why = data?.why_this_result || data?._why || data?.explanation || `Guidance type: ${formatReasonLabel(data?.reason_code)}`;
 
       setRecoveryExpanded(true);
       setResultBox(el('rcResult'), outcome === 'UNAVAILABLE' ? 'unavailable' : outcome === 'NOT FOUND' ? 'not_found' : 'found');
       el('rcResultStatus').textContent = outcome;
       el('rcResultTitle').textContent = data?.summary || (outcome === 'NOT FOUND' ? 'No matching transaction was found.' : 'Recovery analysis ready.');
       el('rcResultText').textContent = source === 'demo'
-        ? (data?.explanation || 'Preview scenario loaded. This is a local demo result.')
+        ? (data?.explanation || 'Sample scenario loaded. This is illustrative local data.')
         : (data?.explanation || why);
       el('rcReason').textContent = formatReasonLabel(data?.reason_code || outcome);
       el('rcRecoverability').textContent = formatRecoverability(data?.recoverability);
-      el('rcDestination').innerHTML = formatDestinationProfile(destinationType, destinationAddress);
+      el('rcDestination').innerHTML = formatDestinationProfile(destinationType, destinationAddress) + (destinationNote ? `<br><span class="muted">${escapeHtml(destinationNote)}</span>` : '');
       el('rcObservedStatus').textContent = formatStatusLabel(observed.tx_status || data?.status || '—');
-      el('rcCheckedAt').textContent = toDisplayTime(data?._checked_at_label || data?.checked_at || new Date().toISOString());
+      el('rcCheckedAt').textContent = toDisplayTime(data?.proof?.checked_at || data?._checked_at_label || data?.checked_at || new Date().toISOString());
       el('rcConfidence').textContent = inferRecoveryConfidence(data);
       el('rcReasonCode').textContent = reasonCode;
       el('rcWhy').textContent = why;
@@ -1048,7 +1156,7 @@ POST /api/recovery-copilot
           reason_code: 'OK',
           next_action: 'TEST_FIRST',
           summary: 'Details match, but the destination looks like a contract or app.',
-          explanation: 'This preview shows a case where the network, asset, and address all match, but the address is infrastructure rather than a personal wallet.',
+          explanation: 'This sample shows a case where the network, asset, and address all match, but the address is infrastructure rather than a personal wallet.',
           _why: 'Matching details are not enough here. Contract destinations can behave differently from a personal wallet and deserve a small test first.',
           checked_at: now,
           risk_flags: ['contract_destination'],
@@ -1062,7 +1170,7 @@ POST /api/recovery-copilot
           reason_code: 'OK',
           next_action: 'BLOCK_AND_REVERIFY',
           summary: 'Details match, but the destination looks like an exchange-style deposit address.',
-          explanation: 'This preview highlights a deposit-like destination where memo/tag and venue confirmation matter as much as the raw address.',
+          explanation: 'This sample highlights a deposit-like destination where memo/tag and venue confirmation matter as much as the raw address.',
           _why: 'Deposit-style destinations can still fail if the wrong exchange, wrong network, or missing memo/tag is used. Re-verify before sending.',
           checked_at: now,
           risk_flags: ['confirm_venue', 'confirm_memo_or_tag'],
@@ -1076,7 +1184,7 @@ POST /api/recovery-copilot
           reason_code: 'INVALID_ADDRESS',
           next_action: 'BLOCK_AND_REVERIFY',
           summary: 'Provided address is invalid.',
-          explanation: 'This preview shows how the interface behaves when the submitted destination is malformed before any money moves.',
+          explanation: 'This sample shows how the interface behaves when the submitted destination is malformed before any money moves.',
           _why: 'The address format itself failed validation. This should be blocked immediately and corrected before a transfer is attempted.',
           checked_at: now,
           risk_flags: ['invalid_address'],
@@ -1090,7 +1198,7 @@ POST /api/recovery-copilot
           reason_code: 'UNSUPPORTED_ASSET_OR_NETWORK',
           next_action: 'BLOCK_AND_REVERIFY',
           summary: 'Unsupported asset / network combination.',
-          explanation: 'This preview shows how the product can present unsupported combinations without exposing raw internal language.',
+          explanation: 'This sample shows how the product can present unsupported combinations without exposing raw internal language.',
           _why: 'The payout details are not automatically verifiable in the current supported scope. Re-check the pair or route it for manual review.',
           checked_at: now,
           risk_flags: ['unsupported_setup'],
@@ -1100,7 +1208,7 @@ POST /api/recovery-copilot
       };
       const data = scenarios[kind];
       applyPreflightResult(data, 'demo');
-      el('pfState').textContent = 'Preview scenario loaded. This result is local demo data, not a live API response.';
+      el('pfState').textContent = 'Sample scenario loaded. This is illustrative local data, not a live API response.';
     }
 
     function previewRecoveryNotFound() {
@@ -1110,7 +1218,7 @@ POST /api/recovery-copilot
         status: 'not_found',
         reason_code: 'TX_NOT_FOUND',
         summary: 'No matching transaction was found on the selected network.',
-        explanation: 'This preview demonstrates the post-error state when the submitted transaction hash cannot be found on the chosen chain.',
+        explanation: 'This sample demonstrates the post-error state when the submitted transaction hash cannot be found on the chosen chain.',
         _why: 'The transaction hash was not found for the selected network. The next step is to verify chain selection, tx hash accuracy, and whether the transfer was actually broadcast.',
         checked_at: new Date().toISOString(),
         recoverability: 'unknown',
@@ -1122,7 +1230,7 @@ POST /api/recovery-copilot
         ],
       };
       applyRecoveryResult(data, 'demo');
-      el('rcState').textContent = 'Preview scenario loaded. This result is local demo data, not a live API response.';
+      el('rcState').textContent = 'Sample scenario loaded. This is illustrative local data, not a live API response.';
     }
 
     async function checkHealth() {
@@ -1148,7 +1256,7 @@ POST /api/recovery-copilot
       el('pfProvidedAsset').value = 'USDC';
       el('pfProvidedAddress').value = '0x1111111111111111111111111111111111111111';
       el('pfProvidedMemo').value = '';
-      el('pfState').textContent = 'Valid example loaded. Running live check…';
+      el('pfState').textContent = 'Wallet-match test loaded. Running live verification…';
       await runPreflight();
     }
 
@@ -1161,14 +1269,14 @@ POST /api/recovery-copilot
       el('pfProvidedAsset').value = 'USDT';
       el('pfProvidedAddress').value = '0x2222222222222222222222222222222222222222';
       el('pfProvidedMemo').value = '';
-      el('pfState').textContent = 'Mismatch example loaded. Running live check…';
+      el('pfState').textContent = 'Mismatch test loaded. Running live verification…';
       await runPreflight();
     }
 
     async function runPreflight() {
       setPreflightButtonsBusy(true);
       setPreflightPreviewState('running');
-      el('pfState').textContent = 'Running live pre-send check…';
+      el('pfState').textContent = 'Running live pre-send verification…';
       try {
         const payload = {
           expected: {
@@ -1186,7 +1294,7 @@ POST /api/recovery-copilot
         };
         const data = await fetchJson(PRECHECK_URL, { method: 'POST', body: JSON.stringify(payload), timeoutMs: 15000 });
         applyPreflightResult(data, 'live');
-        el('pfState').textContent = 'Pre-send check complete.';
+        el('pfState').textContent = 'Pre-send verification complete.';
       } catch (err) {
         const data = {
           _verdict: 'UNAVAILABLE',
@@ -1201,7 +1309,7 @@ POST /api/recovery-copilot
           checks: {},
         };
         applyPreflightResult(data, 'live');
-        el('pfState').textContent = 'Live request failed.';
+        el('pfState').textContent = 'Live verification request failed.';
       } finally {
         setPreflightButtonsBusy(false);
       }
@@ -1258,7 +1366,7 @@ POST /api/recovery-copilot
       el('rcCheckedAt').textContent = '—';
       el('rcConfidence').textContent = '—';
       el('rcReasonCode').textContent = '—';
-      el('rcWhy').textContent = 'Waiting for a live or preview result.';
+      el('rcWhy').textContent = 'Waiting for a live or sample result.';
       el('rcNextActions').textContent = '—';
       el('rcState').textContent = 'Cleared.';
     }
@@ -1334,7 +1442,7 @@ POST /api/recovery-copilot
     el('pfInvalidDemoBtn').addEventListener('click', () => previewPreflightScenario('invalid'));
     el('pfUnsupportedDemoBtn').addEventListener('click', () => previewPreflightScenario('unsupported'));
     setPreflightPreviewState('ready');
-    el('pfState').textContent = 'Ready. Run a live check or load one of the demo scenarios.';
+    el('pfState').textContent = 'Ready for a live verification or a sample scenario.';
     el('rcRunBtn').addEventListener('click', runRecovery);
     el('rcClearBtn').addEventListener('click', clearRecovery);
     el('rcNotFoundDemoBtn').addEventListener('click', previewRecoveryNotFound);
