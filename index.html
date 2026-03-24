@@ -137,6 +137,7 @@
     .status-strip {
       display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;
     }
+    .status-strip.hidden { display: none; }
     .status-chip {
       padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line);
       background: rgba(255,255,255,.03); color: #d4d4d8; font-size: 13px;
@@ -182,6 +183,7 @@
     .result-kv {
       border: 1px solid var(--line); background: rgba(0,0,0,.20); border-radius: 14px; padding: 12px;
     }
+    .result-kv.wide { grid-column: 1 / -1; }
     .result-k { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #a1a1aa; margin-bottom: 8px; }
     .result-v { font-size: 13px; color: #f4f4f5; word-break: break-word; }
     .check-list { display: grid; gap: 8px; }
@@ -199,6 +201,17 @@
       background: rgba(0,0,0,.20); border-radius: 16px; color: #d4d4d8;
     }
     .list-item strong { color: var(--white); }
+    .demo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+    .demo-btn { width: 100%; }
+    .flow-grid { display: grid; gap: 16px; margin-top: 26px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .flow-step { padding: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.03); border-radius: 20px; }
+    .flow-step-num { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #a1a1aa; margin-bottom: 8px; }
+    .flow-step h3 { font-size: 20px; margin-bottom: 8px; }
+    .flow-step p { color: #d4d4d8; font-size: 14px; }
+    .code-shell { margin-top: 18px; border: 1px solid var(--line); border-radius: 18px; background: rgba(0,0,0,.22); overflow: hidden; }
+    .code-shell summary { cursor: pointer; list-style: none; padding: 16px 18px; font-size: 14px; font-weight: 700; color: #e4e4e7; }
+    .code-shell summary::-webkit-details-marker { display: none; }
+    .code-shell pre { margin: 0; padding: 0 18px 18px 18px; white-space: pre-wrap; color:#d4d4d8; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; line-height:1.7; }
     .soft-section {
       border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--panel-2);
     }
@@ -209,7 +222,7 @@
 
     @media (max-width: 1020px) {
       nav { display: none; }
-      .hero-grid, .two-col, .three-col { grid-template-columns: 1fr; }
+      .hero-grid, .two-col, .three-col, .flow-grid, .demo-grid { grid-template-columns: 1fr; }
       .hero-grid { min-height: auto; }
     }
     @media (max-width: 720px) {
@@ -262,9 +275,9 @@
             <div class="tag">Block when details do not match</div>
             <div class="tag">No custody</div>
           </div>
-          <div class="status-strip">
-            <div class="status-chip" id="apiStatus">API status: checking…</div>
-            <div class="status-chip" id="apiConfigured">Network checks: checking…</div>
+          <div class="status-strip hidden" id="statusStrip">
+            <div class="status-chip" id="apiStatus">API status</div>
+            <div class="status-chip" id="apiConfigured">Network checks</div>
           </div>
         </div>
 
@@ -371,22 +384,33 @@
             <button class="btn btn-secondary" id="pfHappyBtn" type="button">Run valid example</button>
             <button class="btn btn-ghost" id="pfMismatchBtn" type="button">Run mismatch example</button>
           </div>
+          <div class="note" style="margin-top:10px;">Preview scenarios below are local demos for common payout cases. They do not call the live API.</div>
+          <div class="demo-grid">
+            <button class="btn btn-ghost demo-btn" id="pfContractDemoBtn" type="button">Preview contract destination</button>
+            <button class="btn btn-ghost demo-btn" id="pfExchangeDemoBtn" type="button">Preview exchange-like deposit</button>
+            <button class="btn btn-ghost demo-btn" id="pfInvalidDemoBtn" type="button">Preview invalid address</button>
+            <button class="btn btn-ghost demo-btn" id="pfUnsupportedDemoBtn" type="button">Preview unsupported asset / network</button>
+          </div>
           <div class="note" id="pfState">Ready.</div>
 
-          <div class="result ok" id="pfResult">
+          <div class="result" id="pfResult">
             <div class="result-top">
               <div>
-                <div class="result-status" id="pfResultStatus">Verified</div>
-                <div class="result-title" id="pfResultTitle">All submitted payout details match.</div>
-                <div class="result-text" id="pfResultText">The recipient details match and the address passed a basic live recipient check.</div>
+                <div class="result-status" id="pfResultStatus">READY</div>
+                <div class="result-title" id="pfResultTitle">Enter payout details or run an example.</div>
+                <div class="result-text" id="pfResultText">The card below is designed as proof: one external verdict, one reason code, one next step.</div>
               </div>
-              <div class="panel-badge" id="pfReason">OK</div>
+              <div class="panel-badge" id="pfReason">READY</div>
             </div>
             <div class="result-kv-grid">
-              <div class="result-kv"><div class="result-k">Next action</div><div class="result-v" id="pfNext">Safe to proceed</div></div>
-              <div class="result-kv"><div class="result-k">Risk flags</div><div class="result-v" id="pfFlags">None</div></div>
-              <div class="result-kv"><div class="result-k">Recipient address type</div><div class="result-v" id="pfDestType">Not clearly identified</div></div>
-              <div class="result-kv"><div class="result-k">Checks</div><div class="result-v check-list" id="pfChecks"><div class="check-row"><span>All checks</span><span class="status-yes">Green</span></div></div></div>
+              <div class="result-kv"><div class="result-k">Next step</div><div class="result-v" id="pfNext">Run live check</div></div>
+              <div class="result-kv"><div class="result-k">Checked at</div><div class="result-v" id="pfCheckedAt">—</div></div>
+              <div class="result-kv"><div class="result-k">Confidence</div><div class="result-v" id="pfConfidence">—</div></div>
+              <div class="result-kv"><div class="result-k">Reason code</div><div class="result-v" id="pfReasonCode">—</div></div>
+              <div class="result-kv wide"><div class="result-k">Why this verdict</div><div class="result-v" id="pfWhy">Waiting for a live or preview result.</div></div>
+              <div class="result-kv"><div class="result-k">Destination class</div><div class="result-v" id="pfDestType">Unknown</div></div>
+              <div class="result-kv"><div class="result-k">Risk flags</div><div class="result-v" id="pfFlags">—</div></div>
+              <div class="result-kv wide"><div class="result-k">Checks</div><div class="result-v check-list" id="pfChecks"><div class="check-row"><span>Live verification</span><span>Waiting</span></div></div></div>
             </div>
           </div>
         </div>
@@ -469,23 +493,28 @@
           <div class="panel-actions">
             <button class="btn btn-primary" id="rcRunBtn" type="button">Analyze transaction</button>
             <button class="btn btn-secondary" id="rcClearBtn" type="button">Clear</button>
+            <button class="btn btn-ghost" id="rcNotFoundDemoBtn" type="button">Preview tx not found</button>
           </div>
           <div class="note" id="rcState">Ready.</div>
 
           <div class="result compact" id="rcResult">
             <div class="result-top">
               <div>
-                <div class="result-status" id="rcResultStatus">Waiting</div>
+                <div class="result-status" id="rcResultStatus">WAITING</div>
                 <div class="result-title" id="rcResultTitle">No transaction analyzed yet.</div>
-                <div class="result-text" id="rcResultText">Paste a real transaction hash to get a live result.</div>
+                <div class="result-text" id="rcResultText">Paste a real transaction hash to get a live recovery result.</div>
               </div>
               <div class="panel-badge" id="rcReason">—</div>
             </div>
             <div class="result-kv-grid">
               <div class="result-kv"><div class="result-k">Recoverability</div><div class="result-v" id="rcRecoverability">—</div></div>
-              <div class="result-kv"><div class="result-k">Observed destination</div><div class="result-v" id="rcDestination">—</div></div>
-              <div class="result-kv"><div class="result-k">Observed status</div><div class="result-v" id="rcObservedStatus">—</div></div>
-              <div class="result-kv"><div class="result-k">Recommended next actions</div><div class="result-v" id="rcNextActions">—</div></div>
+              <div class="result-kv"><div class="result-k">Destination class</div><div class="result-v" id="rcDestination">—</div></div>
+              <div class="result-kv"><div class="result-k">On-chain status</div><div class="result-v" id="rcObservedStatus">—</div></div>
+              <div class="result-kv"><div class="result-k">Checked at</div><div class="result-v" id="rcCheckedAt">—</div></div>
+              <div class="result-kv"><div class="result-k">Confidence</div><div class="result-v" id="rcConfidence">—</div></div>
+              <div class="result-kv"><div class="result-k">Reason code</div><div class="result-v" id="rcReasonCode">—</div></div>
+              <div class="result-kv wide"><div class="result-k">Why this result</div><div class="result-v" id="rcWhy">Waiting for a live or preview result.</div></div>
+              <div class="result-kv wide"><div class="result-k">Recommended next actions</div><div class="result-v" id="rcNextActions">—</div></div>
             </div>
           </div>
         </div>
@@ -515,20 +544,49 @@
 
     <section id="api" class="section soft-section">
       <div class="container">
-        <div class="eyebrow">API shape</div>
-        <h2>One system for prevention and recovery.</h2>
-        <div class="grid two-col" style="margin-top:34px; grid-template-columns: .95fr 1.05fr;">
+        <div class="eyebrow">Integration flow</div>
+        <h2>How PayeeProof fits into a payout workflow.</h2>
+        <p class="lead" style="max-width:900px; margin-top:14px;">A short integration story is stronger than a wall of raw JSON: collect payout details, run the check, get one clear verdict, then approve, block, or escalate.</p>
+
+        <div class="flow-grid">
+          <div class="flow-step">
+            <div class="flow-step-num">Step 1</div>
+            <h3>User enters details</h3>
+            <p>Network, asset, address, and memo or tag are collected before any transfer is approved.</p>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num">Step 2</div>
+            <h3>PayeeProof checks</h3>
+            <p>The service compares expected vs provided details and runs a live destination lookup.</p>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num">Step 3</div>
+            <h3>Clear verdict</h3>
+            <p>The result returns one public language standard: SAFE, BLOCK, REVERIFY, or TEST FIRST.</p>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num">Step 4</div>
+            <h3>Ops takes action</h3>
+            <p>Approve the payout, stop it, re-confirm details, or ask for a small test transaction first.</p>
+          </div>
+        </div>
+
+        <div class="grid two-col" style="margin-top:28px; grid-template-columns: .95fr 1.05fr;">
           <div class="card panel">
-            <h3 style="font-size:24px; margin-bottom:14px;">What the service does</h3>
+            <h3 style="font-size:24px; margin-bottom:14px;">Current production scope</h3>
             <div class="list" style="margin-top:0;">
-              <div class="list-item"><strong>Pre-Send Check</strong><span>Checks address format, compares expected and provided details, and runs a live recipient-type check.</span></div>
-              <div class="list-item"><strong>Recovery Guide</strong><span>Looks up a transaction, checks its status, identifies the recipient type, and suggests next steps.</span></div>
-              <div class="list-item"><strong>Pilot requests</strong><span>Saves pilot requests and can email them to hello@payeeproof.com.</span></div>
+              <div class="list-item"><strong>Pre-Send Check</strong><span>Live validation for network, asset, address, memo or tag, and destination classification.</span></div>
+              <div class="list-item"><strong>Mistake Recovery Guide</strong><span>Live transaction lookup with recoverability guidance and next actions.</span></div>
+              <div class="list-item"><strong>Pilot intake</strong><span>Teams can submit their flow and get a practical pilot fit review.</span></div>
             </div>
-            <p class="note" style="margin-top:16px;">Some exchange deposit checks still require direct exchange integrations. Current coverage focuses on public blockchain verification and recovery guidance.</p>
+            <p class="note" style="margin-top:16px;">Exchange-side verification still depends on direct partner integrations. Public chain checks and guided recovery are already live.</p>
           </div>
           <div class="card panel" style="background: rgba(0,0,0,.22);">
-<pre style="margin:0; white-space:pre-wrap; color:#d4d4d8; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; line-height:1.7;">POST /api/preflight-check
+            <h3 style="font-size:24px; margin-bottom:14px;">Technical details, kept out of the hero</h3>
+            <p class="muted">The main page stays commercial. The payload examples are still here, but collapsed so the page reads like a product first.</p>
+            <details class="code-shell">
+              <summary>View example payloads</summary>
+<pre>POST /api/preflight-check
 {
   "expected": {
     "network": "ethereum",
@@ -542,13 +600,14 @@
   }
 }
 
-POST Recovery API
+POST /api/recovery-copilot
 {
   "chain": "polygon",
   "tx_hash": "0x...",
   "issue_type": "wrong_network",
   "intended_chain": "ethereum"
 }</pre>
+            </details>
           </div>
         </div>
       </div>
@@ -656,6 +715,26 @@ POST Recovery API
       return String(value || '').replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
     }
 
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function toDisplayTime(value) {
+      if (!value) return '—';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value);
+      return date.toLocaleString('en-GB', {
+        year: 'numeric', month: 'short', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        timeZoneName: 'short',
+      });
+    }
+
     function formatNetworkName(value) {
       const labels = {
         ethereum: 'Ethereum',
@@ -670,17 +749,14 @@ POST Recovery API
 
     function formatStatusLabel(value) {
       const labels = {
-        verified: 'Verified',
-        mismatch_detected: 'Mismatch detected',
-        blocked: 'Blocked',
-        error: 'Error',
-        found: 'Found',
-        failed: 'Failed',
+        found: 'Result ready',
+        failed: 'Review needed',
         reverted: 'Failed on-chain',
         not_found: 'Not found',
         unavailable: 'Unavailable',
         confirmed: 'Confirmed',
         pending: 'Pending',
+        error: 'Unavailable',
       };
       return labels[String(value || '').toLowerCase()] || humanizeCode(value || '—');
     }
@@ -691,35 +767,50 @@ POST Recovery API
         NETWORK_MISMATCH: 'Wrong network',
         ASSET_MISMATCH: 'Wrong asset',
         ADDRESS_MISMATCH: 'Wrong address',
-        MEMO_MISMATCH: 'Memo or tag does not match',
+        MEMO_MISMATCH: 'Memo or tag mismatch',
         INVALID_ADDRESS: 'Invalid address',
         REQUEST_FAILED: 'Service unavailable',
         TX_NOT_FOUND: 'Transaction not found',
-        GENERAL_ONCHAIN_GUIDANCE: 'Live transaction guidance',
+        GENERAL_ONCHAIN_GUIDANCE: 'Recovery guidance',
+        UNSUPPORTED_ASSET: 'Unsupported asset',
+        UNSUPPORTED_NETWORK: 'Unsupported network',
+        UNSUPPORTED_ASSET_OR_NETWORK: 'Unsupported setup',
       };
       return labels[String(value || '').toUpperCase()] || humanizeCode(value || '—');
     }
 
     function formatNextActionLabel(value) {
       const labels = {
-        SAFE_TO_PROCEED: 'Safe to proceed',
-        BLOCK_AND_REVERIFY: 'Stop and re-check details',
-        CHECK_BACKEND: 'Service check needed',
+        SAFE_TO_PROCEED: 'Proceed with the payment',
+        BLOCK_AND_REVERIFY: 'Stop and re-check the details',
+        CHECK_BACKEND: 'Check service availability',
+        TEST_FIRST: 'Send a small test first',
+        ESCALATE: 'Escalate for manual review',
       };
       return labels[String(value || '').toUpperCase()] || humanizeCode(value || '—');
     }
 
-    function formatAddressType(value) {
-      const labels = {
-        eoa: 'Regular wallet',
-        contract: 'Smart contract',
-        program: 'On-chain app / program',
-        exchange_deposit: 'Exchange deposit address',
-        deposit_address: 'Exchange deposit address',
-        wallet: 'Regular wallet',
-        unknown: 'Not clearly identified',
-      };
-      return labels[String(value || '').toLowerCase()] || humanizeCode(value || 'Not clearly identified');
+    function getDestinationProfile(value) {
+      const raw = String(value || 'unknown').toLowerCase();
+      if (['eoa', 'wallet', 'personal_wallet', 'externally_owned_account'].includes(raw)) {
+        return { label: 'Personal wallet', note: 'Looks like a self-custody style wallet address.' };
+      }
+      if (['contract', 'program', 'app_contract', 'smart_contract'].includes(raw)) {
+        return { label: 'Contract or app', note: 'Funds may arrive, but recovery depends on contract logic and ownership.' };
+      }
+      if (['exchange_deposit', 'deposit_address', 'exchange_like_deposit'].includes(raw)) {
+        return { label: 'Exchange-like deposit', note: 'Confirm the exact venue, network, asset, and memo/tag before sending.' };
+      }
+      if (['bridge_router', 'router', 'bridge', 'bridge_or_router'].includes(raw)) {
+        return { label: 'Bridge / router', note: 'Infrastructure address. Test first unless this destination is explicitly expected.' };
+      }
+      return { label: 'Unknown', note: 'Public signals were not strong enough to classify this destination.' };
+    }
+
+    function formatDestinationProfile(value, address = '') {
+      const profile = getDestinationProfile(value);
+      const addressLine = address ? `<br><span class="muted">${escapeHtml(address)}</span>` : '';
+      return `<strong>${escapeHtml(profile.label)}</strong><br><span class="muted">${escapeHtml(profile.note)}</span>${addressLine}`;
     }
 
     function formatRecoverability(value) {
@@ -738,6 +829,11 @@ POST Recovery API
       return flags.map((item) => humanizeCode(item)).join(', ');
     }
 
+    function formatReasonCodeRaw(value) {
+      const code = String(value || '').trim();
+      return code ? code.toUpperCase() : '—';
+    }
+
     function renderChecks(checks) {
       const entries = Object.entries(checks || {});
       if (!entries.length) {
@@ -746,8 +842,8 @@ POST Recovery API
       return entries.map(([key, value]) => {
         const cls = value ? 'status-yes' : 'status-no';
         const label = formatCheckLabel(key);
-        const verdict = value ? 'Yes' : 'No';
-        return `<div class="check-row"><span>${label}</span><span class="${cls}">${verdict}</span></div>`;
+        const verdict = value ? 'Pass' : 'Fail';
+        return `<div class="check-row"><span>${escapeHtml(label)}</span><span class="${cls}">${escapeHtml(verdict)}</span></div>`;
       }).join('');
     }
 
@@ -756,71 +852,290 @@ POST Recovery API
       box.classList.toggle('compact', !isExpanded);
     }
 
+    function setResultBox(box, status) {
+      box.classList.remove('ok', 'bad');
+      if (['verified', 'found', 'confirmed', 'safe'].includes(String(status || '').toLowerCase())) box.classList.add('ok');
+      else if (['blocked', 'failed', 'reverted', 'not_found', 'unavailable', 'block'].includes(String(status || '').toLowerCase())) box.classList.add('bad');
+    }
+
+    function preflightVerdictFromData(data) {
+      if (data && data._verdict) {
+        return { label: data._verdict, why: data._why || data.explanation || 'Preview scenario.' };
+      }
+      const status = String(data?.status || '').toLowerCase();
+      const reasonCode = formatReasonCodeRaw(data?.reason_code);
+      const destinationType = (((data?.onchain || {}).provided || {}).address_type) || 'unknown';
+      const destination = getDestinationProfile(destinationType);
+      const hasRiskFlags = Array.isArray(data?.risk_flags) && data.risk_flags.length > 0;
+
+      if (reasonCode === 'INVALID_ADDRESS') {
+        return { label: 'BLOCK', why: data?.explanation || 'The destination address format is invalid.' };
+      }
+      if (['NETWORK_MISMATCH', 'ASSET_MISMATCH', 'ADDRESS_MISMATCH', 'MEMO_MISMATCH'].includes(reasonCode) || status === 'mismatch_detected') {
+        return { label: 'BLOCK', why: data?.explanation || 'Submitted payout details do not match the expected ones.' };
+      }
+      if (status === 'verified') {
+        if (destination.label === 'Contract or app' || destination.label === 'Bridge / router') {
+          return { label: 'TEST FIRST', why: data?.explanation || 'The details match, but the destination looks like infrastructure or a contract.' };
+        }
+        if (destination.label === 'Exchange-like deposit') {
+          return { label: 'REVERIFY', why: data?.explanation || 'The address looks like a deposit destination. Confirm venue, network, asset, and memo/tag first.' };
+        }
+        if (destination.label === 'Unknown' || hasRiskFlags) {
+          return { label: 'REVERIFY', why: data?.explanation || 'The core details match, but the destination still needs manual confirmation.' };
+        }
+        return { label: 'SAFE', why: data?.explanation || 'Network, asset, address, and memo checks matched cleanly.' };
+      }
+      if (['error', 'unavailable'].includes(status)) {
+        return { label: 'UNAVAILABLE', why: data?.explanation || 'Live verification is temporarily unavailable.' };
+      }
+      return { label: 'REVERIFY', why: data?.explanation || 'Use a small test or confirm the payout details manually before sending.' };
+    }
+
+    function preflightTitleFromVerdict(verdict) {
+      const labels = {
+        SAFE: 'Clear to proceed.',
+        BLOCK: 'Do not send until the details are corrected.',
+        REVERIFY: 'Re-check the destination before sending.',
+        'TEST FIRST': 'Use a small test transaction first.',
+        UNAVAILABLE: 'Live verification is unavailable.',
+      };
+      return labels[verdict] || 'Review the payout details.';
+    }
+
+    function inferPreflightConfidence(data, verdictLabel) {
+      if (data && data._confidence) return data._confidence;
+      if (verdictLabel === 'SAFE' || verdictLabel === 'BLOCK') return 'High';
+      if (verdictLabel === 'TEST FIRST' || verdictLabel === 'REVERIFY') return 'Medium';
+      return 'Limited';
+    }
+
     function setPreflightButtonsBusy(isBusy) {
-      const runBtn = el('pfRunBtn');
-      const happyBtn = el('pfHappyBtn');
-      const mismatchBtn = el('pfMismatchBtn');
-      runBtn.disabled = isBusy;
-      happyBtn.disabled = isBusy;
-      mismatchBtn.disabled = isBusy;
-      runBtn.textContent = isBusy ? 'Checking…' : 'Run live check';
+      const ids = ['pfRunBtn', 'pfHappyBtn', 'pfMismatchBtn', 'pfContractDemoBtn', 'pfExchangeDemoBtn', 'pfInvalidDemoBtn', 'pfUnsupportedDemoBtn'];
+      ids.forEach((id) => {
+        const node = el(id);
+        if (node) node.disabled = isBusy;
+      });
+      el('pfRunBtn').textContent = isBusy ? 'Checking…' : 'Run live check';
+    }
+
+    function setRecoveryButtonsBusy(isBusy) {
+      const ids = ['rcRunBtn', 'rcClearBtn', 'rcNotFoundDemoBtn'];
+      ids.forEach((id) => {
+        const node = el(id);
+        if (node) node.disabled = isBusy;
+      });
+      el('rcRunBtn').textContent = isBusy ? 'Analyzing…' : 'Analyze transaction';
     }
 
     function setPreflightPreviewState(mode) {
       const box = el('pfResult');
       box.classList.remove('ok', 'bad');
-      if (mode === 'valid') {
-        el('pfResultStatus').textContent = 'Example loaded';
-        el('pfResultTitle').textContent = 'Valid example is ready.';
-        el('pfResultText').textContent = 'Fields were filled in. Click “Run live check” to verify them against the live service.';
-        el('pfReason').textContent = 'Preview';
-        el('pfNext').textContent = 'Click Run live check';
-        el('pfFlags').textContent = 'Not checked yet';
-        el('pfDestType').textContent = 'Will be checked live';
-      } else if (mode === 'mismatch') {
-        el('pfResultStatus').textContent = 'Example loaded';
-        el('pfResultTitle').textContent = 'Mismatch example is ready.';
-        el('pfResultText').textContent = 'This example is intentionally wrong. Click “Run live check” to see how the service blocks it.';
-        el('pfReason').textContent = 'Preview';
-        el('pfNext').textContent = 'Click Run live check';
-        el('pfFlags').textContent = 'Not checked yet';
-        el('pfDestType').textContent = 'Will be checked live';
-      } else if (mode === 'running') {
-        el('pfResultStatus').textContent = 'Checking';
+      if (mode === 'running') {
+        el('pfResultStatus').textContent = 'CHECKING';
         el('pfResultTitle').textContent = 'Running a live pre-send check…';
-        el('pfResultText').textContent = 'Comparing the submitted payout details and asking the live service to validate the recipient.';
+        el('pfResultText').textContent = 'Comparing the submitted payout details and asking the live service to classify the destination.';
         el('pfReason').textContent = 'Live';
         el('pfNext').textContent = 'Please wait';
-        el('pfFlags').textContent = 'Checking…';
+        el('pfCheckedAt').textContent = '—';
+        el('pfConfidence').textContent = '—';
+        el('pfReasonCode').textContent = '—';
+        el('pfWhy').textContent = 'Waiting for the live response.';
         el('pfDestType').textContent = 'Checking…';
-      } else {
-        el('pfResultStatus').textContent = 'Ready';
-        el('pfResultTitle').textContent = 'Enter details or load an example.';
-        el('pfResultText').textContent = 'Then click “Run live check” to validate the payout details.';
-        el('pfReason').textContent = 'Ready';
-        el('pfNext').textContent = 'Run live check';
-        el('pfFlags').textContent = '—';
-        el('pfDestType').textContent = 'Not checked yet';
+        el('pfFlags').textContent = 'Checking…';
+        el('pfChecks').innerHTML = '<div class="check-row"><span>Live verification</span><span>Running</span></div>';
+        return;
       }
+      el('pfResultStatus').textContent = 'READY';
+      el('pfResultTitle').textContent = 'Enter payout details or run an example.';
+      el('pfResultText').textContent = 'The card below is designed as proof: one external verdict, one reason code, one next step.';
+      el('pfReason').textContent = 'READY';
+      el('pfNext').textContent = 'Run live check';
+      el('pfCheckedAt').textContent = '—';
+      el('pfConfidence').textContent = '—';
+      el('pfReasonCode').textContent = '—';
+      el('pfWhy').textContent = 'Waiting for a live or preview result.';
+      el('pfDestType').textContent = 'Unknown';
+      el('pfFlags').textContent = '—';
       el('pfChecks').innerHTML = '<div class="check-row"><span>Live verification</span><span>Waiting</span></div>';
     }
 
-    function setResultBox(box, status) {
-      box.classList.remove('ok', 'bad');
-      if (status === 'verified' || status === 'found' || status === 'confirmed') box.classList.add('ok');
-      else if (status === 'blocked' || status === 'failed' || status === 'reverted' || status === 'not_found' || status === 'unavailable') box.classList.add('bad');
+    function applyPreflightResult(data, source = 'live') {
+      const verdict = preflightVerdictFromData(data);
+      const destinationType = (((data?.onchain || {}).provided || {}).address_type) || 'unknown';
+      const checks = data?.checks || {};
+      const checkedAt = data?._checked_at_label || data?.checked_at || new Date().toISOString();
+      const reasonCode = formatReasonCodeRaw(data?.reason_code);
+      const nextAction = data?._next_action_label || formatNextActionLabel(data?.next_action || (verdict.label === 'TEST FIRST' ? 'TEST_FIRST' : verdict.label === 'BLOCK' ? 'BLOCK_AND_REVERIFY' : verdict.label === 'UNAVAILABLE' ? 'CHECK_BACKEND' : 'SAFE_TO_PROCEED'));
+
+      setResultBox(el('pfResult'), verdict.label);
+      el('pfResultStatus').textContent = verdict.label;
+      el('pfResultTitle').textContent = data?.summary || preflightTitleFromVerdict(verdict.label);
+      el('pfResultText').textContent = source === 'demo'
+        ? (data?.explanation || 'Preview scenario loaded. This is a local demo result.')
+        : (data?.explanation || verdict.why);
+      el('pfReason').textContent = formatReasonLabel(data?.reason_code || verdict.label);
+      el('pfNext').textContent = nextAction;
+      el('pfCheckedAt').textContent = toDisplayTime(checkedAt);
+      el('pfConfidence').textContent = inferPreflightConfidence(data, verdict.label);
+      el('pfReasonCode').textContent = reasonCode;
+      el('pfWhy').textContent = data?._why || verdict.why;
+      el('pfDestType').innerHTML = formatDestinationProfile(destinationType, data?._address || '');
+      el('pfFlags').textContent = formatRiskFlags(data?.risk_flags);
+      el('pfChecks').innerHTML = renderChecks(checks);
+    }
+
+    function recoveryOutcomeLabel(data) {
+      if (data && data._outcome) return data._outcome;
+      const status = String(data?.status || '').toLowerCase();
+      const reasonCode = formatReasonCodeRaw(data?.reason_code);
+      if (status === 'not_found' || reasonCode === 'TX_NOT_FOUND') return 'NOT FOUND';
+      if (['error', 'unavailable'].includes(status)) return 'UNAVAILABLE';
+      return 'RESULT READY';
+    }
+
+    function inferRecoveryConfidence(data) {
+      if (data && data._confidence) return data._confidence;
+      const status = String(data?.status || '').toLowerCase();
+      const observedStatus = String((data?.observed || {}).tx_status || '').toLowerCase();
+      if (status === 'not_found') return 'High';
+      if (['confirmed', 'failed', 'reverted'].includes(observedStatus) || status === 'found') return 'High';
+      if (observedStatus === 'pending') return 'Medium';
+      return 'Limited';
+    }
+
+    function applyRecoveryResult(data, source = 'live') {
+      const observed = data?.observed || {};
+      const outcome = recoveryOutcomeLabel(data);
+      const reasonCode = formatReasonCodeRaw(data?.reason_code);
+      const destinationType = observed.destination_type || data?._destination_type || 'unknown';
+      const destinationAddress = observed.destination || data?._destination || '';
+      const why = data?._why || data?.explanation || `Guidance type: ${formatReasonLabel(data?.reason_code)}`;
+
+      setRecoveryExpanded(true);
+      setResultBox(el('rcResult'), outcome === 'UNAVAILABLE' ? 'unavailable' : outcome === 'NOT FOUND' ? 'not_found' : 'found');
+      el('rcResultStatus').textContent = outcome;
+      el('rcResultTitle').textContent = data?.summary || (outcome === 'NOT FOUND' ? 'No matching transaction was found.' : 'Recovery analysis ready.');
+      el('rcResultText').textContent = source === 'demo'
+        ? (data?.explanation || 'Preview scenario loaded. This is a local demo result.')
+        : (data?.explanation || why);
+      el('rcReason').textContent = formatReasonLabel(data?.reason_code || outcome);
+      el('rcRecoverability').textContent = formatRecoverability(data?.recoverability);
+      el('rcDestination').innerHTML = formatDestinationProfile(destinationType, destinationAddress);
+      el('rcObservedStatus').textContent = formatStatusLabel(observed.tx_status || data?.status || '—');
+      el('rcCheckedAt').textContent = toDisplayTime(data?._checked_at_label || data?.checked_at || new Date().toISOString());
+      el('rcConfidence').textContent = inferRecoveryConfidence(data);
+      el('rcReasonCode').textContent = reasonCode;
+      el('rcWhy').textContent = why;
+      el('rcNextActions').textContent = (data?.next_actions || []).join(' | ') || '—';
+    }
+
+    function previewPreflightScenario(kind) {
+      const now = new Date().toISOString();
+      const commonChecks = {
+        network_match: true,
+        asset_match: true,
+        expected_address_valid: true,
+        provided_address_valid: true,
+        address_match: true,
+        memo_match: true,
+      };
+      const scenarios = {
+        contract: {
+          _verdict: 'TEST FIRST',
+          _confidence: 'Medium',
+          status: 'verified',
+          reason_code: 'OK',
+          next_action: 'TEST_FIRST',
+          summary: 'Details match, but the destination looks like a contract or app.',
+          explanation: 'This preview shows a case where the network, asset, and address all match, but the address is infrastructure rather than a personal wallet.',
+          _why: 'Matching details are not enough here. Contract destinations can behave differently from a personal wallet and deserve a small test first.',
+          checked_at: now,
+          risk_flags: ['contract_destination'],
+          onchain: { provided: { address_type: 'contract' } },
+          checks: commonChecks,
+        },
+        exchange: {
+          _verdict: 'REVERIFY',
+          _confidence: 'Medium',
+          status: 'verified',
+          reason_code: 'OK',
+          next_action: 'BLOCK_AND_REVERIFY',
+          summary: 'Details match, but the destination looks like an exchange-style deposit address.',
+          explanation: 'This preview highlights a deposit-like destination where memo/tag and venue confirmation matter as much as the raw address.',
+          _why: 'Deposit-style destinations can still fail if the wrong exchange, wrong network, or missing memo/tag is used. Re-verify before sending.',
+          checked_at: now,
+          risk_flags: ['confirm_venue', 'confirm_memo_or_tag'],
+          onchain: { provided: { address_type: 'exchange_deposit' } },
+          checks: commonChecks,
+        },
+        invalid: {
+          _verdict: 'BLOCK',
+          _confidence: 'High',
+          status: 'blocked',
+          reason_code: 'INVALID_ADDRESS',
+          next_action: 'BLOCK_AND_REVERIFY',
+          summary: 'Provided address is invalid.',
+          explanation: 'This preview shows how the interface behaves when the submitted destination is malformed before any money moves.',
+          _why: 'The address format itself failed validation. This should be blocked immediately and corrected before a transfer is attempted.',
+          checked_at: now,
+          risk_flags: ['invalid_address'],
+          onchain: { provided: { address_type: 'unknown' } },
+          checks: { ...commonChecks, provided_address_valid: false, address_match: false },
+        },
+        unsupported: {
+          _verdict: 'REVERIFY',
+          _confidence: 'Medium',
+          status: 'blocked',
+          reason_code: 'UNSUPPORTED_ASSET_OR_NETWORK',
+          next_action: 'BLOCK_AND_REVERIFY',
+          summary: 'Unsupported asset / network combination.',
+          explanation: 'This preview shows how the product can present unsupported combinations without exposing raw internal language.',
+          _why: 'The payout details are not automatically verifiable in the current supported scope. Re-check the pair or route it for manual review.',
+          checked_at: now,
+          risk_flags: ['unsupported_setup'],
+          onchain: { provided: { address_type: 'unknown' } },
+          checks: { network_match: true, asset_match: false, expected_address_valid: true, provided_address_valid: true, address_match: true, memo_match: true },
+        },
+      };
+      const data = scenarios[kind];
+      applyPreflightResult(data, 'demo');
+      el('pfState').textContent = 'Preview scenario loaded. This result is local demo data, not a live API response.';
+    }
+
+    function previewRecoveryNotFound() {
+      const data = {
+        _outcome: 'NOT FOUND',
+        _confidence: 'High',
+        status: 'not_found',
+        reason_code: 'TX_NOT_FOUND',
+        summary: 'No matching transaction was found on the selected network.',
+        explanation: 'This preview demonstrates the post-error state when the submitted transaction hash cannot be found on the chosen chain.',
+        _why: 'The transaction hash was not found for the selected network. The next step is to verify chain selection, tx hash accuracy, and whether the transfer was actually broadcast.',
+        checked_at: new Date().toISOString(),
+        recoverability: 'unknown',
+        observed: { destination_type: 'unknown', tx_status: 'not_found' },
+        next_actions: [
+          'Re-check the transaction hash character by character.',
+          'Confirm that the selected network is correct.',
+          'Ask the sender or exchange for the exact transaction record.'
+        ],
+      };
+      applyRecoveryResult(data, 'demo');
+      el('rcState').textContent = 'Preview scenario loaded. This result is local demo data, not a live API response.';
     }
 
     async function checkHealth() {
+      const strip = el('statusStrip');
       try {
-        const data = await fetchJson(HEALTH_URL, { method: 'GET' });
-        el('apiStatus').innerHTML = `API status: <span class="live-indicator">live</span>`;
+        const data = await fetchJson(HEALTH_URL, { method: 'GET', timeoutMs: 8000 });
         const configured = data.rpc_configured || {};
-        const ready = Object.entries(configured).filter(([,v]) => v).map(([k]) => formatNetworkName(k));
-        el('apiConfigured').textContent = ready.length ? `Network checks: ${ready.join(', ')}` : 'Network checks: not configured';
+        const ready = Object.entries(configured).filter(([, v]) => v).map(([k]) => formatNetworkName(k));
+        el('apiStatus').innerHTML = `API: <span class="live-indicator">live</span>`;
+        el('apiConfigured').textContent = ready.length ? `Networks live: ${ready.join(', ')}` : 'Networks live: not reported';
+        strip.classList.remove('hidden');
       } catch (err) {
-        el('apiStatus').innerHTML = `API status: <span class="offline-indicator">offline</span>`;
-        el('apiConfigured').textContent = 'Network checks: service not reachable';
+        strip.classList.add('hidden');
       }
     }
 
@@ -833,7 +1148,6 @@ POST Recovery API
       el('pfProvidedAsset').value = 'USDC';
       el('pfProvidedAddress').value = '0x1111111111111111111111111111111111111111';
       el('pfProvidedMemo').value = '';
-      setPreflightPreviewState('valid');
       el('pfState').textContent = 'Valid example loaded. Running live check…';
       await runPreflight();
     }
@@ -847,7 +1161,6 @@ POST Recovery API
       el('pfProvidedAsset').value = 'USDT';
       el('pfProvidedAddress').value = '0x2222222222222222222222222222222222222222';
       el('pfProvidedMemo').value = '';
-      setPreflightPreviewState('mismatch');
       el('pfState').textContent = 'Mismatch example loaded. Running live check…';
       await runPreflight();
     }
@@ -872,29 +1185,22 @@ POST Recovery API
           },
         };
         const data = await fetchJson(PRECHECK_URL, { method: 'POST', body: JSON.stringify(payload), timeoutMs: 15000 });
-        const box = el('pfResult');
-        setResultBox(box, data.status);
-        el('pfResultStatus').textContent = formatStatusLabel(data.status);
-        el('pfResultTitle').textContent = data.summary || formatReasonLabel(data.reason_code) || 'Pre-Send result';
-        el('pfResultText').textContent = data.explanation || 'No explanation returned.';
-        el('pfReason').textContent = formatReasonLabel(data.reason_code);
-        el('pfNext').textContent = formatNextActionLabel(data.next_action);
-        el('pfFlags').textContent = formatRiskFlags(data.risk_flags);
-        el('pfDestType').textContent = formatAddressType((((data.onchain || {}).provided || {}).address_type) || 'unknown');
-        const checks = data.checks || {};
-        el('pfChecks').innerHTML = renderChecks(checks);
+        applyPreflightResult(data, 'live');
         el('pfState').textContent = 'Pre-send check complete.';
       } catch (err) {
-        const box = el('pfResult');
-        setResultBox(box, 'blocked');
-        el('pfResultStatus').textContent = 'Error';
-        el('pfResultTitle').textContent = 'Pre-Send check failed.';
-        el('pfResultText').textContent = err.message || 'Could not reach the service.';
-        el('pfReason').textContent = formatReasonLabel('REQUEST_FAILED');
-        el('pfNext').textContent = formatNextActionLabel('CHECK_BACKEND');
-        el('pfFlags').textContent = '—';
-        el('pfDestType').textContent = '—';
-        el('pfChecks').innerHTML = '<div class="check-row"><span>Checks unavailable</span><span>—</span></div>';
+        const data = {
+          _verdict: 'UNAVAILABLE',
+          status: 'error',
+          reason_code: 'REQUEST_FAILED',
+          summary: 'Pre-Send check failed.',
+          explanation: err.message || 'Could not reach the service.',
+          _why: 'The site could not get a live answer from the verification API.',
+          checked_at: new Date().toISOString(),
+          risk_flags: [],
+          onchain: { provided: { address_type: 'unknown' } },
+          checks: {},
+        };
+        applyPreflightResult(data, 'live');
         el('pfState').textContent = 'Live request failed.';
       } finally {
         setPreflightButtonsBusy(false);
@@ -902,6 +1208,7 @@ POST Recovery API
     }
 
     async function runRecovery() {
+      setRecoveryButtonsBusy(true);
       el('rcState').textContent = 'Analyzing transaction…';
       try {
         const payload = {
@@ -912,32 +1219,25 @@ POST Recovery API
           intended_chain: el('rcIntendedChain').value,
         };
         const data = await fetchJson(RECOVERY_URL, { method: 'POST', body: JSON.stringify(payload) });
-        const observed = data.observed || {};
-        const box = el('rcResult');
-        setRecoveryExpanded(true);
-        setResultBox(box, data.status);
-        el('rcResultStatus').textContent = formatStatusLabel(data.status || 'found');
-        el('rcResultTitle').textContent = data.summary || 'Recovery analysis ready.';
-        el('rcResultText').textContent = data.explanation || `Guidance type: ${formatReasonLabel(data.reason_code)}`;
-        el('rcReason').textContent = formatReasonLabel(data.reason_code);
-        el('rcRecoverability').textContent = formatRecoverability(data.recoverability);
-        el('rcDestination').textContent = observed.destination ? `${observed.destination} (${formatAddressType(observed.destination_type || 'unknown')})` : '—';
-        el('rcObservedStatus').textContent = formatStatusLabel(observed.tx_status || data.status || '—');
-        el('rcNextActions').textContent = (data.next_actions || []).join(' | ') || '—';
+        applyRecoveryResult(data, 'live');
         el('rcState').textContent = 'Recovery analysis complete.';
       } catch (err) {
-        const box = el('rcResult');
-        setRecoveryExpanded(false);
-        setResultBox(box, 'failed');
-        el('rcResultStatus').textContent = 'Error';
-        el('rcResultTitle').textContent = 'Recovery analysis failed.';
-        el('rcResultText').textContent = err.message || 'Could not reach the service.';
-        el('rcReason').textContent = 'REQUEST_FAILED';
-        el('rcRecoverability').textContent = '—';
-        el('rcDestination').textContent = '—';
-        el('rcObservedStatus').textContent = '—';
-        el('rcNextActions').textContent = 'Check whether the service is live and network connections are working.';
+        const data = {
+          _outcome: 'UNAVAILABLE',
+          status: 'error',
+          reason_code: 'REQUEST_FAILED',
+          summary: 'Recovery analysis failed.',
+          explanation: err.message || 'Could not reach the service.',
+          _why: 'The site could not get a live answer from the recovery API.',
+          checked_at: new Date().toISOString(),
+          recoverability: 'unknown',
+          observed: { destination_type: 'unknown', tx_status: 'unavailable' },
+          next_actions: ['Check whether the service is live and whether network connections are healthy.'],
+        };
+        applyRecoveryResult(data, 'live');
         el('rcState').textContent = 'Backend request failed.';
+      } finally {
+        setRecoveryButtonsBusy(false);
       }
     }
 
@@ -948,13 +1248,17 @@ POST Recovery API
       const box = el('rcResult');
       setRecoveryExpanded(false);
       box.classList.remove('ok', 'bad');
-      el('rcResultStatus').textContent = 'Waiting';
+      el('rcResultStatus').textContent = 'WAITING';
       el('rcResultTitle').textContent = 'No transaction analyzed yet.';
-      el('rcResultText').textContent = 'Paste a real transaction hash to get a live result.';
+      el('rcResultText').textContent = 'Paste a real transaction hash to get a live recovery result.';
       el('rcReason').textContent = '—';
       el('rcRecoverability').textContent = '—';
       el('rcDestination').textContent = '—';
       el('rcObservedStatus').textContent = '—';
+      el('rcCheckedAt').textContent = '—';
+      el('rcConfidence').textContent = '—';
+      el('rcReasonCode').textContent = '—';
+      el('rcWhy').textContent = 'Waiting for a live or preview result.';
       el('rcNextActions').textContent = '—';
       el('rcState').textContent = 'Cleared.';
     }
@@ -1025,14 +1329,18 @@ POST Recovery API
     el('pfRunBtn').addEventListener('click', runPreflight);
     el('pfHappyBtn').addEventListener('click', () => { void pfLoadHappy(); });
     el('pfMismatchBtn').addEventListener('click', () => { void pfLoadMismatch(); });
+    el('pfContractDemoBtn').addEventListener('click', () => previewPreflightScenario('contract'));
+    el('pfExchangeDemoBtn').addEventListener('click', () => previewPreflightScenario('exchange'));
+    el('pfInvalidDemoBtn').addEventListener('click', () => previewPreflightScenario('invalid'));
+    el('pfUnsupportedDemoBtn').addEventListener('click', () => previewPreflightScenario('unsupported'));
     setPreflightPreviewState('ready');
-    el('pfState').textContent = 'Ready. Load an example or enter details, then run a live check.';
+    el('pfState').textContent = 'Ready. Run a live check or load one of the demo scenarios.';
     el('rcRunBtn').addEventListener('click', runRecovery);
     el('rcClearBtn').addEventListener('click', clearRecovery);
+    el('rcNotFoundDemoBtn').addEventListener('click', previewRecoveryNotFound);
     el('pilotForm').addEventListener('submit', submitPilot);
     el('pilotCopyBtn').addEventListener('click', copyPilot);
 
-    pfLoadHappy();
     clearRecovery();
     checkHealth();
   </script>
