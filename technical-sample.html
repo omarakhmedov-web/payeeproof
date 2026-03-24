@@ -271,6 +271,7 @@
       .panel-actions, .btn-row { flex-direction: column; align-items: stretch; }
       .btn { width: 100%; }
       .result-top { flex-direction: column; }
+      .shell-line { grid-template-columns: 1fr; gap: 6px; }
     }
   
     .proof-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
@@ -281,6 +282,15 @@
     .point strong { font-size:15px; }
     .point span { color: var(--muted); }
     .mini-pill { display:inline-flex; align-items:center; justify-content:center; min-width:36px; height:36px; padding:0 12px; border-radius:999px; border:1px solid var(--line); background: var(--panel-2); font-weight:700; }
+
+    .hero-card { padding: 28px; align-self: center; }
+    .mini-shell { display:grid; gap: 0; border:1px solid var(--line); background: rgba(255,255,255,.03); border-radius: 22px; overflow: hidden; }
+    .mini-shell-bar { display:flex; gap:8px; padding: 14px 16px; border-bottom:1px solid var(--line); background: rgba(255,255,255,.02); }
+    .mini-shell-bar span { width:10px; height:10px; border-radius:999px; background: rgba(255,255,255,.18); display:block; }
+    .shell-line { display:grid; grid-template-columns: minmax(170px, 210px) minmax(0, 1fr); gap: 16px; align-items:start; padding: 14px 16px; border-bottom:1px solid rgba(255,255,255,.08); }
+    .shell-line:last-child { border-bottom: 0; }
+    .shell-line strong { color: var(--white); font-size: 15px; line-height: 1.45; }
+    .shell-line span { color: #d4d4d8; line-height: 1.55; }
 
   </style>
 </head>
