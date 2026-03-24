@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PayeeProof — use cases</title>
+  <meta name="description" content="Buyer-facing use cases for PayeeProof across payout operations, exchange deposit protection, support workflows, treasury review, and pilot teams." />
+  <meta property="og:title" content="PayeeProof — use cases" />
+  <meta property="og:description" content="A buyer-facing use-case page showing where PayeeProof fits in payout ops, support, exchange deposit protection, treasury controls, and pilot rollout." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="./og-cover.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./payeeproof-favicon-192.png" />
+  <style>
+    :root {
+      --bg: #09090b;
+      --bg-soft: #111114;
+      --panel: rgba(255,255,255,0.04);
+      --panel-strong: rgba(255,255,255,0.07);
+      --text: #f4f4f5;
+      --muted: #b4b4bc;
+      --line: rgba(255,255,255,0.10);
+      --gold: #d4af37;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --shadow: 0 26px 70px rgba(0,0,0,0.35);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1200px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(212,175,55,0.16), transparent 26%),
+        linear-gradient(180deg, #09090b 0%, #0d0d11 46%, #09090b 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(calc(100% - 40px), var(--max)); margin: 0 auto; }
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: blur(16px);
+      background: rgba(9,9,11,0.74);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .topbar-inner {
+      min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; font-weight: 600; letter-spacing: 0.01em; }
+    .logo {
+      width: 42px; height: 42px; border-radius: 14px;
+      background: linear-gradient(145deg, rgba(212,175,55,0.24), rgba(255,255,255,0.06));
+      border: 1px solid rgba(212,175,55,0.32);
+      display: grid; place-items: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 18px 42px rgba(0,0,0,0.24);
+      overflow: hidden;
+    }
+    .logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    nav { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+    nav a, .footer a { color: var(--muted); font-size: 14px; transition: color .2s ease, opacity .2s ease; }
+    nav a:hover, .footer a:hover { color: var(--text); }
+    .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; min-height: 48px; padding: 0 18px; border-radius: 999px;
+      border: 1px solid var(--line); font-weight: 600; font-size: 15px;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(212,175,55,0.22), rgba(212,175,55,0.08));
+      border-color: rgba(212,175,55,0.40);
+    }
+    .btn-secondary { background: rgba(255,255,255,0.03); }
+    .hero { padding: 88px 0 44px; }
+    .hero-grid { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: 28px; align-items: stretch; }
+    .hero-copy h1 { margin: 14px 0 18px; font-size: clamp(40px, 5vw, 68px); line-height: 1.03; letter-spacing: -0.03em; }
+    .lead { color: var(--muted); font-size: 19px; max-width: 860px; }
+    .pill {
+      display: inline-flex; gap: 10px; align-items: center;
+      min-height: 36px; padding: 0 14px; border-radius: 999px;
+      border: 1px solid rgba(212,175,55,0.24);
+      background: rgba(212,175,55,0.10);
+      color: #f5deb0; font-size: 14px;
+    }
+    .hero-card, .card {
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      box-shadow: var(--shadow);
+    }
+    .hero-card { padding: 24px; }
+    .metric-list, .boundary-list, .faq-list { display: grid; gap: 14px; }
+    .metric {
+      padding: 16px 18px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+    .metric h3, .card h3 { margin: 0 0 8px; font-size: 18px; }
+    .metric p, .card p, li { margin: 0; color: var(--muted); }
+    .section { padding: 76px 0; }
+    .section.soft { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-top: 1px solid rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .eyebrow { color: #f5deb0; text-transform: uppercase; letter-spacing: .18em; font-size: 12px; font-weight: 700; }
+    h2 { font-size: clamp(30px, 4vw, 48px); line-height: 1.08; letter-spacing: -0.03em; margin: 12px 0 0; }
+    .grid { display: grid; gap: 22px; }
+    .three-col { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .two-col { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .card { padding: 24px; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .tag {
+      display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px;
+      border-radius: 999px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03);
+      color: #d4d4d8; font-size: 13px;
+    }
+    .boundary-list { padding-left: 18px; }
+    .boundary-list li { margin-bottom: 10px; }
+    .check { color: var(--green); font-weight: 700; }
+    .cross { color: var(--amber); font-weight: 700; }
+    .cta {
+      padding: 28px; border-radius: var(--radius-xl);
+      border: 1px solid rgba(212,175,55,0.22);
+      background: linear-gradient(145deg, rgba(212,175,55,0.10), rgba(255,255,255,0.03));
+      box-shadow: var(--shadow);
+    }
+    .footer { padding: 28px 0 42px; color: #71717a; font-size: 14px; }
+    .footer-inner { display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap; }
+    .footer-links { display:flex; gap:18px; flex-wrap:wrap; }
+    @media (max-width: 1020px) {
+      nav { display:none; }
+      .hero-grid, .three-col, .two-col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .section { padding: 68px 0; }
+      .btn-row { flex-direction: column; align-items: stretch; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
+        <span>PayeeProof</span>
+      </div>
+      <nav>
+        <a href="#overview">Overview</a>
+        <a href="#teams">Teams</a>
+        <a href="#controls">Workflow fit</a>
+        <a href="#impact">Business impact</a>
+        <a href="#pilot">Pilot</a>
+        <a href="./trust-security.html">Trust &amp; security</a>
+        <a href="./policy-examples.html">Policy examples</a>
+        <a href="./technical-sample.html">Technical sample</a>
+        <a href="./pilot-flow.html">Pilot flow</a>
+      </nav>
+      <div class="btn-row">
+        <a class="btn btn-secondary" href="./index.html">Back to main site</a>
+        <a class="btn btn-primary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20request">Request pilot</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="overview">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="pill">Buyer-facing use cases · pilot-ready · operations-first</div>
+          <h1>Where PayeeProof fits in real payout, support, and treasury workflows.</h1>
+          <p class="lead">PayeeProof is most useful where one wrong transfer detail becomes a support case, a manual escalation, or a loss event. The product is designed to help teams decide before approval, classify the destination, and leave behind a readable verification record instead of vague reassurance.</p>
+          <div class="btn-row" style="margin-top:22px;">
+            <a class="btn btn-primary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20request">Request pilot</a>
+            <a class="btn btn-secondary" href="./sample-verification-record.html">See sample record</a>
+            <a class="btn btn-ghost" href="./policy-examples.html">Open policy examples</a>
+          </div>
+          <div class="tag-row">
+            <span class="tag">Payout approvals</span>
+            <span class="tag">Exchange-like deposits</span>
+            <span class="tag">Support escalation</span>
+            <span class="tag">Treasury controls</span>
+          </div>
+        </div>
+        <aside class="hero-card">
+          <div class="metric-list">
+            <div class="metric">
+              <h3>Best fit today</h3>
+              <p>Stablecoin payout teams, exchanges, marketplaces, finance ops, and support desks that want one clear decision before money moves.</p>
+            </div>
+            <div class="metric">
+              <h3>Why it matters</h3>
+              <p>Wrong-network sends, ambiguous destinations, and exchange-like deposit routes create preventable support load and expensive mistakes.</p>
+            </div>
+            <div class="metric">
+              <h3>Rollout style</h3>
+              <p>Start with one narrow flow, review real record outputs, and expand only after the decision layer feels operationally useful.</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section soft" id="teams">
+      <div class="container">
+        <div class="eyebrow">Teams and buyer paths</div>
+        <h2>Use cases that translate product logic into business value.</h2>
+        <div class="grid three-col" style="margin-top:34px;">
+          <article class="card">
+            <h3>Payout operations</h3>
+            <p>The last pause before approval is where PayeeProof earns its keep. A clear verdict helps stop wrong-network or wrong-destination sends before they become incidents.</p>
+            <ul class="boundary-list">
+              <li>Check address, network, asset, memo or tag before approval</li>
+              <li>Classify the destination for a practical next step</li>
+              <li>Reduce preventable payout exceptions</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Exchange or deposit protection</h3>
+            <p>Deposits can be valid but still operationally risky. Exchange-like destinations and routing-sensitive paths are where a TEST FIRST or REVERIFY state is valuable.</p>
+            <ul class="boundary-list">
+              <li>Flag exchange-like deposit behavior</li>
+              <li>Recommend a small test before sending size</li>
+              <li>Reduce network and routing mistakes</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Support desk triage</h3>
+            <p>When something already went wrong, support needs a fast starting point. Recovery guidance anchored to a real transaction reduces guesswork and back-and-forth.</p>
+            <ul class="boundary-list">
+              <li>Summarize the on-chain transaction quickly</li>
+              <li>Provide next actions instead of generic warnings</li>
+              <li>Standardize first-line responses</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Treasury and finance ops</h3>
+            <p>Finance teams often want one more control before release. PayeeProof can serve as a narrow verification step without becoming the fund holder or execution point.</p>
+            <ul class="boundary-list">
+              <li>Add a structured check before payout release</li>
+              <li>Keep operator approval in-house</li>
+              <li>Store readable records for review</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Marketplaces and OTC desks</h3>
+            <p>High-value or repeat transfers benefit from a compact decision record that tells ops whether to approve, block, reverify, or test small first.</p>
+            <ul class="boundary-list">
+              <li>Reduce friction in manual review queues</li>
+              <li>Improve consistency across operators</li>
+              <li>Create audit-style traceability for exceptions</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Pilot teams</h3>
+            <p>Teams exploring a rollout usually need clarity before code. The buyer-safe pages, policy examples, and technical sample make it easier to evaluate fit asynchronously.</p>
+            <ul class="boundary-list">
+              <li>Start by email instead of scheduling a heavy process</li>
+              <li>Review examples before touching production</li>
+              <li>Keep the pilot narrow and measurable</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="controls">
+      <div class="container">
+        <div class="eyebrow">Workflow fit</div>
+        <h2>PayeeProof works best at decision points, not as a replacement for the payout owner.</h2>
+        <div class="grid two-col" style="margin-top:34px;">
+          <article class="card">
+            <h3>Before funds move</h3>
+            <ul class="boundary-list">
+              <li>Collect expected transfer details</li>
+              <li>Run the pre-send check</li>
+              <li>Read verdict, reason code, confidence, and destination class</li>
+              <li>Approve, block, reverify, or test first</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>After something already went wrong</h3>
+            <ul class="boundary-list">
+              <li>Anchor the case to a real transaction hash</li>
+              <li>Classify what the destination appears to be</li>
+              <li>Give support or ops a practical recovery starting point</li>
+              <li>Escalate only where human handling is actually needed</li>
+            </ul>
+          </article>
+        </div>
+        <div class="grid three-col" style="margin-top:28px;">
+          <article class="card">
+            <h3>What teams usually store</h3>
+            <p>A verification record with <strong>checked_at</strong>, <strong>verdict</strong>, <strong>reason_code</strong>, <strong>confidence</strong>, and a readable next step.</p>
+          </article>
+          <article class="card">
+            <h3>What usually escalates</h3>
+            <p>Contract destinations, exchange-like deposits, network mismatch, unsupported combinations, or ambiguous customer-provided details.</p>
+          </article>
+          <article class="card">
+            <h3>What stays with the operator</h3>
+            <p>Final approval, internal payout policy, sanctions or compliance controls outside scope, and customer communication.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="impact">
+      <div class="container">
+        <div class="eyebrow">Business impact</div>
+        <h2>Why teams care, in plain operational terms.</h2>
+        <div class="grid three-col" style="margin-top:34px;">
+          <article class="card">
+            <h3>Fewer preventable mistakes</h3>
+            <p>Wrong-address and wrong-network incidents are easier to stop before they become expensive cleanup work.</p>
+          </article>
+          <article class="card">
+            <h3>Lower support load</h3>
+            <p>Structured pre-send answers and recovery guidance reduce repetitive manual investigation and customer back-and-forth.</p>
+          </article>
+          <article class="card">
+            <h3>Cleaner operator decisions</h3>
+            <p>SAFE, BLOCK, REVERIFY, and TEST FIRST are easier to route and explain than vague comments or tribal knowledge.</p>
+          </article>
+          <article class="card">
+            <h3>Better traceability</h3>
+            <p>A readable record helps with audit-style review, internal QA, partner discussions, and incident follow-up.</p>
+          </article>
+          <article class="card">
+            <h3>Easier partner evaluation</h3>
+            <p>Buyers can review use cases, policy examples, trust boundaries, and technical sample pages before any deep integration work.</p>
+          </article>
+          <article class="card">
+            <h3>Email-first rollout</h3>
+            <p>Initial pilot evaluation can start asynchronously, which is useful for lean teams that want clarity before calls or implementation effort.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pilot">
+      <div class="container">
+        <div class="eyebrow">Pilot path</div>
+        <h2>The easiest pilot is narrow, reviewable, and tied to one real workflow.</h2>
+        <div class="grid three-col" style="margin-top:34px;">
+          <article class="card">
+            <h3>1. Pick one workflow</h3>
+            <p>Examples: payout approval, exchange-like deposit review, treasury release step, or support triage for post-send mistakes.</p>
+          </article>
+          <article class="card">
+            <h3>2. Review the decision layer</h3>
+            <p>Use the sample record, policy examples, trust page, and technical sample to confirm that the product language matches operational reality.</p>
+          </article>
+          <article class="card">
+            <h3>3. Start by email</h3>
+            <p>Send the current flow, networks, assets, and the problem you want to reduce. That is enough for an initial pilot fit review.</p>
+          </article>
+        </div>
+        <div class="btn-row" style="margin-top:24px;">
+          <a class="btn btn-primary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20request">Request pilot</a>
+          <a class="btn btn-secondary" href="./pilot-flow.html">See pilot flow</a>
+          <a class="btn btn-ghost" href="./technical-sample.html">Open technical sample</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="brand">
+        <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
+        <div>© 2026 PayeeProof</div>
+      </div>
+      <div class="footer-links">
+        <a href="#overview">Overview</a>
+        <a href="#teams">Teams</a>
+        <a href="#controls">Workflow fit</a>
+        <a href="#impact">Business impact</a>
+        <a href="#pilot">Pilot</a>
+        <a href="./trust-security.html">Trust &amp; security</a>
+        <a href="./policy-examples.html">Policy examples</a>
+        <a href="./technical-sample.html">Technical sample</a>
+        <a href="./pilot-flow.html">Pilot flow</a>
+        <a href="./index.html">Main site</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
