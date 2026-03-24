@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PayeeProof — pilot flow and API sample</title>
-  <meta name="description" content="A compact PayeeProof page showing pilot intake, verification flow, structured outputs, and endpoint samples without cluttering the main site." />
-  <meta property="og:title" content="PayeeProof — pilot flow and API sample" />
-  <meta property="og:description" content="Pilot intake, verification flow, structured outputs, and compact endpoint samples for PayeeProof." />
+  <title>PayeeProof — verification policy examples</title>
+  <meta name="description" content="Buyer-safe policy examples showing how PayeeProof classifies payout risk, destination types, and operator actions during pilot reviews." />
+  <meta property="og:title" content="PayeeProof — verification policy examples" />
+  <meta property="og:description" content="Clear verdict policy, destination classes, and structured example records for pilot reviews." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -56,33 +56,11 @@
     .grid { display: grid; gap: 24px; }
     .two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .three-col { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-    }
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      border-bottom: 1px solid var(--line);
-      background: rgba(6,8,13,.82);
-      backdrop-filter: blur(16px);
-    }
-    .topbar-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      padding: 16px 0;
-    }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow); }
+    .topbar { position: sticky; top: 0; z-index: 50; border-bottom: 1px solid var(--line); background: rgba(6,8,13,.82); backdrop-filter: blur(16px); }
+    .topbar-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 16px 0; }
     .brand { display: flex; align-items: center; gap: 12px; }
-    .logo {
-      width: 42px; height: 42px; border-radius: 14px; overflow: hidden;
-      border: 1px solid var(--line); background: var(--panel); flex: 0 0 42px;
-      display: grid; place-items: center;
-    }
+    .logo { width: 42px; height: 42px; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: var(--panel); flex: 0 0 42px; display: grid; place-items: center; }
     .logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .brand-title { font-weight: 700; letter-spacing: -.02em; }
     .brand-sub { font-size: 12px; color: #71717a; }
@@ -90,201 +68,69 @@
     nav a { color: var(--muted); font-size: 14px; }
     nav a:hover { color: var(--white); }
     .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-      padding: 14px 18px; border-radius: 16px; border: 1px solid var(--line);
-      font-weight: 700; font-size: 14px; cursor: pointer; transition: .18s ease;
-      text-align: center;
-    }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 18px; border-radius: 16px; border: 1px solid var(--line); font-weight: 700; font-size: 14px; }
+    .btn-primary { background: var(--white); color: #05070b; }
+    .btn-secondary { background: var(--panel); color: var(--text); }
+    .btn-ghost { background: transparent; color: var(--muted); }
     .btn:hover { transform: translateY(-1px); }
-    .btn:disabled { opacity: .62; cursor: not-allowed; transform: none; }
-    .btn:disabled:hover { transform: none; }
-    .btn-primary { background: var(--white); color: #000; border-color: transparent; }
-    .btn-secondary { background: transparent; color: var(--text); }
-    .btn-ghost { background: rgba(255,255,255,.03); color: #d4d4d8; }
-    .pill {
-      display: inline-flex; align-items: center; gap: 8px; width: fit-content;
-      border: 1px solid var(--line); background: var(--panel); color: #e4e4e7;
-      padding: 9px 14px; border-radius: 999px; font-size: 12px; font-weight: 700;
-      letter-spacing: .08em; text-transform: uppercase;
-    }
-    .eyebrow { color: #a1a1aa; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .22em; margin-bottom: 12px; }
-    h1,h2,h3,p { margin: 0; }
-    h1 { font-size: clamp(40px, 7vw, 72px); line-height: .98; letter-spacing: -.04em; max-width: 980px; }
-    h2 { font-size: clamp(30px, 4vw, 46px); line-height: 1.04; letter-spacing: -.03em; }
-    h3 { font-size: 26px; line-height: 1.1; letter-spacing: -.02em; }
-    .lead {
-      font-size: clamp(18px, 2.15vw, 22px); color: var(--muted); max-width: 860px; line-height: 1.7;
-    }
-    .hero {
-      position: relative; overflow: hidden; border-bottom: 1px solid var(--line);
-      background:
-        radial-gradient(circle at 10% 0%, rgba(255,255,255,.08), transparent 26%),
-        radial-gradient(circle at 86% 8%, rgba(59,130,246,.14), transparent 16%),
-        var(--bg);
-    }
-    .hero-grid {
-      display: grid; grid-template-columns: 1.05fr .95fr; gap: 32px; align-items: start;
-      min-height: 84vh; padding: 54px 0;
-    }
-    .hero-copy { display: grid; gap: 22px; align-content: center; }
+    .hero { padding: 72px 0 44px; }
+    .hero-grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1.1fr) minmax(340px, .9fr); align-items: stretch; }
+    .hero-copy { display: grid; align-content: center; gap: 18px; }
+    .pill { display: inline-flex; width: fit-content; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel-2); color: #d4d4d8; font-size: 13px; }
+    h1 { margin: 0; font-size: clamp(38px, 5vw, 62px); line-height: 1.04; letter-spacing: -.04em; }
+    h2 { margin: 0 0 10px; font-size: clamp(28px, 3.6vw, 40px); letter-spacing: -.03em; }
+    h3 { margin: 0 0 8px; font-size: 20px; letter-spacing: -.02em; }
+    p { margin: 0; }
+    .lead { color: #d4d4d8; font-size: 18px; max-width: 740px; }
+    .hero-card { padding: 24px; display: grid; gap: 18px; }
+    .mini-shell { border: 1px solid var(--line); border-radius: 22px; background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025)); overflow: hidden; }
+    .mini-shell-bar { display: flex; gap: 8px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+    .mini-shell-bar span { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,.16); }
+    .shell-line { display:flex; justify-content:space-between; gap:14px; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.08); }
+    .shell-line:last-child { border-bottom:0; }
+    .shell-line strong { color: var(--white); }
+    .shell-line span { color: #d4d4d8; text-align:right; }
+    .tag-row { display:flex; flex-wrap:wrap; gap:10px; }
+    .tag { padding: 9px 12px; border-radius: 999px; border:1px solid var(--line); background: var(--panel-2); color:#d4d4d8; font-size:13px; }
+    .eyebrow { color: #a1a1aa; text-transform: uppercase; font-size: 12px; letter-spacing: .16em; margin-bottom: 12px; }
     .muted { color: var(--muted); }
-    .tag-row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .tag {
-      border: 1px solid var(--line); background: rgba(255,255,255,.03); color: #d4d4d8;
-      padding: 10px 14px; border-radius: 999px; font-size: 13px;
-    }
-    .status-strip {
-      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;
-    }
-    .status-strip.hidden { display: none; }
-    .status-chip {
-      padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line);
-      background: rgba(255,255,255,.03); color: #d4d4d8; font-size: 13px;
-    }
-    .live-indicator { color: var(--ok); font-weight: 700; }
-    .offline-indicator { color: var(--bad); font-weight: 700; }
-
-    .panel { padding: 24px; }
-    .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
-    .panel-badge {
-      color: #cbd5e1; border: 1px solid var(--line); background: rgba(255,255,255,.04);
-      border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 700;
-    }
-    .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-    .field { display: grid; gap: 8px; }
-    .field.wide { grid-column: 1 / -1; }
-    .group {
-      padding: 16px; border: 1px solid var(--line); background: rgba(0,0,0,.18); border-radius: 18px;
-    }
-    .group h4 { margin: 0 0 14px 0; font-size: 14px; letter-spacing: .04em; color: #e4e4e7; }
-    label { font-size: 13px; color: var(--muted); }
-    input, textarea, select {
-      width: 100%; border: 1px solid var(--line); background: rgba(0,0,0,.22); color: var(--white);
-      border-radius: 14px; padding: 13px 14px; font: inherit; outline: none;
-    }
-    textarea { min-height: 124px; resize: vertical; }
-    input:focus, textarea:focus, select:focus {
-      border-color: rgba(255,255,255,.28); box-shadow: 0 0 0 4px rgba(255,255,255,.04);
-    }
-    .panel-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
-    .note { font-size: 12px; color: #a1a1aa; }
-    .result {
-      margin-top: 16px; border-radius: 18px; padding: 18px;
-      border: 1px solid var(--warn-line); background: var(--warn-bg);
-    }
-    .result.ok { border-color: var(--ok-line); background: var(--ok-bg); }
-    .result.bad { border-color: var(--bad-line); background: var(--bad-bg); }
-    .result-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-    .result-status { font-size: 14px; font-weight: 700; color: #d4d4d8; }
-    .result-title { margin-top: 6px; font-size: 20px; font-weight: 700; }
-    .result-text { margin-top: 10px; font-size: 14px; color: #d4d4d8; }
-    .result-kv-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
-    .result-kv {
-      border: 1px solid var(--line); background: rgba(0,0,0,.20); border-radius: 14px; padding: 12px;
-    }
-    .result-kv.wide { grid-column: 1 / -1; }
-    .result-k { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #a1a1aa; margin-bottom: 8px; }
-    .result-v { font-size: 13px; color: #f4f4f5; word-break: break-word; }
-    .check-list { display: grid; gap: 8px; }
-    .check-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .check-row span:first-child { color: #d4d4d8; }
-    .check-row .status-yes { color: var(--ok); font-weight: 700; }
-    .check-row .status-no { color: var(--bad); font-weight: 700; }
-    .result.compact { padding: 14px 18px; }
-    .result.compact .result-kv-grid { display: none; }
-    .list {
-      display: grid; gap: 10px; margin-top: 14px;
-    }
-    .list-item {
-      display: flex; gap: 12px; padding: 14px; border: 1px solid var(--line);
-      background: rgba(0,0,0,.20); border-radius: 16px; color: #d4d4d8;
-    }
-    .list-item strong { color: var(--white); }
-    .demo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
-    .demo-btn { width: 100%; }
-    .flow-grid { display: grid; gap: 16px; margin-top: 26px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .flow-step { padding: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.03); border-radius: 20px; }
-    .flow-step-num { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #a1a1aa; margin-bottom: 8px; }
-    .flow-step h3 { font-size: 20px; margin-bottom: 8px; }
-    .flow-step p { color: #d4d4d8; font-size: 14px; }
-    .code-shell { margin-top: 18px; border: 1px solid var(--line); border-radius: 18px; background: rgba(0,0,0,.22); overflow: hidden; }
-    .code-shell summary { cursor: pointer; list-style: none; padding: 16px 18px; font-size: 14px; font-weight: 700; color: #e4e4e7; }
-    .code-shell summary::-webkit-details-marker { display: none; }
-    .code-shell pre { margin: 0; padding: 0 18px 18px 18px; white-space: pre-wrap; color:#d4d4d8; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; line-height:1.7; }
-    .proof-grid { display: grid; gap: 24px; grid-template-columns: 1.05fr .95fr; margin-top: 32px; }
-    .proof-record { border: 1px solid var(--line); border-radius: 22px; background: rgba(0,0,0,.22); padding: 22px; }
-    .proof-row { display: flex; justify-content: space-between; gap: 18px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.08); }
-    .proof-row:last-child { border-bottom: 0; }
-    .proof-label { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #a1a1aa; }
-    .proof-value { font-size: 14px; color: #f4f4f5; text-align: right; }
-    .artifact-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
-    .mini-note { font-size: 12px; color: #8b8b95; margin-top: 12px; }
-    .ops-grid { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 28px; }
-    .ops-card { padding: 20px; border: 1px solid var(--line); border-radius: 20px; background: rgba(255,255,255,.03); }
-    .ops-card h3 { font-size: 20px; margin-bottom: 8px; }
-    .ops-card p { color: #d4d4d8; font-size: 14px; }
-
-    .scenario-grid { display: grid; gap: 16px; margin-top: 32px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .scenario-card {
-      padding: 20px; border: 1px solid var(--line); border-radius: 20px;
-      background: rgba(255,255,255,.03);
-    }
-    .scenario-top { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 12px; }
-    .scenario-type {
-      font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #a1a1aa;
-    }
-    .scenario-badge {
-      display:inline-flex; align-items:center; justify-content:center;
-      min-width: 96px; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
-      border: 1px solid var(--line); background: rgba(255,255,255,.04); color: #e4e4e7;
-    }
-    .scenario-badge.safe { color: var(--ok); border-color: var(--ok-line); background: var(--ok-bg); }
-    .scenario-badge.block { color: var(--bad); border-color: var(--bad-line); background: var(--bad-bg); }
-    .scenario-badge.reverify,
-    .scenario-badge.testfirst,
-    .scenario-badge.review { color: var(--warn); border-color: var(--warn-line); background: var(--warn-bg); }
-    .scenario-card h3 { font-size: 20px; margin-bottom: 10px; }
-    .scenario-card p { color: #d4d4d8; font-size: 14px; margin-bottom: 14px; }
-    .scenario-meta { display: grid; gap: 10px; }
-    .scenario-meta-row {
-      display:flex; gap:12px; padding: 12px; border: 1px solid var(--line);
-      background: rgba(0,0,0,.18); border-radius: 14px; color: #d4d4d8;
-    }
-    .scenario-meta-row strong { min-width: 88px; color: var(--white); }
-    .soft-section {
-      border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--panel-2);
-    }
+    .matrix-grid, .class-grid, .example-grid { display:grid; gap: 16px; margin-top: 28px; }
+    .matrix-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .class-grid, .example-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .policy-card, .class-card, .example-card, .notes-card { padding: 22px; border:1px solid var(--line); border-radius: 20px; background: rgba(255,255,255,.03); }
+    .badge { display:inline-flex; align-items:center; justify-content:center; min-width:96px; padding:8px 12px; border-radius:999px; font-size:12px; font-weight:700; border:1px solid var(--line); background: rgba(255,255,255,.04); color:#e4e4e7; }
+    .badge.safe { color: var(--ok); border-color: var(--ok-line); background: var(--ok-bg); }
+    .badge.block { color: var(--bad); border-color: var(--bad-line); background: var(--bad-bg); }
+    .badge.reverify, .badge.testfirst, .badge.review, .badge.notfound { color: var(--warn); border-color: var(--warn-line); background: var(--warn-bg); }
+    .policy-top, .class-top, .example-top { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 14px; }
+    .policy-top .muted, .class-top .muted, .example-top .muted { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+    .bullets { display:grid; gap:12px; margin-top: 14px; }
+    .bullet { padding: 12px 14px; border-radius: 14px; background: rgba(0,0,0,.18); border:1px solid rgba(255,255,255,.06); }
+    .bullet strong { color: var(--white); display:block; margin-bottom:4px; }
+    .example-meta { display:grid; gap:10px; margin-top: 14px; }
+    .meta-row { display:flex; justify-content:space-between; gap:12px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.08); }
+    .meta-row:last-child { border-bottom:0; }
+    .meta-row strong { color: var(--white); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+    .meta-row span { color:#d4d4d8; text-align:right; font-size:14px; }
+    .soft-section { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--panel-2); }
+    .notes-grid { display:grid; gap:16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .footer { border-top: 1px solid var(--line); padding: 26px 0; color: #71717a; font-size: 14px; }
     .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; }
     .footer-links { display: flex; gap: 18px; flex-wrap: wrap; }
     .footer-links a:hover { color: #d4d4d8; }
-
     @media (max-width: 1020px) {
-      nav { display: none; }
-      .hero-grid, .two-col, .three-col, .flow-grid, .demo-grid, .proof-grid, .ops-grid { grid-template-columns: 1fr; }
-      .hero-grid { min-height: auto; }
+      nav { display:none; }
+      .hero-grid, .matrix-grid, .class-grid, .example-grid, .notes-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 720px) {
-      .field-grid, .result-kv-grid { grid-template-columns: 1fr; }
       .section { padding: 68px 0; }
-      .panel-actions, .btn-row { flex-direction: column; align-items: stretch; }
+      .btn-row { flex-direction: column; align-items: stretch; }
       .btn { width: 100%; }
-      .result-top { flex-direction: column; }
+      .shell-line, .meta-row { flex-direction: column; }
+      .shell-line span, .meta-row span { text-align: left; }
     }
-  
-    .proof-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
-    .notes-box { border:1px solid var(--line); background: var(--panel-2); border-radius: 18px; padding: 16px 18px; }
-    .points { display:grid; gap:14px; }
-    .point { display:grid; gap:6px; padding:14px 0; border-bottom:1px solid var(--line); }
-    .point:last-child { border-bottom:none; padding-bottom:0; }
-    .point strong { font-size:15px; }
-    .point span { color: var(--muted); }
-    .mini-pill { display:inline-flex; align-items:center; justify-content:center; min-width:36px; height:36px; padding:0 12px; border-radius:999px; border:1px solid var(--line); background: var(--panel-2); font-weight:700; }
-
   </style>
 </head>
-
 <body>
   <header class="topbar">
     <div class="container topbar-inner">
@@ -292,196 +138,238 @@
         <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
         <div>
           <div class="brand-title">PayeeProof</div>
-          <div class="brand-sub">Pilot flow and API sample</div>
+          <div class="brand-sub">Verification policy examples</div>
         </div>
       </div>
       <nav>
         <a href="#overview">Overview</a>
-        <a href="#flow">Flow</a>
-        <a href="#inputs">Inputs</a>
-        <a href="#outputs">Outputs</a>
-        <a href="#api">Endpoints</a>
-        <a href="./policy-examples.html">Policy examples</a>
-        <a href="#contact">Pilot</a>
+        <a href="#verdicts">Verdicts</a>
+        <a href="#classes">Destination classes</a>
+        <a href="#examples">Examples</a>
+        <a href="#notes">Review notes</a>
+        <a href="./trust-security.html">Trust &amp; security</a>
+        <a href="./technical-sample.html">Technical sample</a>
+        <a href="./pilot-flow.html">Pilot flow</a>
       </nav>
       <div class="btn-row">
         <a class="btn btn-secondary" href="./index.html">Back to main site</a>
-        <a class="btn btn-primary" href="#contact">Request pilot</a>
+        <a class="btn btn-primary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20request">Request pilot</a>
       </div>
     </div>
   </header>
 
-<main>
+  <main>
     <section class="hero" id="overview">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <div class="pill">Pilot review page · workflow first</div>
-          <h1>How a PayeeProof pilot fits into a payout workflow without rebuilding the stack.</h1>
-          <p class="lead">This page is for teams that want one practical answer: what goes into a pilot review, what PayeeProof returns, and how a verification result can slot into payout, risk, support, or treasury operations.</p>
+          <div class="pill">Buyer-safe policy layer · pilot review ready</div>
+          <h1>How PayeeProof turns ambiguous payout checks into clear operator decisions.</h1>
+          <p class="lead">This page is not a raw API dump. It shows the practical decision layer: what each verdict means, how destination types are classified, and how an ops team can read a structured verification record without translating blockchain jargon first.</p>
           <div class="btn-row">
-            <a class="btn btn-primary" href="#flow">See pilot flow</a>
+            <a class="btn btn-primary" href="#examples">See policy examples</a>
             <a class="btn btn-secondary" href="./sample-verification-record.html">Open sample record</a>
-            <a class="btn btn-ghost" href="#api">See endpoint sample</a>
-            <a class="btn btn-ghost" href="./policy-examples.html">Open policy examples</a>
+            <a class="btn btn-ghost" href="./technical-sample.html">Open technical sample</a>
           </div>
           <div class="tag-row">
-            <div class="tag">Email-first pilot review</div>
-            <div class="tag">Pre-send + recovery</div>
-            <div class="tag">Readable record</div>
-            <div class="tag">Low-friction integration</div>
+            <div class="tag">SAFE · BLOCK · REVERIFY · TEST FIRST</div>
+            <div class="tag">Personal wallet / contract / exchange-like / bridge-router / unknown</div>
+            <div class="tag">Readable for ops and treasury</div>
+            <div class="tag">Pilot-ready review layer</div>
           </div>
         </div>
         <div class="hero-card card">
           <div class="mini-shell">
-            <div class="mini-shell-bar">
-              <span></span><span></span><span></span>
-            </div>
-            <div class="shell-line"><strong>Pilot entry</strong><span>Workflow brief or live use case</span></div>
-            <div class="shell-line"><strong>Main output</strong><span>SAFE · BLOCK · REVERIFY · TEST FIRST</span></div>
-            <div class="shell-line"><strong>Stored artifact</strong><span>Structured verification record</span></div>
-            <div class="shell-line"><strong>Operational users</strong><span>Ops, support, treasury, risk</span></div>
-            <div class="shell-line"><strong>Escalation model</strong><span>Humans only when needed</span></div>
-            <div class="shell-line"><strong>Review style</strong><span>Commercial main site + compact tech page</span></div>
+            <div class="mini-shell-bar"><span></span><span></span><span></span></div>
+            <div class="shell-line"><strong>Primary job</strong><span>Reduce bad approvals before funds move</span></div>
+            <div class="shell-line"><strong>Decision style</strong><span>Readable verdict + reason code + operator action</span></div>
+            <div class="shell-line"><strong>Destination classes</strong><span>Personal wallet, contract, exchange-like deposit, bridge-router, unknown</span></div>
+            <div class="shell-line"><strong>Workflow fit</strong><span>Ops review, payout approval, support escalation, audit trail</span></div>
+            <div class="shell-line"><strong>Human role</strong><span>Escalate only when the case is not clearly safe</span></div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section-sm" id="flow">
+    <section class="section" id="verdicts">
       <div class="container">
-        <div class="eyebrow">Pilot flow</div>
-        <h2>Four steps from intake to operational action.</h2>
-        <div class="flow-grid">
-          <div class="flow-step">
-            <div class="flow-step-num">Step 1</div>
-            <h3>Team sends context</h3>
-            <p>The team shares the payout or recovery use case, expected route, and the operational point where a verification answer is needed.</p>
-          </div>
-          <div class="flow-step">
-            <div class="flow-step-num">Step 2</div>
-            <h3>Live verification runs</h3>
-            <p>PayeeProof checks network, asset, address format, destination class, and transaction context where relevant.</p>
-          </div>
-          <div class="flow-step">
-            <div class="flow-step-num">Step 3</div>
-            <h3>Verdict + record returned</h3>
-            <p>The system returns a clear operational verdict plus a structured record suitable for workflow logs or support review.</p>
-          </div>
-          <div class="flow-step">
-            <div class="flow-step-num">Step 4</div>
-            <h3>Escalate only when needed</h3>
-            <p>Teams only spend manual time on BLOCK, REVERIFY, TEST FIRST, recovery, or partner-specific edge cases.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="inputs">
-      <div class="container">
-        <div class="eyebrow">What goes in</div>
-        <h2>Pilot inputs stay narrow and practical.</h2>
-        <div class="grid two-col" style="margin-top:28px; align-items:start;">
-          <div class="card" style="padding:28px;">
-            <h3 style="margin-top:0;">Pre-send review</h3>
-            <div class="points">
-              <div class="point"><strong>expected network</strong><span>The chain the payout is supposed to use.</span></div>
-              <div class="point"><strong>expected asset</strong><span>The token or stablecoin expected for the route.</span></div>
-              <div class="point"><strong>provided address</strong><span>The destination the user or workflow is trying to use.</span></div>
-              <div class="point"><strong>optional memo / tag</strong><span>Useful for destinations that require it.</span></div>
-              <div class="point"><strong>context fields</strong><span>Only if the team needs custom workflow routing or logging.</span></div>
+        <div class="eyebrow">Decision policy</div>
+        <h2>Verdicts are designed for operator action, not for technical theater.</h2>
+        <p class="lead">Each verdict is paired with a practical bias: approve, block, verify again, or require a small live test before releasing a larger payout.</p>
+        <div class="matrix-grid">
+          <div class="policy-card">
+            <div class="policy-top"><span class="muted">Low-friction approval</span><span class="badge safe">SAFE</span></div>
+            <h3>Approve when the target looks consistent with the intended destination.</h3>
+            <div class="bullets">
+              <div class="bullet"><strong>Typical trigger</strong>Wallet match, expected network, no obvious destination mismatch.</div>
+              <div class="bullet"><strong>Operator action</strong>Proceed with the payout using the verified target.</div>
+              <div class="bullet"><strong>Why it exists</strong>Teams need a positive approval state, not only warnings.</div>
             </div>
           </div>
-          <div class="card" style="padding:28px;">
-            <h3 style="margin-top:0;">Recovery review</h3>
-            <div class="points">
-              <div class="point"><strong>chain</strong><span>The chain where the transaction actually happened.</span></div>
-              <div class="point"><strong>tx hash</strong><span>The anchor for real post-error analysis.</span></div>
-              <div class="point"><strong>issue type</strong><span>Wrong network, wrong address, unsupported route, or similar.</span></div>
-              <div class="point"><strong>intended route</strong><span>Helpful when the user meant to send somewhere else.</span></div>
-              <div class="point"><strong>operator notes</strong><span>Optional, for support teams handling escalations.</span></div>
+          <div class="policy-card">
+            <div class="policy-top"><span class="muted">Hard stop</span><span class="badge block">BLOCK</span></div>
+            <h3>Block when the payout target is clearly wrong or invalid.</h3>
+            <div class="bullets">
+              <div class="bullet"><strong>Typical trigger</strong>Wrong network, invalid address, unsupported asset, obvious mismatch.</div>
+              <div class="bullet"><strong>Operator action</strong>Do not send. Reconfirm destination details from the source of truth.</div>
+              <div class="bullet"><strong>Why it exists</strong>Some cases do not need debate. They need prevention.</div>
+            </div>
+          </div>
+          <div class="policy-card">
+            <div class="policy-top"><span class="muted">Needs confirmation</span><span class="badge reverify">REVERIFY</span></div>
+            <h3>Reverify when the destination is reachable but context is incomplete or risky.</h3>
+            <div class="bullets">
+              <div class="bullet"><strong>Typical trigger</strong>Contract destination, unclear ownership, unusual routing path, incomplete context.</div>
+              <div class="bullet"><strong>Operator action</strong>Pause and obtain a fresh confirmation before release.</div>
+              <div class="bullet"><strong>Why it exists</strong>It catches cases that are not broken, but are not comfortable enough to approve blind.</div>
+            </div>
+          </div>
+          <div class="policy-card">
+            <div class="policy-top"><span class="muted">Caution with live funds</span><span class="badge testfirst">TEST FIRST</span></div>
+            <h3>Require a small live test when the destination may be valid but operationally sensitive.</h3>
+            <div class="bullets">
+              <div class="bullet"><strong>Typical trigger</strong>Exchange-like deposit address, bridge-router path, high-value first-time payout.</div>
+              <div class="bullet"><strong>Operator action</strong>Send a minimal test amount first, then confirm receipt before full release.</div>
+              <div class="bullet"><strong>Why it exists</strong>It converts uncertainty into a controlled operational step.</div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section-sm" id="outputs">
+    <section class="section soft-section" id="classes">
       <div class="container">
-        <div class="eyebrow">What comes back</div>
-        <h2>A verdict for action, plus a record for traceability.</h2>
-        <div class="proof-grid">
-          <div class="proof-record card">
-            <div class="proof-row"><div class="proof-label">verdict</div><div class="proof-value">SAFE / BLOCK / REVERIFY / TEST FIRST</div></div>
-            <div class="proof-row"><div class="proof-label">reason_code</div><div class="proof-value">Stable label for logs and policy routing</div></div>
-            <div class="proof-row"><div class="proof-label">confidence</div><div class="proof-value">Quick summary layer for nuanced cases</div></div>
-            <div class="proof-row"><div class="proof-label">destination type</div><div class="proof-value">Personal wallet / contract / exchange-like deposit / bridge-router / unknown</div></div>
-            <div class="proof-row"><div class="proof-label">why this verdict</div><div class="proof-value">Human-readable explanation for ops and support</div></div>
-            <div class="proof-row"><div class="proof-label">checked_at</div><div class="proof-value">Timestamp suitable for audit-style review</div></div>
+        <div class="eyebrow">Destination classification</div>
+        <h2>Destination classes should sound like operations, not like a blockchain forum.</h2>
+        <div class="class-grid">
+          <div class="class-card">
+            <div class="class-top"><span class="muted">Class</span><span class="badge safe">Personal wallet</span></div>
+            <p class="muted">A direct wallet destination controlled by an end user or treasury wallet with no obvious exchange-style deposit behavior.</p>
           </div>
-          <div class="card" style="padding:28px;">
-            <h3 style="margin-top:0;">Operational outcome</h3>
-            <div class="points">
-              <div class="point"><strong>SAFE</strong><span>Approve the payout when expected details and destination class align.</span></div>
-              <div class="point"><strong>BLOCK</strong><span>Stop before funds move when the route is clearly wrong or invalid.</span></div>
-              <div class="point"><strong>REVERIFY</strong><span>Pause and confirm when a human check is the safer next action.</span></div>
-              <div class="point"><strong>TEST FIRST</strong><span>Use a small test for exchange-like or route-sensitive destinations.</span></div>
+          <div class="class-card">
+            <div class="class-top"><span class="muted">Class</span><span class="badge reverify">Contract destination</span></div>
+            <p class="muted">A smart contract or program destination. It may be valid, but usually deserves a pause unless the contract is explicitly expected.</p>
+          </div>
+          <div class="class-card">
+            <div class="class-top"><span class="muted">Class</span><span class="badge testfirst">Exchange-like deposit</span></div>
+            <p class="muted">A destination that behaves like a custodial deposit endpoint. It may work, but teams should often test small before sending size.</p>
+          </div>
+          <div class="class-card">
+            <div class="class-top"><span class="muted">Class</span><span class="badge testfirst">Bridge-router</span></div>
+            <p class="muted">A routing or bridge-related destination where the operational path matters as much as the raw address itself.</p>
+          </div>
+          <div class="class-card">
+            <div class="class-top"><span class="muted">Class</span><span class="badge reverify">Unknown</span></div>
+            <p class="muted">The destination is syntactically valid, but context is insufficient for a comfortable approval.</p>
+          </div>
+          <div class="class-card">
+            <div class="class-top"><span class="muted">Class</span><span class="badge block">Invalid or mismatched</span></div>
+            <p class="muted">The address, network, or asset relationship does not support sending. This is a stop state, not a discussion state.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="examples">
+      <div class="container">
+        <div class="eyebrow">Structured examples</div>
+        <h2>Example records, written the way a payout team would actually consume them.</h2>
+        <div class="example-grid">
+          <div class="example-card">
+            <div class="example-top"><span class="muted">Example 01</span><span class="badge safe">SAFE</span></div>
+            <h3>Wallet match on intended network</h3>
+            <p class="muted">The payout target matches the expected wallet pattern and no major mismatch is detected.</p>
+            <div class="example-meta">
+              <div class="meta-row"><strong>Reason code</strong><span>OK</span></div>
+              <div class="meta-row"><strong>Confidence</strong><span>High</span></div>
+              <div class="meta-row"><strong>Destination class</strong><span>Personal wallet</span></div>
+              <div class="meta-row"><strong>Operator action</strong><span>Approve payout</span></div>
             </div>
-            <div class="artifact-links">
-              <a class="btn btn-secondary" href="./sample-verification-record.html">Open sample record</a>
-              <a class="btn btn-ghost" href="./sample-verification-record.json">Open sample JSON</a>
+          </div>
+          <div class="example-card">
+            <div class="example-top"><span class="muted">Example 02</span><span class="badge block">BLOCK</span></div>
+            <h3>Wrong network selected for a valid address</h3>
+            <p class="muted">The address may exist elsewhere, but the current chain context is inconsistent with the intended transfer.</p>
+            <div class="example-meta">
+              <div class="meta-row"><strong>Reason code</strong><span>NETWORK_MISMATCH</span></div>
+              <div class="meta-row"><strong>Confidence</strong><span>High</span></div>
+              <div class="meta-row"><strong>Destination class</strong><span>Invalid or mismatched</span></div>
+              <div class="meta-row"><strong>Operator action</strong><span>Stop and reconfirm network</span></div>
+            </div>
+          </div>
+          <div class="example-card">
+            <div class="example-top"><span class="muted">Example 03</span><span class="badge reverify">REVERIFY</span></div>
+            <h3>Contract destination instead of a direct wallet</h3>
+            <p class="muted">Funds may land somewhere real, but the destination type introduces enough ambiguity to require a fresh check.</p>
+            <div class="example-meta">
+              <div class="meta-row"><strong>Reason code</strong><span>DESTINATION_REVIEW</span></div>
+              <div class="meta-row"><strong>Confidence</strong><span>Medium</span></div>
+              <div class="meta-row"><strong>Destination class</strong><span>Contract destination</span></div>
+              <div class="meta-row"><strong>Operator action</strong><span>Pause and verify intent</span></div>
+            </div>
+          </div>
+          <div class="example-card">
+            <div class="example-top"><span class="muted">Example 04</span><span class="badge testfirst">TEST FIRST</span></div>
+            <h3>Exchange-like deposit destination for a first-time payout</h3>
+            <p class="muted">The endpoint may be legitimate, but operationally the safest move is to confirm with a small live send first.</p>
+            <div class="example-meta">
+              <div class="meta-row"><strong>Reason code</strong><span>TEST_AMOUNT_RECOMMENDED</span></div>
+              <div class="meta-row"><strong>Confidence</strong><span>Medium</span></div>
+              <div class="meta-row"><strong>Destination class</strong><span>Exchange-like deposit</span></div>
+              <div class="meta-row"><strong>Operator action</strong><span>Send test amount first</span></div>
+            </div>
+          </div>
+          <div class="example-card">
+            <div class="example-top"><span class="muted">Example 05</span><span class="badge block">BLOCK</span></div>
+            <h3>Invalid address or unsupported target format</h3>
+            <p class="muted">The target cannot safely receive the intended transfer in the current context.</p>
+            <div class="example-meta">
+              <div class="meta-row"><strong>Reason code</strong><span>INVALID_ADDRESS</span></div>
+              <div class="meta-row"><strong>Confidence</strong><span>High</span></div>
+              <div class="meta-row"><strong>Destination class</strong><span>Invalid or mismatched</span></div>
+              <div class="meta-row"><strong>Operator action</strong><span>Reject and re-collect details</span></div>
+            </div>
+          </div>
+          <div class="example-card">
+            <div class="example-top"><span class="muted">Example 06</span><span class="badge notfound">NOT FOUND</span></div>
+            <h3>Recovery review with no on-chain transaction found</h3>
+            <p class="muted">Recovery mode can only reason from a real transaction anchor. If the hash is absent, the team needs a valid one before analysis.</p>
+            <div class="example-meta">
+              <div class="meta-row"><strong>Reason code</strong><span>TX_NOT_FOUND</span></div>
+              <div class="meta-row"><strong>Confidence</strong><span>High</span></div>
+              <div class="meta-row"><strong>Destination class</strong><span>Unknown</span></div>
+              <div class="meta-row"><strong>Operator action</strong><span>Collect a valid tx hash</span></div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section" id="api">
+    <section class="section soft-section" id="notes">
       <div class="container">
-        <div class="eyebrow">Compact API view</div>
-        <h2>Enough for review, without turning this into developer docs.</h2>
-        <div class="grid two-col" style="margin-top:28px; align-items:start;">
-          <div class="card" style="padding:28px;">
-            <h3 style="margin-top:0;">Endpoints in the current pilot surface</h3>
-            <div class="points">
-              <div class="point"><strong>GET /health</strong><span>Service health and configured network visibility.</span></div>
-              <div class="point"><strong>POST /api/preflight-check</strong><span>Pre-send verification for payout approval workflows.</span></div>
-              <div class="point"><strong>POST /api/recovery-copilot</strong><span>Transaction-anchored post-error guidance.</span></div>
-              <div class="point"><strong>POST /pilot-request</strong><span>Pilot intake for commercial and technical review.</span></div>
-            </div>
+        <div class="eyebrow">Review notes</div>
+        <h2>What these examples are meant to communicate during a pilot review.</h2>
+        <div class="notes-grid">
+          <div class="notes-card">
+            <h3>Readable outside engineering</h3>
+            <p class="muted">Policy examples should help an ops or treasury lead understand the decision logic without needing to interpret raw chain terminology first.</p>
           </div>
-          <div class="card" style="padding:28px;">
-            <h3 style="margin-top:0;">Request shape examples</h3>
-            <details class="code-shell" open>
-              <summary>Open compact request examples</summary>
-<pre>POST /api/preflight-check
-{
-  "network": "ethereum",
-  "asset": "USDC",
-  "address": "0x1111111111111111111111111111111111111111"
-}
-
-POST /api/recovery-copilot
-{
-  "chain": "polygon",
-  "tx_hash": "0x..."
-}</pre>
-            </details>
+          <div class="notes-card">
+            <h3>Operational, not legalistic</h3>
+            <p class="muted">These examples describe practical handling states. They are designed to guide action in a workflow, not to pretend every payout can be reduced to a legal guarantee.</p>
+          </div>
+          <div class="notes-card">
+            <h3>Strict where needed</h3>
+            <p class="muted">Wrong-network or invalid-format cases should look unapologetically blocked. That sharpness is part of the value.</p>
+          </div>
+          <div class="notes-card">
+            <h3>Cautious where ambiguity remains</h3>
+            <p class="muted">When a destination may be valid but context is incomplete, PayeeProof should visibly prefer re-verification or a small test over false certainty.</p>
           </div>
         </div>
-      </div>
-    </section>
-
-    <section class="section-sm" id="contact">
-      <div class="container">
-        <div class="card" style="padding:32px;">
-          <div class="eyebrow">Pilot next step</div>
-          <h2 style="margin-top:8px;">Review the main site for positioning. Use this page when the team wants the workflow in plain English.</h2>
-          <p class="lead" style="margin-top:14px; max-width:900px;">A clean review path is simple: main site for the commercial story, sample record for trust, technical sample for compact field logic, and this page for the actual pilot flow.</p>
-          <div class="btn-row" style="margin-top:18px;">
-            <a class="btn btn-primary" href="./index.html#contact">Request pilot on main site</a>
-            <a class="btn btn-secondary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20review">Email hello@payeeproof.com</a>
-            <a class="btn btn-ghost" href="./technical-sample.html">Open technical sample</a>
-          </div>
+        <div class="btn-row" style="margin-top:28px;">
+          <a class="btn btn-primary" href="./sample-verification-record.html">Open public sample record</a>
+          <a class="btn btn-secondary" href="./pilot-flow.html">Open pilot flow</a>
+          <a class="btn btn-ghost" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20request">Request pilot by email</a>
         </div>
       </div>
     </section>
@@ -495,12 +383,14 @@ POST /api/recovery-copilot
       </div>
       <div class="footer-links">
         <a href="#overview">Overview</a>
-        <a href="#flow">Flow</a>
-        <a href="#inputs">Inputs</a>
-        <a href="#outputs">Outputs</a>
-        <a href="#api">Endpoints</a>
+        <a href="#verdicts">Verdicts</a>
+        <a href="#classes">Destination classes</a>
+        <a href="#examples">Examples</a>
+        <a href="#notes">Review notes</a>
+        <a href="./trust-security.html">Trust &amp; security</a>
+        <a href="./trust-security.html">Trust &amp; security</a>
         <a href="./technical-sample.html">Technical sample</a>
-        <a href="./policy-examples.html">Policy examples</a>
+        <a href="./pilot-flow.html">Pilot flow</a>
         <a href="./index.html">Main site</a>
       </div>
     </div>
