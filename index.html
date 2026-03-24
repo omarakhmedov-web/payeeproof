@@ -224,6 +224,34 @@
     .ops-card { padding: 20px; border: 1px solid var(--line); border-radius: 20px; background: rgba(255,255,255,.03); }
     .ops-card h3 { font-size: 20px; margin-bottom: 8px; }
     .ops-card p { color: #d4d4d8; font-size: 14px; }
+
+    .scenario-grid { display: grid; gap: 16px; margin-top: 32px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .scenario-card {
+      padding: 20px; border: 1px solid var(--line); border-radius: 20px;
+      background: rgba(255,255,255,.03);
+    }
+    .scenario-top { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 12px; }
+    .scenario-type {
+      font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #a1a1aa;
+    }
+    .scenario-badge {
+      display:inline-flex; align-items:center; justify-content:center;
+      min-width: 96px; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      border: 1px solid var(--line); background: rgba(255,255,255,.04); color: #e4e4e7;
+    }
+    .scenario-badge.safe { color: var(--ok); border-color: var(--ok-line); background: var(--ok-bg); }
+    .scenario-badge.block { color: var(--bad); border-color: var(--bad-line); background: var(--bad-bg); }
+    .scenario-badge.reverify,
+    .scenario-badge.testfirst,
+    .scenario-badge.review { color: var(--warn); border-color: var(--warn-line); background: var(--warn-bg); }
+    .scenario-card h3 { font-size: 20px; margin-bottom: 10px; }
+    .scenario-card p { color: #d4d4d8; font-size: 14px; margin-bottom: 14px; }
+    .scenario-meta { display: grid; gap: 10px; }
+    .scenario-meta-row {
+      display:flex; gap:12px; padding: 12px; border: 1px solid var(--line);
+      background: rgba(0,0,0,.18); border-radius: 14px; color: #d4d4d8;
+    }
+    .scenario-meta-row strong { min-width: 88px; color: var(--white); }
     .soft-section {
       border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--panel-2);
     }
@@ -261,7 +289,10 @@
         <a href="#recovery">Recovery</a>
         <a href="#security">Security</a>
         <a href="#record">Record</a>
+        <a href="#scenarios">Scenarios</a>
         <a href="#integration">Integration</a>
+        <a href="./technical-sample.html">Technical sample</a>
+        <a href="./pilot-flow.html">Pilot flow</a>
         <a href="#contact">Pilot</a>
       </nav>
       <div class="btn-row">
@@ -449,18 +480,18 @@
             <button class="btn btn-primary" id="pfRunBtn" type="button">Run live check</button>
           </div>
           <details class="code-shell" style="margin-top:16px;">
-            <summary>Open example scenarios</summary>
+            <summary>Open pilot review scenarios (optional)</summary>
             <div style="padding: 0 18px 18px 18px;">
-              <div class="note" style="margin:0 0 14px 0;">Examples stay available for inspection, but are kept out of the main product path.</div>
+              <div class="note" style="margin:0 0 14px 0;">These review scenarios stay available for inspection, but remain outside the main product path.</div>
               <div class="panel-actions" style="margin-top:0;">
-                <button class="btn btn-secondary" id="pfHappyBtn" type="button">Run wallet-match example</button>
-                <button class="btn btn-ghost" id="pfMismatchBtn" type="button">Run mismatch example</button>
+                <button class="btn btn-secondary" id="pfHappyBtn" type="button">Wallet match</button>
+                <button class="btn btn-ghost" id="pfMismatchBtn" type="button">Network mismatch</button>
               </div>
               <div class="demo-grid">
-                <button class="btn btn-ghost demo-btn" id="pfContractDemoBtn" type="button">Show contract destination</button>
-                <button class="btn btn-ghost demo-btn" id="pfExchangeDemoBtn" type="button">Show exchange-like deposit</button>
-                <button class="btn btn-ghost demo-btn" id="pfInvalidDemoBtn" type="button">Show invalid address</button>
-                <button class="btn btn-ghost demo-btn" id="pfUnsupportedDemoBtn" type="button">Show unsupported setup</button>
+                <button class="btn btn-ghost demo-btn" id="pfContractDemoBtn" type="button">Contract destination</button>
+                <button class="btn btn-ghost demo-btn" id="pfExchangeDemoBtn" type="button">Exchange-like deposit</button>
+                <button class="btn btn-ghost demo-btn" id="pfInvalidDemoBtn" type="button">Invalid address</button>
+                <button class="btn btn-ghost demo-btn" id="pfUnsupportedDemoBtn" type="button">Unsupported setup</button>
               </div>
             </div>
           </details>
@@ -471,7 +502,7 @@
               <div>
                 <div class="result-status" id="pfResultStatus">WAITING</div>
                 <div class="result-title" id="pfResultTitle">No verification record yet.</div>
-                <div class="result-text" id="pfResultText">Run a live check or load a sample scenario to generate a proof-style result card.</div>
+                <div class="result-text" id="pfResultText">Run a live check to generate a proof-style result card. Pilot review scenarios stay available below if you need examples.</div>
               </div>
               <div class="panel-badge" id="pfReason">READY</div>
             </div>
@@ -480,7 +511,7 @@
               <div class="result-kv"><div class="result-k">Checked at</div><div class="result-v" id="pfCheckedAt">—</div></div>
               <div class="result-kv"><div class="result-k">Confidence</div><div class="result-v" id="pfConfidence">—</div></div>
               <div class="result-kv"><div class="result-k">Reason code</div><div class="result-v" id="pfReasonCode">—</div></div>
-              <div class="result-kv wide"><div class="result-k">Why this verdict</div><div class="result-v" id="pfWhy">Waiting for a live or sample result.</div></div>
+              <div class="result-kv wide"><div class="result-k">Why this verdict</div><div class="result-v" id="pfWhy">Waiting for a live or pilot-review result.</div></div>
               <div class="result-kv"><div class="result-k">Destination class</div><div class="result-v" id="pfDestType">Unknown</div></div>
               <div class="result-kv"><div class="result-k">Risk flags</div><div class="result-v" id="pfFlags">—</div></div>
               <div class="result-kv wide"><div class="result-k">Checks</div><div class="result-v check-list" id="pfChecks"><div class="check-row"><span>Live verification</span><span>Waiting</span></div></div></div>
@@ -592,7 +623,7 @@
               <div class="result-kv"><div class="result-k">Checked at</div><div class="result-v" id="rcCheckedAt">—</div></div>
               <div class="result-kv"><div class="result-k">Confidence</div><div class="result-v" id="rcConfidence">—</div></div>
               <div class="result-kv"><div class="result-k">Reason code</div><div class="result-v" id="rcReasonCode">—</div></div>
-              <div class="result-kv wide"><div class="result-k">Why this result</div><div class="result-v" id="rcWhy">Waiting for a live or sample result.</div></div>
+              <div class="result-kv wide"><div class="result-k">Why this result</div><div class="result-v" id="rcWhy">Waiting for a live or pilot-review result.</div></div>
               <div class="result-kv wide"><div class="result-k">Recommended next actions</div><div class="result-v" id="rcNextActions">—</div></div>
             </div>
           </div>
@@ -667,10 +698,10 @@
             </div>
           </div>
           <div class="card panel" style="background: rgba(0,0,0,.22);">
-            <h3 style="font-size:24px; margin-bottom:14px;">Technical sample for pilot reviews</h3>
-            <p class="muted">The main page stays commercial. This section is only for teams that want to review a compact technical sample during pilot evaluation.</p>
+            <h3 style="font-size:24px; margin-bottom:14px;">Technical review (optional)</h3>
+            <p class="muted">The main page stays commercial. This compact sample is only for teams that want a quick technical review during pilot evaluation. A separate pilot-flow page is also available for teams that need a clearer review path.</p>
             <details class="code-shell">
-              <summary>Open technical sample</summary>
+              <summary>Open compact technical sample</summary>
 <pre>POST /api/preflight-check
 {
   "expected": {
@@ -693,7 +724,100 @@ POST /api/recovery-copilot
   "intended_chain": "ethereum"
 }</pre>
             </details>
+            <div class="artifact-links" style="margin-top:18px;">
+              <a class="btn btn-secondary" href="./technical-sample.html">Open technical sample</a>
+              <a class="btn btn-ghost" href="./pilot-flow.html">Open pilot flow</a>
+            </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="scenarios" class="section">
+      <div class="container">
+        <div class="eyebrow">Verification scenarios</div>
+        <h2>Common outcomes, shown in one operational language.</h2>
+        <p class="lead" style="max-width:900px; margin-top:14px;">These are the scenarios a payout or support team usually cares about first: match, mismatch, risky destination classes, and the recovery cases that need escalation instead of guesswork.</p>
+
+        <div class="scenario-grid">
+          <article class="scenario-card card">
+            <div class="scenario-top">
+              <div class="scenario-type">Pre-Send</div>
+              <div class="scenario-badge safe">SAFE</div>
+            </div>
+            <h3>Wallet details match</h3>
+            <p>Network, asset, and destination align, and the recipient looks like a personal wallet rather than an ambiguous service endpoint.</p>
+            <div class="scenario-meta">
+              <div class="scenario-meta-row"><strong>Reason</strong><span>Clean match with no destination warning.</span></div>
+              <div class="scenario-meta-row"><strong>Ops action</strong><span>Approve payout and keep the record in the workflow log.</span></div>
+            </div>
+          </article>
+
+          <article class="scenario-card card">
+            <div class="scenario-top">
+              <div class="scenario-type">Pre-Send</div>
+              <div class="scenario-badge block">BLOCK</div>
+            </div>
+            <h3>Wrong network or invalid address</h3>
+            <p>The safest answer is to stop immediately when the address format fails or the provided network does not match the intended route.</p>
+            <div class="scenario-meta">
+              <div class="scenario-meta-row"><strong>Reason</strong><span>Mismatch confirmed before funds move.</span></div>
+              <div class="scenario-meta-row"><strong>Ops action</strong><span>Block the payout and re-confirm the instructions.</span></div>
+            </div>
+          </article>
+
+          <article class="scenario-card card">
+            <div class="scenario-top">
+              <div class="scenario-type">Pre-Send</div>
+              <div class="scenario-badge testfirst">TEST FIRST</div>
+            </div>
+            <h3>Exchange-like deposit destination</h3>
+            <p>Some addresses behave more like service endpoints than self-custody wallets. A small test transfer is often safer than immediate full-size approval.</p>
+            <div class="scenario-meta">
+              <div class="scenario-meta-row"><strong>Reason</strong><span>Destination type suggests platform-style handling.</span></div>
+              <div class="scenario-meta-row"><strong>Ops action</strong><span>Use a test transfer or direct recipient confirmation first.</span></div>
+            </div>
+          </article>
+
+          <article class="scenario-card card">
+            <div class="scenario-top">
+              <div class="scenario-type">Pre-Send</div>
+              <div class="scenario-badge reverify">REVERIFY</div>
+            </div>
+            <h3>Contract or app destination</h3>
+            <p>Funds may technically arrive, but recoverability and ownership depend on contract logic, permissions, and whether the destination was truly intended.</p>
+            <div class="scenario-meta">
+              <div class="scenario-meta-row"><strong>Reason</strong><span>Destination is not a plain personal wallet.</span></div>
+              <div class="scenario-meta-row"><strong>Ops action</strong><span>Re-verify the exact receiver and only proceed with explicit confirmation.</span></div>
+            </div>
+          </article>
+
+          <article class="scenario-card card">
+            <div class="scenario-top">
+              <div class="scenario-type">Recovery</div>
+              <div class="scenario-badge block">NOT FOUND</div>
+            </div>
+            <h3>Transaction hash not found</h3>
+            <p>When the lookup cannot find the transaction on the selected network, the right move is to verify the hash and chain first instead of improvising recovery steps.</p>
+            <div class="scenario-meta">
+              <div class="scenario-meta-row"><strong>Reason</strong><span>Nothing was found on the chosen network or the hash was entered incorrectly.</span></div>
+              <div class="scenario-meta-row"><strong>Ops action</strong><span>Confirm the hash, network, and source wallet before escalation.</span></div>
+            </div>
+          </article>
+
+          <article class="scenario-card card">
+            <div class="scenario-top">
+              <div class="scenario-type">Recovery</div>
+              <div class="scenario-badge review">MANUAL REVIEW</div>
+            </div>
+            <h3>Missing memo or ambiguous recipient</h3>
+            <p>Some failures are not solved by chain data alone. Service-side records, support workflows, or destination-owner confirmation may still be required.</p>
+            <div class="scenario-meta">
+              <div class="scenario-meta-row"><strong>Reason</strong><span>Recovery depends on off-chain process or recipient-side handling.</span></div>
+              <div class="scenario-meta-row"><strong>Ops action</strong><span>Escalate to support with the transaction record and the intended destination details.</span></div>
+            </div>
+          </article>
         </div>
       </div>
     </section>
@@ -703,24 +827,25 @@ POST /api/recovery-copilot
         <div>
           <div class="eyebrow">Pilot</div>
           <h2>Request a pilot</h2>
-          <p class="lead" style="max-width:760px; margin-top:14px;">Use the form to describe the payout or recovery flow you want to protect. Pilot intake is email-first, and an introductory call is not required to start the fit review.</p>
+          <p class="lead" style="max-width:760px; margin-top:14px;">Use the form to describe the payout or recovery flow you want to protect. Pilot intake is email-first, and an introductory call is not required to start a fit review.</p>
           <div class="list" style="margin-top:24px;">
             <div class="list-item"><strong>Best fit</strong><span>Treasury teams, payroll flows, payout ops, exchanges, marketplaces, OTC desks.</span></div>
-            <div class="list-item"><strong>What you get</strong><span>A practical fit check, a next step for pilot scope, and a clear email thread to continue from.</span></div>
+            <div class="list-item"><strong>What to include</strong><span>Networks, assets, destination types, where mistakes happen today, and what decision your team needs before approval.</span></div>
+            <div class="list-item"><strong>Pilot review output</strong><span>A practical fit check, an initial pilot direction, and a clear email thread for next steps.</span></div>
             <div class="list-item"><strong>Business contact</strong><span><span style="text-decoration:underline;">hello@payeeproof.com</span></span></div>
           </div>
         </div>
 
         <div class="card panel">
           <h3 style="font-size:24px; margin-bottom:14px;">Request pilot</h3>
-          <p class="muted" style="margin-bottom:18px;">Work email required.</p>
+          <p class="muted" style="margin-bottom:18px;">Work email required. Include enough context for a serious fit review, not just a one-line intro.</p>
           <form class="grid" id="pilotForm" novalidate>
             <div class="field-grid">
               <div class="field"><input id="pilotName" placeholder="Full name" autocomplete="name" /></div>
               <div class="field"><input id="pilotCompany" placeholder="Company / team" autocomplete="organization" /></div>
               <div class="field"><input id="pilotEmail" type="email" placeholder="Work email" autocomplete="email" /></div>
               <div class="field"><input id="pilotVolume" placeholder="Monthly payout volume (optional)" /></div>
-              <div class="field wide"><textarea id="pilotNotes" placeholder="What payout or recovery flow do you want to protect?"></textarea></div>
+              <div class="field wide"><textarea id="pilotNotes" placeholder="Describe the flow, the networks/assets involved, where mistakes happen today, and what decision PayeeProof should return before approval."></textarea></div>
             </div>
             <div class="panel-actions">
               <button class="btn btn-primary" id="pilotSubmitBtn" type="submit">Request pilot</button>
@@ -745,8 +870,11 @@ POST /api/recovery-copilot
         <a href="#recovery">Recovery</a>
         <a href="#security">Security</a>
         <a href="#record">Record</a>
+        <a href="#scenarios">Scenarios</a>
         <a href="#integration">Integration</a>
         <a href="#contact">Pilot</a>
+        <a href="./technical-sample.html">Technical sample</a>
+        <a href="./pilot-flow.html">Pilot flow</a>
       </div>
     </div>
   </footer>
@@ -1062,13 +1190,13 @@ POST /api/recovery-copilot
       }
       el('pfResultStatus').textContent = 'READY';
       el('pfResultTitle').textContent = 'No verification record yet.';
-      el('pfResultText').textContent = 'Run a live check or load a sample scenario to generate a proof-style result card.';
+      el('pfResultText').textContent = 'Run a live check to generate a proof-style result card. Pilot review scenarios stay available below if you need examples.';
       el('pfReason').textContent = 'READY';
       el('pfNext').textContent = 'Run live check';
       el('pfCheckedAt').textContent = '—';
       el('pfConfidence').textContent = '—';
       el('pfReasonCode').textContent = '—';
-      el('pfWhy').textContent = 'Waiting for a live or sample result.';
+      el('pfWhy').textContent = 'Waiting for a live or pilot-review result.';
       el('pfDestType').textContent = 'Unknown';
       el('pfFlags').textContent = '—';
       el('pfChecks').innerHTML = '<div class="check-row"><span>Live verification</span><span>Not run yet</span></div>';
@@ -1361,7 +1489,7 @@ POST /api/recovery-copilot
       el('rcCheckedAt').textContent = '—';
       el('rcConfidence').textContent = '—';
       el('rcReasonCode').textContent = '—';
-      el('rcWhy').textContent = 'Waiting for a live or sample result.';
+      el('rcWhy').textContent = 'Waiting for a live or pilot-review result.';
       el('rcNextActions').textContent = '—';
       el('rcState').textContent = 'Cleared.';
     }
