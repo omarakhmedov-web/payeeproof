@@ -289,10 +289,6 @@
             <div class="tag">Proof-style result cards</div>
             <div class="tag">Six networks live</div>
           </div>
-          <div class="status-strip hidden" id="statusStrip">
-            <div class="status-chip" id="apiStatus">API status</div>
-            <div class="status-chip" id="apiConfigured">Network checks</div>
-          </div>
         </div>
 
         <div class="card panel">
@@ -361,7 +357,7 @@
             <div class="proof-row"><div class="proof-label">Confidence</div><div class="proof-value">High</div></div>
             <div class="proof-row"><div class="proof-label">Destination class</div><div class="proof-value">Personal wallet</div></div>
             <div class="proof-row"><div class="proof-label">Source</div><div class="proof-value">Live RPC lookup</div></div>
-            <div class="proof-row"><div class="proof-label">Next action</div><div class="proof-value">SAFE_TO_PROCEED</div></div>
+            <div class="proof-row"><div class="proof-label">Next action</div><div class="proof-value">Approve payout</div></div>
             <div class="proof-row"><div class="proof-label">Why this verdict</div><div class="proof-value">Network, asset, address, and memo checks matched. The destination classified as a personal wallet.</div></div>
           </div>
         </div>
@@ -451,16 +447,23 @@
 
           <div class="panel-actions">
             <button class="btn btn-primary" id="pfRunBtn" type="button">Run live check</button>
-            <button class="btn btn-secondary" id="pfHappyBtn" type="button">Load wallet-match test</button>
-            <button class="btn btn-ghost" id="pfMismatchBtn" type="button">Load mismatch test</button>
           </div>
-          <div class="note" style="margin-top:10px;">Sample scenario library. Some buttons run live checks, while the edge-case buttons below render local sample results so teams can inspect the handling immediately.</div>
-          <div class="demo-grid">
-            <button class="btn btn-ghost demo-btn" id="pfContractDemoBtn" type="button">Load contract destination</button>
-            <button class="btn btn-ghost demo-btn" id="pfExchangeDemoBtn" type="button">Load exchange-like deposit</button>
-            <button class="btn btn-ghost demo-btn" id="pfInvalidDemoBtn" type="button">Load invalid address</button>
-            <button class="btn btn-ghost demo-btn" id="pfUnsupportedDemoBtn" type="button">Load unsupported asset / network</button>
-          </div>
+          <details class="code-shell" style="margin-top:16px;">
+            <summary>Open example scenarios</summary>
+            <div style="padding: 0 18px 18px 18px;">
+              <div class="note" style="margin:0 0 14px 0;">Examples stay available for inspection, but are kept out of the main product path.</div>
+              <div class="panel-actions" style="margin-top:0;">
+                <button class="btn btn-secondary" id="pfHappyBtn" type="button">Run wallet-match example</button>
+                <button class="btn btn-ghost" id="pfMismatchBtn" type="button">Run mismatch example</button>
+              </div>
+              <div class="demo-grid">
+                <button class="btn btn-ghost demo-btn" id="pfContractDemoBtn" type="button">Show contract destination</button>
+                <button class="btn btn-ghost demo-btn" id="pfExchangeDemoBtn" type="button">Show exchange-like deposit</button>
+                <button class="btn btn-ghost demo-btn" id="pfInvalidDemoBtn" type="button">Show invalid address</button>
+                <button class="btn btn-ghost demo-btn" id="pfUnsupportedDemoBtn" type="button">Show unsupported setup</button>
+              </div>
+            </div>
+          </details>
           <div class="note" id="pfState">Ready for a live check.</div>
 
           <div class="result" id="pfResult">
@@ -563,8 +566,14 @@
           <div class="panel-actions">
             <button class="btn btn-primary" id="rcRunBtn" type="button">Analyze transaction</button>
             <button class="btn btn-secondary" id="rcClearBtn" type="button">Clear</button>
-            <button class="btn btn-ghost" id="rcNotFoundDemoBtn" type="button">Load tx not found case</button>
           </div>
+          <details class="code-shell" style="margin-top:16px;">
+            <summary>Open recovery example</summary>
+            <div style="padding: 0 18px 18px 18px;">
+              <div class="note" style="margin:0 0 14px 0;">A single sample case stays available for review without turning the main page into a sandbox.</div>
+              <button class="btn btn-ghost" id="rcNotFoundDemoBtn" type="button">Show transaction-not-found example</button>
+            </div>
+          </details>
           <div class="note" id="rcState">Ready for recovery analysis.</div>
 
           <div class="result compact" id="rcResult">
@@ -658,10 +667,10 @@
             </div>
           </div>
           <div class="card panel" style="background: rgba(0,0,0,.22);">
-            <h3 style="font-size:24px; margin-bottom:14px;">Technical details, kept out of the hero</h3>
-            <p class="muted">The main page stays commercial. The payload examples are still here, but collapsed so the page reads like a product first.</p>
+            <h3 style="font-size:24px; margin-bottom:14px;">Technical sample for pilot reviews</h3>
+            <p class="muted">The main page stays commercial. This section is only for teams that want to review a compact technical sample during pilot evaluation.</p>
             <details class="code-shell">
-              <summary>View example payloads</summary>
+              <summary>Open technical sample</summary>
 <pre>POST /api/preflight-check
 {
   "expected": {
@@ -1233,20 +1242,6 @@ POST /api/recovery-copilot
       el('rcState').textContent = 'Sample scenario loaded. This is illustrative local data, not a live API response.';
     }
 
-    async function checkHealth() {
-      const strip = el('statusStrip');
-      try {
-        const data = await fetchJson(HEALTH_URL, { method: 'GET', timeoutMs: 8000 });
-        const configured = data.rpc_configured || {};
-        const ready = Object.entries(configured).filter(([, v]) => v).map(([k]) => formatNetworkName(k));
-        el('apiStatus').innerHTML = `API: <span class="live-indicator">live</span>`;
-        el('apiConfigured').textContent = ready.length ? `Networks live: ${ready.join(', ')}` : 'Networks live: not reported';
-        strip.classList.remove('hidden');
-      } catch (err) {
-        strip.classList.add('hidden');
-      }
-    }
-
     async function pfLoadHappy() {
       el('pfExpectedChain').value = 'ethereum';
       el('pfExpectedAsset').value = 'USDC';
@@ -1442,7 +1437,7 @@ POST /api/recovery-copilot
     el('pfInvalidDemoBtn').addEventListener('click', () => previewPreflightScenario('invalid'));
     el('pfUnsupportedDemoBtn').addEventListener('click', () => previewPreflightScenario('unsupported'));
     setPreflightPreviewState('ready');
-    el('pfState').textContent = 'Ready for a live verification or a sample scenario.';
+    el('pfState').textContent = 'Ready for a live verification.';
     el('rcRunBtn').addEventListener('click', runRecovery);
     el('rcClearBtn').addEventListener('click', clearRecovery);
     el('rcNotFoundDemoBtn').addEventListener('click', previewRecoveryNotFound);
@@ -1450,7 +1445,6 @@ POST /api/recovery-copilot
     el('pilotCopyBtn').addEventListener('click', copyPilot);
 
     clearRecovery();
-    checkHealth();
   </script>
 </body>
 </html>
