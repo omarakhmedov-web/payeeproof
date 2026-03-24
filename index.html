@@ -272,6 +272,35 @@
       .btn { width: 100%; }
       .result-top { flex-direction: column; }
     }
+
+    .detect-note {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      min-height: 20px;
+      font-size: 12px;
+      color: #a1a1aa;
+    }
+    .detect-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: #d4d4d8;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .detect-pill.ok { color: var(--ok); border-color: var(--ok-line); background: var(--ok-bg); }
+    .detect-pill.warn { color: var(--warn); border-color: var(--warn-line); background: var(--warn-bg); }
+    .detect-pill.bad { color: var(--bad); border-color: var(--bad-line); background: var(--bad-bg); }
+
   </style>
 </head>
 <body>
@@ -466,6 +495,7 @@
                 <div class="field wide">
                   <label for="pfExpectedAddress">Expected address</label>
                   <input id="pfExpectedAddress" placeholder="0x..." />
+                  <div class="detect-note" id="pfExpectedDetect"></div>
                 </div>
                 <div class="field wide">
                   <label for="pfExpectedMemo">Expected memo / tag (optional)</label>
@@ -498,6 +528,7 @@
                 <div class="field wide">
                   <label for="pfProvidedAddress">Provided address</label>
                   <input id="pfProvidedAddress" placeholder="0x..." />
+                  <div class="detect-note" id="pfProvidedDetect"></div>
                 </div>
                 <div class="field wide">
                   <label for="pfProvidedMemo">Provided memo / tag (optional)</label>
@@ -892,7 +923,7 @@ POST /api/recovery-copilot
             <div class="list-item"><strong>Best fit</strong><span>Treasury teams, payroll flows, payout ops, exchanges, marketplaces, OTC desks.</span></div>
             <div class="list-item"><strong>What to include</strong><span>Networks, assets, destination types, where mistakes happen today, and what decision your team needs before approval.</span></div>
             <div class="list-item"><strong>Pilot review output</strong><span>A practical fit check, an initial pilot direction, and a clear email thread for next steps.</span></div>
-            <div class="list-item"><strong>Contact channel</strong><span>Email-first intake for pilot review and next-step coordination.</span></div>
+            <div class="list-item"><strong>Business contact</strong><span><span style="text-decoration:underline;">hello@payeeproof.com</span></span></div>
           </div>
         </div>
 
@@ -909,7 +940,7 @@ POST /api/recovery-copilot
             </div>
             <div class="panel-actions">
               <button class="btn btn-primary" id="pilotSubmitBtn" type="submit">Request pilot</button>
-              <a class="btn btn-secondary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20request">Open email draft</a>
+              <a class="btn btn-secondary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20request">Email hello@payeeproof.com</a>
               <button class="btn btn-secondary" id="pilotCopyBtn" type="button">Copy request</button>
             </div>
             <div class="note" id="pilotState">Ready. Email-first pilot intake.</div>
@@ -1004,6 +1035,87 @@ POST /api/recovery-copilot
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+    }
+
+
+    const EVM_CHAINS = ['ethereum', 'arbitrum', 'base', 'polygon', 'bsc'];
+
+    function isHex(value) {
+      return /^[0-9a-fA-F]+$/.test(value || '');
+    }
+
+    function isLikelyEvmAddress(value) {
+      return /^0x[0-9a-fA-F]{40}$/.test(String(value || '').trim());
+    }
+
+    function isLikelyEvmTxHash(value) {
+      return /^0x[0-9a-fA-F]{64}$/.test(String(value || '').trim());
+    }
+
+    function isLikelySolanaAddress(value) {
+      const v = String(value || '').trim();
+      return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(v) && !/^0x/i.test(v);
+    }
+
+    function detectAddressFormat(value) {
+      const v = String(value || '').trim();
+      if (!v) return { kind: 'empty' };
+      if (isLikelyEvmAddress(v)) return { kind: 'evm', label: 'EVM address detected', tone: 'warn' };
+      if (isLikelySolanaAddress(v)) return { kind: 'solana', label: 'Solana address detected', tone: 'ok' };
+      if (/^0x/i.test(v)) return { kind: 'invalid_evm', label: 'Invalid EVM address format', tone: 'bad' };
+      return { kind: 'unknown', label: 'Address format not recognized yet', tone: 'bad' };
+    }
+
+    function detectionHtml(tone, label, note) {
+      const noteHtml = note ? `<span>${escapeHtml(note)}</span>` : '';
+      return `<span class="detect-pill ${tone || ''}">${escapeHtml(label)}</span>${noteHtml}`;
+    }
+
+    function updateAddressDetection(addressInputId, chainSelectId, hintId) {
+      const address = el(addressInputId).value.trim();
+      const chainSelect = el(chainSelectId);
+      const hint = el(hintId);
+      const detected = detectAddressFormat(address);
+      if (detected.kind === 'empty') {
+        hint.innerHTML = '';
+        return;
+      }
+      if (detected.kind === 'solana') {
+        if (chainSelect.value !== 'solana') chainSelect.value = 'solana';
+        hint.innerHTML = detectionHtml('ok', 'Solana address', 'Network set to Solana automatically.');
+        return;
+      }
+      if (detected.kind === 'evm') {
+        const note = EVM_CHAINS.includes(chainSelect.value)
+          ? 'Choose the exact EVM chain if needed. Format alone cannot prove Ethereum vs Arbitrum vs Base vs Polygon vs BNB Chain.'
+          : 'Pick one supported EVM chain. Format alone cannot prove the exact chain.';
+        hint.innerHTML = detectionHtml('warn', 'EVM address', note);
+        return;
+      }
+      if (detected.kind === 'invalid_evm') {
+        hint.innerHTML = detectionHtml('bad', 'Invalid EVM address', 'Expected 42 characters total: 0x + 40 hex characters.');
+        return;
+      }
+      hint.innerHTML = detectionHtml('bad', 'Unrecognized format', 'Check the address and selected network before sending.');
+    }
+
+    function bindAddressDetection(addressInputId, chainSelectId, hintId) {
+      const addressInput = el(addressInputId);
+      const chainSelect = el(chainSelectId);
+      const refresh = () => updateAddressDetection(addressInputId, chainSelectId, hintId);
+      addressInput.addEventListener('input', refresh);
+      addressInput.addEventListener('paste', () => setTimeout(refresh, 0));
+      chainSelect.addEventListener('change', refresh);
+      refresh();
+    }
+
+    function updateRecoveryHashHint() {
+      const hash = el('rcHash').value.trim();
+      const hint = el('rcState');
+      if (!hash) return;
+      if (isLikelyEvmTxHash(hash)) {
+        hint.textContent = 'EVM transaction hash detected. Select the exact network where the transfer was broadcast.';
+      }
     }
 
     function toDisplayTime(value) {
@@ -1446,6 +1558,8 @@ POST /api/recovery-copilot
       el('pfProvidedAsset').value = 'USDC';
       el('pfProvidedAddress').value = '0x1111111111111111111111111111111111111111';
       el('pfProvidedMemo').value = '';
+      updateAddressDetection('pfExpectedAddress', 'pfExpectedChain', 'pfExpectedDetect');
+      updateAddressDetection('pfProvidedAddress', 'pfProvidedChain', 'pfProvidedDetect');
       el('pfState').textContent = 'Wallet-match test loaded. Running live verification…';
       await runPreflight();
     }
@@ -1459,6 +1573,8 @@ POST /api/recovery-copilot
       el('pfProvidedAsset').value = 'USDT';
       el('pfProvidedAddress').value = '0x2222222222222222222222222222222222222222';
       el('pfProvidedMemo').value = '';
+      updateAddressDetection('pfExpectedAddress', 'pfExpectedChain', 'pfExpectedDetect');
+      updateAddressDetection('pfProvidedAddress', 'pfProvidedChain', 'pfProvidedDetect');
       el('pfState').textContent = 'Mismatch test loaded. Running live verification…';
       await runPreflight();
     }
