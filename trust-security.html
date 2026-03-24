@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PayeeProof — trust & security</title>
+  <meta name="description" content="Buyer-facing trust and security overview for PayeeProof: non-custodial design, no fund movement, scoped verification, pilot handling, and operator boundaries." />
+  <meta property="og:title" content="PayeeProof — trust & security" />
+  <meta property="og:description" content="A concise trust and security page explaining what PayeeProof checks, what it does not do, and how pilots are handled." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="./og-cover.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./payeeproof-favicon-192.png" />
+  <style>
+    :root {
+      --bg: #09090b;
+      --bg-soft: #111114;
+      --panel: rgba(255,255,255,0.04);
+      --panel-strong: rgba(255,255,255,0.07);
+      --text: #f4f4f5;
+      --muted: #b4b4bc;
+      --line: rgba(255,255,255,0.10);
+      --gold: #d4af37;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --shadow: 0 26px 70px rgba(0,0,0,0.35);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1200px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(212,175,55,0.16), transparent 26%),
+        linear-gradient(180deg, #09090b 0%, #0d0d11 46%, #09090b 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(calc(100% - 40px), var(--max)); margin: 0 auto; }
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: blur(16px);
+      background: rgba(9,9,11,0.74);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .topbar-inner {
+      min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; font-weight: 600; letter-spacing: 0.01em; }
+    .logo {
+      width: 42px; height: 42px; border-radius: 14px;
+      background: linear-gradient(145deg, rgba(212,175,55,0.24), rgba(255,255,255,0.06));
+      border: 1px solid rgba(212,175,55,0.32);
+      display: grid; place-items: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 18px 42px rgba(0,0,0,0.24);
+      overflow: hidden;
+    }
+    .logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    nav { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+    nav a, .footer a { color: var(--muted); font-size: 14px; transition: color .2s ease, opacity .2s ease; }
+    nav a:hover, .footer a:hover { color: var(--text); }
+    .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; min-height: 48px; padding: 0 18px; border-radius: 999px;
+      border: 1px solid var(--line); font-weight: 600; font-size: 15px;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(212,175,55,0.22), rgba(212,175,55,0.08));
+      border-color: rgba(212,175,55,0.40);
+    }
+    .btn-secondary { background: rgba(255,255,255,0.03); }
+    .hero { padding: 88px 0 44px; }
+    .hero-grid { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: 28px; align-items: stretch; }
+    .hero-copy h1 { margin: 14px 0 18px; font-size: clamp(40px, 5vw, 68px); line-height: 1.03; letter-spacing: -0.03em; }
+    .lead { color: var(--muted); font-size: 19px; max-width: 860px; }
+    .pill {
+      display: inline-flex; gap: 10px; align-items: center;
+      min-height: 36px; padding: 0 14px; border-radius: 999px;
+      border: 1px solid rgba(212,175,55,0.24);
+      background: rgba(212,175,55,0.10);
+      color: #f5deb0; font-size: 14px;
+    }
+    .hero-card, .card {
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      box-shadow: var(--shadow);
+    }
+    .hero-card { padding: 24px; }
+    .metric-list, .boundary-list, .faq-list { display: grid; gap: 14px; }
+    .metric {
+      padding: 16px 18px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+    .metric h3, .card h3 { margin: 0 0 8px; font-size: 18px; }
+    .metric p, .card p, li { margin: 0; color: var(--muted); }
+    .section { padding: 76px 0; }
+    .section.soft { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-top: 1px solid rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .eyebrow { color: #f5deb0; text-transform: uppercase; letter-spacing: .18em; font-size: 12px; font-weight: 700; }
+    h2 { font-size: clamp(30px, 4vw, 48px); line-height: 1.08; letter-spacing: -0.03em; margin: 12px 0 0; }
+    .grid { display: grid; gap: 22px; }
+    .three-col { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .two-col { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .card { padding: 24px; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .tag {
+      display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px;
+      border-radius: 999px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03);
+      color: #d4d4d8; font-size: 13px;
+    }
+    .boundary-list { padding-left: 18px; }
+    .boundary-list li { margin-bottom: 10px; }
+    .check { color: var(--green); font-weight: 700; }
+    .cross { color: var(--amber); font-weight: 700; }
+    .cta {
+      padding: 28px; border-radius: var(--radius-xl);
+      border: 1px solid rgba(212,175,55,0.22);
+      background: linear-gradient(145deg, rgba(212,175,55,0.10), rgba(255,255,255,0.03));
+      box-shadow: var(--shadow);
+    }
+    .footer { padding: 28px 0 42px; color: #71717a; font-size: 14px; }
+    .footer-inner { display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap; }
+    .footer-links { display:flex; gap:18px; flex-wrap:wrap; }
+    @media (max-width: 1020px) {
+      nav { display:none; }
+      .hero-grid, .three-col, .two-col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .section { padding: 68px 0; }
+      .btn-row { flex-direction: column; align-items: stretch; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
+        <span>PayeeProof</span>
+      </div>
+      <nav>
+        <a href="#overview">Overview</a>
+        <a href="#model">Operating model</a>
+        <a href="#boundaries">Boundaries</a>
+        <a href="#pilot">Pilot handling</a>
+        <a href="#faq">FAQ</a>
+        <a href="./policy-examples.html">Policy examples</a>
+        <a href="./technical-sample.html">Technical sample</a>
+        <a href="./pilot-flow.html">Pilot flow</a>
+      </nav>
+      <div class="btn-row">
+        <a class="btn btn-secondary" href="./index.html">Back to main site</a>
+        <a class="btn btn-primary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20request">Request pilot</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="overview">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="pill">Trust layer · buyer-facing · pilot ready</div>
+          <h1>Trust & security: what PayeeProof does, what it does not do.</h1>
+          <p class="lead">PayeeProof is designed to reduce wrong-address, wrong-network, and ambiguous-destination mistakes before funds move. The safest version of this product is simple: it does not hold funds, it does not execute transfers, and it gives operators a clear decision record instead of hand-wavy reassurance.</p>
+          <div class="btn-row" style="margin-top:22px;">
+            <a class="btn btn-primary" href="./sample-verification-record.html">See sample verification record</a>
+            <a class="btn btn-secondary" href="./policy-examples.html">Open policy examples</a>
+          </div>
+          <div class="tag-row">
+            <span class="tag">Non-custodial</span>
+            <span class="tag">No fund movement</span>
+            <span class="tag">Operator remains in control</span>
+            <span class="tag">Pilot-reviewed rollout</span>
+          </div>
+        </div>
+        <aside class="hero-card">
+          <div class="metric-list">
+            <div class="metric">
+              <h3>Core principle</h3>
+              <p>PayeeProof should be a control layer, not a new trust problem.</p>
+            </div>
+            <div class="metric">
+              <h3>What changes</h3>
+              <p>Teams get a structured pre-send decision, a reason code, a destination classification, and a clear next step before approval.</p>
+            </div>
+            <div class="metric">
+              <h3>What does not change</h3>
+              <p>The payout owner still owns final approval, operational policy, risk tolerance, and escalation rules.</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section soft" id="model">
+      <div class="container">
+        <div class="eyebrow">Operating model</div>
+        <h2>Designed to verify before approval, not to sit in the middle of funds.</h2>
+        <div class="grid three-col" style="margin-top:34px;">
+          <article class="card">
+            <h3>No custody</h3>
+            <p>PayeeProof does not store, hold, or control customer funds. It is a verification layer, not a wallet, exchange, or payment processor.</p>
+          </article>
+          <article class="card">
+            <h3>No fund movement</h3>
+            <p>PayeeProof does not send transactions on behalf of the user. The operator or payout platform remains the execution point.</p>
+          </article>
+          <article class="card">
+            <h3>Clear operator decisions</h3>
+            <p>The product is built to output practical decisions such as SAFE, BLOCK, REVERIFY, or TEST FIRST — with a reason and operator-facing next step.</p>
+          </article>
+          <article class="card">
+            <h3>Live checks, not static guesses</h3>
+            <p>Recipient type and transaction context are derived from live chain lookups and rule-based review, not only from a form field looking syntactically valid.</p>
+          </article>
+          <article class="card">
+            <h3>Scoped use case</h3>
+            <p>The initial focus is transfer safety around addresses, networks, destinations, and post-error guidance — not broad AML, sanctions, or fraud scoring.</p>
+          </article>
+          <article class="card">
+            <h3>Explainable outputs</h3>
+            <p>Every serious control layer should explain why it returned an answer. That is why decision records include verdicts, destination type, confidence, and reason codes.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="boundaries">
+      <div class="container">
+        <div class="eyebrow">Boundaries</div>
+        <h2>What PayeeProof checks — and what the payout team still owns.</h2>
+        <div class="grid two-col" style="margin-top:34px;">
+          <article class="card">
+            <h3><span class="check">✓</span> What PayeeProof is meant to check</h3>
+            <ul class="boundary-list">
+              <li>Address validity for the selected network</li>
+              <li>Whether the destination looks like a personal wallet, contract, exchange-like deposit, router, or unknown destination</li>
+              <li>Whether the selected asset and network combination should be blocked, reverified, or tested first</li>
+              <li>Whether a submitted transaction can be found on-chain and summarized for recovery guidance</li>
+              <li>Whether the verification result can be expressed in a structured record for ops, support, or audit review</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3><span class="cross">→</span> What the payout team still owns</h3>
+            <ul class="boundary-list">
+              <li>Final approval of the transfer</li>
+              <li>Internal payout policy and exception handling</li>
+              <li>Escalation decisions for ambiguous or unsupported cases</li>
+              <li>Sanctions, KYC, fraud, or broader compliance controls outside PayeeProof’s current scope</li>
+              <li>Customer communication, account ownership checks, and platform-side entitlement rules</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="pilot">
+      <div class="container">
+        <div class="eyebrow">Pilot handling</div>
+        <h2>Pilot reviews should feel controlled, limited, and easy to evaluate.</h2>
+        <div class="grid three-col" style="margin-top:34px;">
+          <article class="card">
+            <h3>1. Narrow use case first</h3>
+            <p>Pilots start with a specific transfer or support workflow: pre-send approval, destination review, or transaction recovery guidance. This keeps evaluation concrete.</p>
+          </article>
+          <article class="card">
+            <h3>2. Structured outputs</h3>
+            <p>The team reviews what a real record looks like: checked_at, verdict, reason_code, confidence, destination class, and recommended next action.</p>
+          </article>
+          <article class="card">
+            <h3>3. Human-readable review</h3>
+            <p>Pages such as Policy examples, Pilot flow, and the public sample record exist so non-engineering stakeholders can understand the decision layer quickly.</p>
+          </article>
+        </div>
+        <div class="cta" style="margin-top:26px;">
+          <h3 style="margin:0 0 10px; font-size:24px;">Practical pilot posture</h3>
+          <p style="margin:0; color:var(--muted);">A strong pilot does not ask a partner to trust vague claims. It gives them a narrow workflow, a sample record, clear verdict semantics, and a contact path for follow-up questions.</p>
+          <div class="btn-row" style="margin-top:18px;">
+            <a class="btn btn-primary" href="./pilot-flow.html">Review pilot flow</a>
+            <a class="btn btn-secondary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20request">Contact hello@payeeproof.com</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="container">
+        <div class="eyebrow">FAQ</div>
+        <h2>Short answers to the trust questions a serious buyer will ask.</h2>
+        <div class="grid two-col" style="margin-top:34px;">
+          <article class="card faq-list">
+            <div>
+              <h3>Does PayeeProof move funds?</h3>
+              <p>No. It is designed as a verification and guidance layer. Execution remains with the payout owner or platform.</p>
+            </div>
+            <div>
+              <h3>Does PayeeProof replace payout policy?</h3>
+              <p>No. It supports policy with structured decisions, but the team still controls approval logic, exceptions, and escalation.</p>
+            </div>
+            <div>
+              <h3>Is this a generic risk engine?</h3>
+              <p>No. The current scope is transfer safety: address, network, destination, and transaction-guidance decisions around crypto transfers.</p>
+            </div>
+          </article>
+          <article class="card faq-list">
+            <div>
+              <h3>Why keep this page separate from the main site?</h3>
+              <p>Because buyers need trust material without turning the homepage into a dense technical console. This page is the trust layer; the homepage stays commercial.</p>
+            </div>
+            <div>
+              <h3>What should a pilot reviewer look at first?</h3>
+              <p>The public sample verification record, the policy examples page, and the pilot flow page. Those three together explain the decision layer clearly.</p>
+            </div>
+            <div>
+              <h3>How do we start?</h3>
+              <p>Send the payout or support workflow you want to protect, the networks involved, and the type of destination ambiguity you want to reduce.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="brand">
+        <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
+        <div>© 2026 PayeeProof</div>
+      </div>
+      <div class="footer-links">
+        <a href="#overview">Overview</a>
+        <a href="#model">Operating model</a>
+        <a href="#boundaries">Boundaries</a>
+        <a href="#pilot">Pilot handling</a>
+        <a href="#faq">FAQ</a>
+        <a href="./policy-examples.html">Policy examples</a>
+        <a href="./technical-sample.html">Technical sample</a>
+        <a href="./pilot-flow.html">Pilot flow</a>
+        <a href="./index.html">Main site</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
