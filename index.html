@@ -1113,11 +1113,22 @@ POST /api/recovery-copilot
       target.innerHTML = label ? softHintHtml(tone, label, note) : '';
     }
 
+    function setSoftHintHtml(targetId, html) {
+      const target = el(targetId);
+      if (!target) return;
+      target.innerHTML = html || '';
+    }
+
     function getSoftHintKey(chain, asset, address) {
       return `${String(chain || '').toLowerCase()}|${String(asset || '').toUpperCase()}|${String(address || '').trim()}`;
     }
 
+    function getEvmGuidanceKey(asset, address) {
+      return `${String(asset || '').toUpperCase()}|${String(address || '').trim()}`;
+    }
+
     const LIVE_ADDRESS_HINT_CACHE = new Map();
+    const EVM_NETWORK_GUIDANCE_CACHE = new Map();
     const LIVE_ADDRESS_HINT_SEQ = {};
 
     function debounce(fn, wait = 500) {
@@ -1149,6 +1160,171 @@ POST /api/recovery-copilot
       return { tone: 'neutral', label: 'Live hint unavailable', note: 'Public signals were not strong enough to classify this address yet.' };
     }
 
+    function getHintCategory(hint) {
+      const label = String(hint?.label || '').toLowerCase();
+      const tone = String(hint?.tone || '').toLowerCase();
+      if (label.includes('deposit')) return 'deposit';
+      if (label.includes('bridge') || label.includes('router')) return 'bridge';
+      if (label.includes('contract') || label.includes('app')) return 'contract';
+      if (label.includes('personal wallet') || label.includes('wallet')) return 'wallet';
+      if (tone === 'ok') return 'wallet';
+      if (tone === 'warn') return 'soft_warn';
+      return 'none';
+    }
+
+    function getHintStrength(hint) {
+      const category = getHintCategory(hint);
+      if (category === 'deposit') return 72;
+      if (category === 'bridge') return 64;
+      if (category === 'contract') return 58;
+      if (category === 'wallet') return 26;
+      if (category === 'soft_warn') return 18;
+      return 0;
+    }
+
+    function getHintShortLabel(hint) {
+      const category = getHintCategory(hint);
+      if (category === 'deposit') return 'deposit-like';
+      if (category === 'bridge') return 'bridge/router';
+      if (category === 'contract') return 'contract/app';
+      if (category === 'wallet') return 'wallet';
+      return 'no signal';
+    }
+
+    function getEvmGuidanceTone(level) {
+      if (level === 'high') return 'warn';
+      if (level === 'medium') return 'ok';
+      return 'neutral';
+    }
+
+    function getEvmGuidanceLevel(positive) {
+      if (!positive.length) return 'none';
+      if (positive.length === 1) return positive[0].score >= 58 ? 'high' : 'medium';
+      const [top, second] = positive;
+      if (top.score >= 58 && second.score <= 26) return 'high';
+      if (top.score - second.score >= 24) return 'high';
+      if (top.score - second.score >= 10) return 'medium';
+      return 'low';
+    }
+
+    function buildEvmGuidanceReason(top, second, level) {
+      if (!top) return 'Public signals were not strong enough to point to one EVM chain yet.';
+      const topName = formatNetworkName(top.chain);
+      const topLabel = getHintShortLabel(top.hint);
+      if (!second) {
+        return `${topName} is the only supported EVM chain showing a usable live signal (${topLabel}).`;
+      }
+      const secondName = formatNetworkName(second.chain);
+      const secondLabel = getHintShortLabel(second.hint);
+      if (level === 'high') {
+        return `${topName} shows the strongest live signal (${topLabel}); the nearest alternative is weaker on ${secondName} (${secondLabel}).`;
+      }
+      if (level === 'medium') {
+        return `${topName} currently looks slightly stronger than ${secondName}, but the spread is not decisive.`;
+      }
+      return `Multiple EVM chains look plausible right now. ${topName} and ${secondName} are too close to force a single recommendation.`;
+    }
+
+    function fetchAddressHintPayload(chain, asset, address) {
+      return {
+        expected: { network: chain, asset, address, memo: '' },
+        provided: { network: chain, asset, address, memo: '' },
+      };
+    }
+
+    async function fetchAddressHintForChain(chain, asset, address, timeoutMs = 3200) {
+      const cacheKey = getSoftHintKey(chain, asset, address);
+      if (LIVE_ADDRESS_HINT_CACHE.has(cacheKey)) {
+        return LIVE_ADDRESS_HINT_CACHE.get(cacheKey);
+      }
+      const data = await fetchJson(PRECHECK_URL, {
+        method: 'POST',
+        body: JSON.stringify(fetchAddressHintPayload(chain, asset, address)),
+        timeoutMs,
+      });
+      const hint = classifySoftHintFromResult(data);
+      LIVE_ADDRESS_HINT_CACHE.set(cacheKey, hint);
+      return hint;
+    }
+
+    function buildEvmGuidanceHtml(results, selectedChain) {
+      const normalized = Array.isArray(results) ? results.slice() : [];
+      const scored = normalized
+        .map((item) => ({ ...item, score: getHintStrength(item.hint), category: getHintCategory(item.hint) }))
+        .sort((a, b) => b.score - a.score || a.chain.localeCompare(b.chain));
+      const positive = scored.filter((item) => item.score > 0);
+      const noSignal = scored.filter((item) => item.score === 0).map((item) => item.chain);
+      const selected = scored.find((item) => item.chain === selectedChain);
+      const top = positive[0];
+      const second = positive[1];
+      const level = getEvmGuidanceLevel(positive);
+      const tone = getEvmGuidanceTone(level);
+      const html = [];
+
+      if (!positive.length) {
+        html.push(`<span class="soft-detect-pill neutral">No strong chain signal yet</span>`);
+      } else if (level === 'low') {
+        const tied = positive.slice(0, 3).map((item) => `${formatNetworkName(item.chain)} (${getHintShortLabel(item.hint)})`);
+        html.push(`<span class="soft-detect-pill neutral">Top candidates: ${escapeHtml(tied.join(' / '))}</span>`);
+      } else {
+        html.push(`<span class="soft-detect-pill ${escapeHtml(tone)}">Recommended: ${escapeHtml(formatNetworkName(top.chain))}</span>`);
+        html.push(`<span class="soft-detect-pill ${escapeHtml(tone)}">Confidence: ${escapeHtml(level === 'high' ? 'high' : 'medium')}</span>`);
+      }
+
+      if (selected) {
+        const selectedLabel = `${formatNetworkName(selected.chain)} → ${getHintShortLabel(selected.hint)}`;
+        const selectedTone = selected.score > 0 ? selected.hint?.tone || 'neutral' : 'neutral';
+        html.push(`<span class="soft-detect-pill ${escapeHtml(selectedTone)}">Current: ${escapeHtml(selectedLabel)}</span>`);
+        if (top && level !== 'low' && selected.chain !== top.chain) {
+          html.push(`<span>${escapeHtml(`Suggested switch: ${formatNetworkName(selected.chain)} → ${formatNetworkName(top.chain)}`)}</span>`);
+        }
+      } else if (selectedChain && !EVM_CHAINS.includes(selectedChain)) {
+        html.push(`<span class="soft-detect-pill bad">Current: ${escapeHtml(formatNetworkName(selectedChain))}</span>`);
+      }
+
+      html.push(`<span>${escapeHtml(buildEvmGuidanceReason(top, second, level))}</span>`);
+
+      const alternatives = positive
+        .filter((item) => !top || item.chain !== top.chain)
+        .slice(0, 3)
+        .map((item) => `${formatNetworkName(item.chain)} (${getHintShortLabel(item.hint)})`);
+      if (alternatives.length) {
+        html.push(`<span>${escapeHtml(`${level === 'low' ? 'Other candidates' : 'Also seen on'}: ${alternatives.join(', ')}`)}</span>`);
+      }
+      if (noSignal.length) {
+        html.push(`<span>${escapeHtml(`No signal yet: ${noSignal.map(formatNetworkName).join(', ')}`)}</span>`);
+      }
+      return html.join('');
+    }
+
+    async function runEvmNetworkGuidance(selectedChain, asset, address, targetId, seqKey, mySeq) {
+      const guidanceKey = getEvmGuidanceKey(asset, address);
+      if (EVM_NETWORK_GUIDANCE_CACHE.has(guidanceKey)) {
+        if (LIVE_ADDRESS_HINT_SEQ[seqKey] === mySeq) {
+          setSoftHintHtml(targetId, buildEvmGuidanceHtml(EVM_NETWORK_GUIDANCE_CACHE.get(guidanceKey), selectedChain));
+        }
+        return;
+      }
+
+      if (LIVE_ADDRESS_HINT_SEQ[seqKey] === mySeq) {
+        setSoftHint(targetId, 'neutral', 'Checking EVM networks…', 'Looking across Ethereum, Arbitrum, Base, Polygon, and BNB Chain.');
+      }
+
+      const results = await Promise.all(EVM_CHAINS.map(async (chain) => {
+        try {
+          const hint = await fetchAddressHintForChain(chain, asset, address, 3200);
+          return { chain, hint };
+        } catch (err) {
+          return { chain, hint: { tone: 'neutral', label: 'Live hint unavailable', note: 'No strong signal yet.' } };
+        }
+      }));
+
+      EVM_NETWORK_GUIDANCE_CACHE.set(guidanceKey, results);
+      if (LIVE_ADDRESS_HINT_SEQ[seqKey] === mySeq) {
+        setSoftHintHtml(targetId, buildEvmGuidanceHtml(results, selectedChain));
+      }
+    }
+
     async function runAddressSoftHint(addressInputId, chainSelectId, assetSelectId, targetId) {
       const address = el(addressInputId)?.value.trim() || '';
       const chain = el(chainSelectId)?.value || '';
@@ -1159,19 +1335,19 @@ POST /api/recovery-copilot
       const mySeq = LIVE_ADDRESS_HINT_SEQ[seqKey];
 
       if (!address) {
-        setSoftHint(targetId, '', '', '');
+        setSoftHintHtml(targetId, '');
         return;
       }
       if (detected.kind === 'invalid_evm' || detected.kind === 'unknown') {
         setSoftHint(targetId, 'bad', 'Invalid or unrecognized', 'Correct the address before trying a live classification.');
         return;
       }
-      if (detected.kind === 'evm' && !EVM_CHAINS.includes(chain)) {
-        setSoftHint(targetId, 'warn', 'Choose an EVM network', 'The address format is valid, but the exact EVM chain must be selected manually.');
+      if (detected.kind === 'evm') {
+        await runEvmNetworkGuidance(chain, asset, address, targetId, seqKey, mySeq);
         return;
       }
-      if (detected.kind !== 'evm' && detected.kind !== 'solana') {
-        setSoftHint(targetId, '', '', '');
+      if (detected.kind !== 'solana') {
+        setSoftHintHtml(targetId, '');
         return;
       }
 
@@ -1184,13 +1360,7 @@ POST /api/recovery-copilot
 
       setSoftHint(targetId, 'neutral', 'Checking live signals…', 'This runs a lightweight destination classification before submit.');
       try {
-        const payload = {
-          expected: { network: chain, asset, address, memo: '' },
-          provided: { network: chain, asset, address, memo: '' },
-        };
-        const data = await fetchJson(PRECHECK_URL, { method: 'POST', body: JSON.stringify(payload), timeoutMs: 4500 });
-        const hint = classifySoftHintFromResult(data);
-        LIVE_ADDRESS_HINT_CACHE.set(cacheKey, hint);
+        const hint = await fetchAddressHintForChain(chain, asset, address, 4500);
         if (LIVE_ADDRESS_HINT_SEQ[seqKey] === mySeq) {
           setSoftHint(targetId, hint.tone, hint.label, hint.note);
         }
@@ -1217,8 +1387,8 @@ POST /api/recovery-copilot
       }
       if (detected.kind === 'evm') {
         const note = EVM_CHAINS.includes(chainSelect.value)
-          ? 'Choose the exact EVM chain if needed. Format alone cannot prove Ethereum vs Arbitrum vs Base vs Polygon vs BNB Chain.'
-          : 'Pick one supported EVM chain. Format alone cannot prove the exact chain.';
+          ? 'Checking supported EVM chains now. The result will suggest a likely network only when the live signal is clearly stronger, without silently switching it.'
+          : 'Pick an EVM network. PayeeProof will suggest a likely chain only when the signal is clear, but it will not switch it silently.';
         hint.innerHTML = detectionHtml('warn', 'EVM address', note);
         return;
       }
