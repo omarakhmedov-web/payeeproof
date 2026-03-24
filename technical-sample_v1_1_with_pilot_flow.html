@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PayeeProof — technical sample for pilot reviews</title>
+  <meta name="description" content="Compact technical sample for teams evaluating PayeeProof during a pilot review." />
+  <meta property="og:title" content="PayeeProof — technical sample for pilot reviews" />
+  <meta property="og:description" content="Compact technical sample for structured verdicts, verification records, and pilot review flows." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://payeeproof.com/payeeproof-logo.png" />
+  <meta name="theme-color" content="#06080d" />
+  <meta name="websitelaunches-verification" content="f5230d27a4535ac7ce5dc40ff1c1d3e7" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./payeeproof-favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./payeeproof-favicon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./payeeproof-favicon-180.png" />
+  <link rel="shortcut icon" href="./payeeproof-favicon.ico" />
+  <style>
+    :root {
+      --bg: #06080d;
+      --panel: rgba(255,255,255,.05);
+      --panel-2: rgba(255,255,255,.03);
+      --line: rgba(255,255,255,.10);
+      --text: #f4f4f5;
+      --muted: #a1a1aa;
+      --white: #ffffff;
+      --ok: #86efac;
+      --warn: #fcd34d;
+      --bad: #fca5a5;
+      --ok-bg: rgba(16,185,129,.10);
+      --warn-bg: rgba(245,158,11,.10);
+      --bad-bg: rgba(239,68,68,.10);
+      --ok-line: rgba(16,185,129,.22);
+      --warn-line: rgba(245,158,11,.22);
+      --bad-line: rgba(239,68,68,.22);
+      --radius-xl: 28px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1200px, calc(100% - 32px)); margin: 0 auto; }
+    .section { padding: 84px 0; }
+    .section-sm { padding: 62px 0; }
+    .grid { display: grid; gap: 24px; }
+    .two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .three-col { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid var(--line);
+      background: rgba(6,8,13,.82);
+      backdrop-filter: blur(16px);
+    }
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 16px 0;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 42px; height: 42px; border-radius: 14px; overflow: hidden;
+      border: 1px solid var(--line); background: var(--panel); flex: 0 0 42px;
+      display: grid; place-items: center;
+    }
+    .logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .brand-title { font-weight: 700; letter-spacing: -.02em; }
+    .brand-sub { font-size: 12px; color: #71717a; }
+    nav { display: flex; gap: 22px; }
+    nav a { color: var(--muted); font-size: 14px; }
+    nav a:hover { color: var(--white); }
+    .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 14px 18px; border-radius: 16px; border: 1px solid var(--line);
+      font-weight: 700; font-size: 14px; cursor: pointer; transition: .18s ease;
+      text-align: center;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:disabled { opacity: .62; cursor: not-allowed; transform: none; }
+    .btn:disabled:hover { transform: none; }
+    .btn-primary { background: var(--white); color: #000; border-color: transparent; }
+    .btn-secondary { background: transparent; color: var(--text); }
+    .btn-ghost { background: rgba(255,255,255,.03); color: #d4d4d8; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px; width: fit-content;
+      border: 1px solid var(--line); background: var(--panel); color: #e4e4e7;
+      padding: 9px 14px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+    }
+    .eyebrow { color: #a1a1aa; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .22em; margin-bottom: 12px; }
+    h1,h2,h3,p { margin: 0; }
+    h1 { font-size: clamp(40px, 7vw, 72px); line-height: .98; letter-spacing: -.04em; max-width: 980px; }
+    h2 { font-size: clamp(30px, 4vw, 46px); line-height: 1.04; letter-spacing: -.03em; }
+    h3 { font-size: 26px; line-height: 1.1; letter-spacing: -.02em; }
+    .lead {
+      font-size: clamp(18px, 2.15vw, 22px); color: var(--muted); max-width: 860px; line-height: 1.7;
+    }
+    .hero {
+      position: relative; overflow: hidden; border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255,255,255,.08), transparent 26%),
+        radial-gradient(circle at 86% 8%, rgba(59,130,246,.14), transparent 16%),
+        var(--bg);
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: 1.05fr .95fr; gap: 32px; align-items: start;
+      min-height: 84vh; padding: 54px 0;
+    }
+    .hero-copy { display: grid; gap: 22px; align-content: center; }
+    .muted { color: var(--muted); }
+    .tag-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .tag {
+      border: 1px solid var(--line); background: rgba(255,255,255,.03); color: #d4d4d8;
+      padding: 10px 14px; border-radius: 999px; font-size: 13px;
+    }
+    .status-strip {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;
+    }
+    .status-strip.hidden { display: none; }
+    .status-chip {
+      padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line);
+      background: rgba(255,255,255,.03); color: #d4d4d8; font-size: 13px;
+    }
+    .live-indicator { color: var(--ok); font-weight: 700; }
+    .offline-indicator { color: var(--bad); font-weight: 700; }
+
+    .panel { padding: 24px; }
+    .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .panel-badge {
+      color: #cbd5e1; border: 1px solid var(--line); background: rgba(255,255,255,.04);
+      border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 700;
+    }
+    .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .field { display: grid; gap: 8px; }
+    .field.wide { grid-column: 1 / -1; }
+    .group {
+      padding: 16px; border: 1px solid var(--line); background: rgba(0,0,0,.18); border-radius: 18px;
+    }
+    .group h4 { margin: 0 0 14px 0; font-size: 14px; letter-spacing: .04em; color: #e4e4e7; }
+    label { font-size: 13px; color: var(--muted); }
+    input, textarea, select {
+      width: 100%; border: 1px solid var(--line); background: rgba(0,0,0,.22); color: var(--white);
+      border-radius: 14px; padding: 13px 14px; font: inherit; outline: none;
+    }
+    textarea { min-height: 124px; resize: vertical; }
+    input:focus, textarea:focus, select:focus {
+      border-color: rgba(255,255,255,.28); box-shadow: 0 0 0 4px rgba(255,255,255,.04);
+    }
+    .panel-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+    .note { font-size: 12px; color: #a1a1aa; }
+    .result {
+      margin-top: 16px; border-radius: 18px; padding: 18px;
+      border: 1px solid var(--warn-line); background: var(--warn-bg);
+    }
+    .result.ok { border-color: var(--ok-line); background: var(--ok-bg); }
+    .result.bad { border-color: var(--bad-line); background: var(--bad-bg); }
+    .result-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .result-status { font-size: 14px; font-weight: 700; color: #d4d4d8; }
+    .result-title { margin-top: 6px; font-size: 20px; font-weight: 700; }
+    .result-text { margin-top: 10px; font-size: 14px; color: #d4d4d8; }
+    .result-kv-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+    .result-kv {
+      border: 1px solid var(--line); background: rgba(0,0,0,.20); border-radius: 14px; padding: 12px;
+    }
+    .result-kv.wide { grid-column: 1 / -1; }
+    .result-k { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #a1a1aa; margin-bottom: 8px; }
+    .result-v { font-size: 13px; color: #f4f4f5; word-break: break-word; }
+    .check-list { display: grid; gap: 8px; }
+    .check-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .check-row span:first-child { color: #d4d4d8; }
+    .check-row .status-yes { color: var(--ok); font-weight: 700; }
+    .check-row .status-no { color: var(--bad); font-weight: 700; }
+    .result.compact { padding: 14px 18px; }
+    .result.compact .result-kv-grid { display: none; }
+    .list {
+      display: grid; gap: 10px; margin-top: 14px;
+    }
+    .list-item {
+      display: flex; gap: 12px; padding: 14px; border: 1px solid var(--line);
+      background: rgba(0,0,0,.20); border-radius: 16px; color: #d4d4d8;
+    }
+    .list-item strong { color: var(--white); }
+    .demo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+    .demo-btn { width: 100%; }
+    .flow-grid { display: grid; gap: 16px; margin-top: 26px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .flow-step { padding: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.03); border-radius: 20px; }
+    .flow-step-num { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #a1a1aa; margin-bottom: 8px; }
+    .flow-step h3 { font-size: 20px; margin-bottom: 8px; }
+    .flow-step p { color: #d4d4d8; font-size: 14px; }
+    .code-shell { margin-top: 18px; border: 1px solid var(--line); border-radius: 18px; background: rgba(0,0,0,.22); overflow: hidden; }
+    .code-shell summary { cursor: pointer; list-style: none; padding: 16px 18px; font-size: 14px; font-weight: 700; color: #e4e4e7; }
+    .code-shell summary::-webkit-details-marker { display: none; }
+    .code-shell pre { margin: 0; padding: 0 18px 18px 18px; white-space: pre-wrap; color:#d4d4d8; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; line-height:1.7; }
+    .proof-grid { display: grid; gap: 24px; grid-template-columns: 1.05fr .95fr; margin-top: 32px; }
+    .proof-record { border: 1px solid var(--line); border-radius: 22px; background: rgba(0,0,0,.22); padding: 22px; }
+    .proof-row { display: flex; justify-content: space-between; gap: 18px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .proof-row:last-child { border-bottom: 0; }
+    .proof-label { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #a1a1aa; }
+    .proof-value { font-size: 14px; color: #f4f4f5; text-align: right; }
+    .artifact-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+    .mini-note { font-size: 12px; color: #8b8b95; margin-top: 12px; }
+    .ops-grid { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 28px; }
+    .ops-card { padding: 20px; border: 1px solid var(--line); border-radius: 20px; background: rgba(255,255,255,.03); }
+    .ops-card h3 { font-size: 20px; margin-bottom: 8px; }
+    .ops-card p { color: #d4d4d8; font-size: 14px; }
+
+    .scenario-grid { display: grid; gap: 16px; margin-top: 32px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .scenario-card {
+      padding: 20px; border: 1px solid var(--line); border-radius: 20px;
+      background: rgba(255,255,255,.03);
+    }
+    .scenario-top { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 12px; }
+    .scenario-type {
+      font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #a1a1aa;
+    }
+    .scenario-badge {
+      display:inline-flex; align-items:center; justify-content:center;
+      min-width: 96px; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      border: 1px solid var(--line); background: rgba(255,255,255,.04); color: #e4e4e7;
+    }
+    .scenario-badge.safe { color: var(--ok); border-color: var(--ok-line); background: var(--ok-bg); }
+    .scenario-badge.block { color: var(--bad); border-color: var(--bad-line); background: var(--bad-bg); }
+    .scenario-badge.reverify,
+    .scenario-badge.testfirst,
+    .scenario-badge.review { color: var(--warn); border-color: var(--warn-line); background: var(--warn-bg); }
+    .scenario-card h3 { font-size: 20px; margin-bottom: 10px; }
+    .scenario-card p { color: #d4d4d8; font-size: 14px; margin-bottom: 14px; }
+    .scenario-meta { display: grid; gap: 10px; }
+    .scenario-meta-row {
+      display:flex; gap:12px; padding: 12px; border: 1px solid var(--line);
+      background: rgba(0,0,0,.18); border-radius: 14px; color: #d4d4d8;
+    }
+    .scenario-meta-row strong { min-width: 88px; color: var(--white); }
+    .soft-section {
+      border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--panel-2);
+    }
+    .footer { border-top: 1px solid var(--line); padding: 26px 0; color: #71717a; font-size: 14px; }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; }
+    .footer-links { display: flex; gap: 18px; flex-wrap: wrap; }
+    .footer-links a:hover { color: #d4d4d8; }
+
+    @media (max-width: 1020px) {
+      nav { display: none; }
+      .hero-grid, .two-col, .three-col, .flow-grid, .demo-grid, .proof-grid, .ops-grid { grid-template-columns: 1fr; }
+      .hero-grid { min-height: auto; }
+    }
+    @media (max-width: 720px) {
+      .field-grid, .result-kv-grid { grid-template-columns: 1fr; }
+      .section { padding: 68px 0; }
+      .panel-actions, .btn-row { flex-direction: column; align-items: stretch; }
+      .btn { width: 100%; }
+      .result-top { flex-direction: column; }
+    }
+  
+    .proof-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+    .notes-box { border:1px solid var(--line); background: var(--panel-2); border-radius: 18px; padding: 16px 18px; }
+    .points { display:grid; gap:14px; }
+    .point { display:grid; gap:6px; padding:14px 0; border-bottom:1px solid var(--line); }
+    .point:last-child { border-bottom:none; padding-bottom:0; }
+    .point strong { font-size:15px; }
+    .point span { color: var(--muted); }
+    .mini-pill { display:inline-flex; align-items:center; justify-content:center; min-width:36px; height:36px; padding:0 12px; border-radius:999px; border:1px solid var(--line); background: var(--panel-2); font-weight:700; }
+
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
+        <div>
+          <div class="brand-title">PayeeProof</div>
+          <div class="brand-sub">Technical sample for pilot reviews</div>
+        </div>
+      </div>
+      <nav>
+        <a href="#overview">Overview</a>
+        <a href="#verdicts">Verdicts</a>
+        <a href="#records">Record fields</a>
+        <a href="#flows">Flows</a>
+        <a href="#api">Endpoints</a>
+        <a href="./pilot-flow.html">Pilot flow</a>
+        <a href="#contact">Pilot</a>
+      </nav>
+      <div class="btn-row">
+        <a class="btn btn-secondary" href="./index.html">Back to main site</a>
+        <a class="btn btn-primary" href="#contact">Request pilot</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="overview">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="pill">Buyer-safe technical page · pilot review only</div>
+          <h1>Technical sample for teams evaluating PayeeProof in a real payout workflow.</h1>
+          <p class="lead">This page is intentionally compact. It shows how PayeeProof expresses verification results, what a structured record contains, and how a pilot can plug into an existing payout or support flow without turning the main site into a developer console.</p>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="#records">See verification record</a>
+            <a class="btn btn-secondary" href="./sample-verification-record.html">Open public sample record</a>
+            <a class="btn btn-ghost" href="./pilot-flow.html">Open pilot flow</a>
+          </div>
+          <div class="tag-row">
+            <div class="tag">Non-custodial</div>
+            <div class="tag">Structured verdicts</div>
+            <div class="tag">Pilot-ready</div>
+            <div class="tag">6 supported networks</div>
+          </div>
+        </div>
+        <div class="hero-card card">
+          <div class="mini-shell">
+            <div class="mini-shell-bar">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="shell-line"><strong>Primary use case</strong><span>Pre-send transfer verification</span></div>
+            <div class="shell-line"><strong>Secondary module</strong><span>Post-error recovery guidance</span></div>
+            <div class="shell-line"><strong>Core outputs</strong><span>SAFE · BLOCK · REVERIFY · TEST FIRST</span></div>
+            <div class="shell-line"><strong>Proof layer</strong><span>Structured verification record for workflow logs</span></div>
+            <div class="shell-line"><strong>Typical buyer</strong><span>Ops, payout, treasury, support, risk</span></div>
+            <div class="shell-line"><strong>Review mode</strong><span>Pilot evaluation with live checks</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-sm" id="verdicts">
+      <div class="container">
+        <div class="eyebrow">Operational language</div>
+        <h2>One verdict system across pre-send and recovery flows.</h2>
+        <div class="scenario-grid" style="margin-top:28px;">
+          <article class="scenario-card card">
+            <div class="scenario-top"><div class="scenario-type">Verdict</div><div class="scenario-badge safe">SAFE</div></div>
+            <h3>Approve payout</h3>
+            <p>Expected details match the provided route and the destination does not trigger a material warning.</p>
+          </article>
+          <article class="scenario-card card">
+            <div class="scenario-top"><div class="scenario-type">Verdict</div><div class="scenario-badge block">BLOCK</div></div>
+            <h3>Stop before funds move</h3>
+            <p>Used for clear mismatches, invalid address formats, or an obviously wrong transfer route.</p>
+          </article>
+          <article class="scenario-card card">
+            <div class="scenario-top"><div class="scenario-type">Verdict</div><div class="scenario-badge reverify">REVERIFY</div></div>
+            <h3>Pause and confirm</h3>
+            <p>Used when a destination or context needs human confirmation before approval.</p>
+          </article>
+          <article class="scenario-card card">
+            <div class="scenario-top"><div class="scenario-type">Verdict</div><div class="scenario-badge testfirst">TEST FIRST</div></div>
+            <h3>Use a low-risk trial</h3>
+            <p>Used for exchange-like deposits, bridge-router behavior, or other cases where a small test is safer than a full send.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="records">
+      <div class="container">
+        <div class="eyebrow">Structured output</div>
+        <h2>What a verification record should show to an ops team.</h2>
+        <div class="grid two-col" style="align-items:start; margin-top:28px;">
+          <div class="card" style="padding:28px;">
+            <div class="proof-head">
+              <div>
+                <div class="eyebrow" style="margin-bottom:8px;">Verification record</div>
+                <h3 style="margin:0; font-size:28px;">Sample output</h3>
+              </div>
+              <div class="scenario-badge safe">SAFE</div>
+            </div>
+            <div class="proof-grid" style="margin-top:22px;">
+              <div class="proof-item"><span>checked_at</span><strong>2026-03-24T19:12:08Z</strong></div>
+              <div class="proof-item"><span>reason_code</span><strong>OK</strong></div>
+              <div class="proof-item"><span>confidence</span><strong>0.96</strong></div>
+              <div class="proof-item"><span>destination type</span><strong>Personal wallet</strong></div>
+              <div class="proof-item"><span>network</span><strong>Ethereum</strong></div>
+              <div class="proof-item"><span>asset</span><strong>USDC</strong></div>
+              <div class="proof-item"><span>ops action</span><strong>Approve payout</strong></div>
+              <div class="proof-item"><span>record style</span><strong>Readable + machine-friendly</strong></div>
+            </div>
+            <div class="notes-box" style="margin-top:18px;">
+              <strong>Why this verdict</strong>
+              <p style="margin:8px 0 0; color:var(--muted);">The expected transfer route and the provided destination align, and the destination class does not require an escalation path.</p>
+            </div>
+          </div>
+          <div class="card" style="padding:28px;">
+            <h3 style="margin-top:0;">Recommended public-facing fields</h3>
+            <div class="points">
+              <div class="point"><strong>checked_at</strong><span>So a team knows exactly when the result was produced.</span></div>
+              <div class="point"><strong>verdict</strong><span>The operational answer the payout team should act on.</span></div>
+              <div class="point"><strong>reason_code</strong><span>Stable classification for logs, rules, and support review.</span></div>
+              <div class="point"><strong>confidence</strong><span>A useful summary layer when the verdict needs nuance.</span></div>
+              <div class="point"><strong>destination type</strong><span>Personal wallet, contract, exchange-like deposit, bridge-router, or unknown.</span></div>
+              <div class="point"><strong>why this verdict</strong><span>A short, human-readable explanation for ops and support teams.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-sm" id="flows">
+      <div class="container">
+        <div class="eyebrow">Pilot flow</div>
+        <h2>How PayeeProof fits into a real workflow.</h2>
+        <div class="grid three-col" style="margin-top:28px;">
+          <div class="card" style="padding:26px;">
+            <div class="mini-pill">1</div>
+            <h3>Pre-send request</h3>
+            <p class="muted">A payout system sends expected and provided transfer details before approval.</p>
+          </div>
+          <div class="card" style="padding:26px;">
+            <div class="mini-pill">2</div>
+            <h3>Verdict + record</h3>
+            <p class="muted">PayeeProof returns a structured verdict and a readable verification record for workflow storage.</p>
+          </div>
+          <div class="card" style="padding:26px;">
+            <div class="mini-pill">3</div>
+            <h3>Escalation only when needed</h3>
+            <p class="muted">Support or ops only intervenes when the answer is BLOCK, REVERIFY, TEST FIRST, or a recovery case.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="api">
+      <div class="container">
+        <div class="eyebrow">Compact endpoint sample</div>
+        <h2>Enough detail for pilot review, without turning this page into API docs.</h2>
+        <div class="grid two-col" style="margin-top:28px; align-items:start;">
+          <div class="card" style="padding:28px;">
+            <h3 style="margin-top:0;">Endpoints currently exposed</h3>
+            <div class="points">
+              <div class="point"><strong>GET /health</strong><span>Simple service health and configured-network visibility.</span></div>
+              <div class="point"><strong>POST /api/preflight-check</strong><span>Pre-send verification for network, asset, and destination.</span></div>
+              <div class="point"><strong>POST /api/recovery-copilot</strong><span>Post-error transaction guidance anchored to a real tx hash.</span></div>
+              <div class="point"><strong>POST /pilot-request</strong><span>Commercial intake for pilot evaluation and use-case review.</span></div>
+            </div>
+            <div class="btn-row" style="margin-top:18px;">
+              <a class="btn btn-secondary" href="./sample-verification-record.json">Open sample JSON record</a>
+            </div>
+          </div>
+          <div class="card" style="padding:28px;">
+            <h3 style="margin-top:0;">Compact request sample</h3>
+            <details class="code-shell" open>
+              <summary>Open request examples</summary>
+<pre>POST /api/preflight-check
+{
+  "expected": {
+    "network": "ethereum",
+    "asset": "USDC",
+    "address": "0x1111111111111111111111111111111111111111"
+  },
+  "provided": {
+    "network": "ethereum",
+    "asset": "USDC",
+    "address": "0x1111111111111111111111111111111111111111"
+  }
+}
+
+POST /api/recovery-copilot
+{
+  "chain": "polygon",
+  "tx_hash": "0x...",
+  "issue_type": "wrong_network",
+  "intended_chain": "ethereum"
+}</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section-sm">
+      <div class="container">
+        <div class="card" style="padding:32px;">
+          <div class="eyebrow">Pilot evaluation</div>
+          <h2 style="margin-top:8px;">Use this page for technical review. Use the main site for the commercial story.</h2>
+          <p class="lead" style="margin-top:14px; max-width:900px;">If a team wants to evaluate PayeeProof seriously, the clean path is simple: review the main site, inspect the sample verification record, and use this page only for a compact technical pass before a pilot decision.</p>
+          <div class="btn-row" style="margin-top:18px;">
+            <a class="btn btn-primary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20review">Email hello@payeeproof.com</a>
+            <a class="btn btn-secondary" href="./index.html#contact">Open pilot form on main site</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="brand">
+        <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
+        <div>© 2026 PayeeProof</div>
+      </div>
+      <div class="footer-links">
+        <a href="#overview">Overview</a>
+        <a href="#verdicts">Verdicts</a>
+        <a href="#records">Record fields</a>
+        <a href="#flows">Flows</a>
+        <a href="#api">Endpoints</a>
+        <a href="./pilot-flow.html">Pilot flow</a>
+        <a href="./index.html">Main site</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
