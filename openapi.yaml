@@ -1,0 +1,334 @@
+openapi: 3.1.0
+info:
+  title: PayeeProof API
+  version: v1
+  summary: Pre-send verification for stablecoin payouts.
+  description: >
+    Buyer-facing draft contract for the current PayeeProof pilot API.
+    This contract documents the pre-send verification surface used to stop
+    wrong-network and wrong-destination mistakes before funds move.
+servers:
+  - url: https://payeeproof-api.onrender.com
+    description: Current production base URL
+tags:
+  - name: Preflight
+    description: Pre-send verification before payout approval
+paths:
+  /api/preflight-check:
+    post:
+      tags: [Preflight]
+      operationId: runPreflightCheck
+      summary: Run a pre-send verification check
+      description: >
+        Compares expected and provided payout details, validates the destination,
+        and returns one operational verdict plus a machine-readable reason code.
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreflightRequest'
+            examples:
+              clean_match:
+                summary: Clean match
+                value:
+                  expected:
+                    network: ethereum
+                    asset: USDC
+                    address: "0x59d779BED4dB1E734D3fDa3172d45bc3063eCD69"
+                    memo: null
+                  provided:
+                    network: ethereum
+                    asset: USDC
+                    address: "0x59d779BED4dB1E734D3fDa3172d45bc3063eCD69"
+                    memo: null
+                  context:
+                    reference_id: payout_102948
+                    flow_type: payout_approval
+      responses:
+        '200':
+          description: Verification result returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreflightResponse'
+              examples:
+                safe:
+                  summary: Safe payout approval
+                  value:
+                    ok: true
+                    api_version: v1
+                    request_id: ppf_req_01HZZZZZZZZZZZZZZZZZZZZZZ
+                    checked_at: '2026-03-26T10:12:08Z'
+                    verdict: SAFE
+                    reason_code: OK
+                    confidence: High
+                    destination_type: personal_wallet
+                    next_action: SAFE_TO_PROCEED
+                    why_this_verdict: Network, asset, address, and memo checks matched. The destination classified as a personal wallet.
+                    scope:
+                      network: ethereum
+                      asset: USDC
+                    checks:
+                      network_match: true
+                      asset_match: true
+                      address_match: true
+                      expected_address_valid: true
+                      provided_address_valid: true
+                      memo_match: true
+                block_network_mismatch:
+                  summary: Wrong network
+                  value:
+                    ok: true
+                    api_version: v1
+                    request_id: ppf_req_01HYYYYYYYYYYYYYYYYYYYYYY
+                    checked_at: '2026-03-26T10:15:41Z'
+                    verdict: BLOCK
+                    reason_code: NETWORK_MISMATCH
+                    confidence: High
+                    destination_type: unknown
+                    next_action: BLOCK_AND_REVERIFY
+                    why_this_verdict: The provided network does not match the approved payout route.
+                    scope:
+                      network: ethereum
+                      asset: USDC
+                    checks:
+                      network_match: false
+                      asset_match: true
+                      address_match: true
+                      expected_address_valid: true
+                      provided_address_valid: true
+                      memo_match: true
+                reverify_deposit_route:
+                  summary: Deposit-like destination
+                  value:
+                    ok: true
+                    api_version: v1
+                    request_id: ppf_req_01HXXXXXXXXXXXXXXXXXXXXXX
+                    checked_at: '2026-03-26T10:17:02Z'
+                    verdict: REVERIFY
+                    reason_code: DESTINATION_REQUIRES_MEMO_OR_VENUE_CHECK
+                    confidence: Medium
+                    destination_type: exchange_like_deposit
+                    next_action: RECHECK_MEMO_OR_TAG
+                    why_this_verdict: The destination looks like a platform-style deposit route and may depend on venue and memo/tag.
+                    scope:
+                      network: ethereum
+                      asset: USDT
+                    checks:
+                      network_match: true
+                      asset_match: true
+                      address_match: true
+                      expected_address_valid: true
+                      provided_address_valid: true
+                      memo_match: true
+        '400':
+          description: Invalid request body or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Temporary internal failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    Party:
+      type: object
+      additionalProperties: false
+      required: [network, asset, address]
+      properties:
+        network:
+          type: string
+          examples: [ethereum, arbitrum, base, polygon, bsc, solana]
+        asset:
+          type: string
+          examples: [USDC, USDT]
+        address:
+          type: string
+          description: Destination address for the selected network
+        memo:
+          type:
+            - string
+            - 'null'
+          description: Optional memo or destination tag
+    RequestContext:
+      type: object
+      additionalProperties: false
+      properties:
+        reference_id:
+          type:
+            - string
+            - 'null'
+        flow_type:
+          type:
+            - string
+            - 'null'
+          examples: [payout_approval, treasury_review, otc_release]
+    PreflightRequest:
+      type: object
+      additionalProperties: false
+      required: [expected, provided]
+      properties:
+        expected:
+          $ref: '#/components/schemas/Party'
+        provided:
+          $ref: '#/components/schemas/Party'
+        context:
+          $ref: '#/components/schemas/RequestContext'
+    Scope:
+      type: object
+      additionalProperties: false
+      properties:
+        network:
+          type: string
+        asset:
+          type: string
+    Checks:
+      type: object
+      additionalProperties: false
+      properties:
+        network_match:
+          type: boolean
+        asset_match:
+          type: boolean
+        address_match:
+          type: boolean
+        expected_address_valid:
+          type: boolean
+        provided_address_valid:
+          type: boolean
+        memo_match:
+          type: boolean
+    Verdict:
+      type: string
+      enum: [SAFE, BLOCK, REVERIFY, TEST_FIRST, UNAVAILABLE]
+    ReasonCode:
+      type: string
+      enum:
+        - OK
+        - NETWORK_MISMATCH
+        - ASSET_MISMATCH
+        - ADDRESS_MISMATCH
+        - INVALID_ADDRESS
+        - ZERO_ADDRESS
+        - MEMO_MISMATCH
+        - DESTINATION_IS_CONTRACT_OR_APP
+        - DESTINATION_IS_BRIDGE_ROUTER
+        - DESTINATION_REQUIRES_MEMO_OR_VENUE_CHECK
+        - DESTINATION_NOT_CLASSIFIED
+        - DESTINATION_LOOKUP_UNAVAILABLE
+        - UNSUPPORTED_NETWORK
+        - UNSUPPORTED_ASSET
+        - UNSUPPORTED_ASSET_OR_NETWORK
+        - REQUEST_FAILED
+        - RENDER_FAILED
+    NextAction:
+      type: string
+      enum:
+        - SAFE_TO_PROCEED
+        - BLOCK_AND_REVERIFY
+        - CONFIRM_DESTINATION
+        - RECHECK_MEMO_OR_TAG
+        - REVERIFY_DESTINATION
+        - RETRY_OR_ESCALATE
+    DestinationType:
+      type: string
+      enum:
+        - personal_wallet
+        - contract_or_app
+        - exchange_like_deposit
+        - bridge_router
+        - unknown
+        - unavailable
+    Confidence:
+      type: string
+      enum: [High, Medium, Low]
+    PreflightResponse:
+      type: object
+      additionalProperties: true
+      required:
+        - ok
+        - api_version
+        - request_id
+        - checked_at
+        - verdict
+        - reason_code
+        - confidence
+        - destination_type
+        - next_action
+      properties:
+        ok:
+          type: boolean
+        api_version:
+          type: string
+          example: v1
+        request_id:
+          type: string
+        checked_at:
+          type: string
+          format: date-time
+        verdict:
+          $ref: '#/components/schemas/Verdict'
+        reason_code:
+          $ref: '#/components/schemas/ReasonCode'
+        confidence:
+          $ref: '#/components/schemas/Confidence'
+        destination_type:
+          $ref: '#/components/schemas/DestinationType'
+        next_action:
+          $ref: '#/components/schemas/NextAction'
+        why_this_verdict:
+          type:
+            - string
+            - 'null'
+        scope:
+          $ref: '#/components/schemas/Scope'
+        checks:
+          $ref: '#/components/schemas/Checks'
+        expected:
+          $ref: '#/components/schemas/Party'
+        provided:
+          $ref: '#/components/schemas/Party'
+    ErrorResponse:
+      type: object
+      additionalProperties: true
+      required: [ok]
+      properties:
+        ok:
+          type: boolean
+          example: false
+        error:
+          type:
+            - string
+            - 'null'
+        message:
+          type:
+            - string
+            - 'null'
+        request_id:
+          type:
+            - string
+            - 'null'
