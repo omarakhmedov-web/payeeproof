@@ -466,10 +466,10 @@
           <div class="card panel">
             <h3 style="font-size:24px; margin-bottom:14px;">What the record captures</h3>
             <div class="list" style="margin-top:0;">
-              <div class="list-item"><strong>Stable verdict</strong><span>SAFE, BLOCK, or REVERIFY — no mixed internal status language.</span></div>
+              <div class="list-item"><strong>Stable verdict</strong><span>SAFE, BLOCK, or REVERIFY — one clear status language.</span></div>
               <div class="list-item"><strong>Proof fields</strong><span>Checked at, confidence, reason code, destination class, source, and next action.</span></div>
               <div class="list-item"><strong>Operational context</strong><span>Short explanation for why the decision was returned and how an ops team should react.</span></div>
-              <div class="list-item"><strong>Reviewability</strong><span>A result that can be pasted into an internal workflow, ticket, or approval log without rewriting it.</span></div>
+              <div class="list-item"><strong>Reviewability</strong><span>A result that can be used in a workflow, ticket, or approval log without rewriting it.</span></div>
             </div>
             <div class="artifact-links">
               <a class="btn btn-primary" href="./sample-verification-record.html">Open verification record</a>
@@ -825,9 +825,9 @@
           </div>
           <div class="card panel" style="background: rgba(0,0,0,.22);">
             <h3 style="font-size:24px; margin-bottom:14px;">Technical review (optional)</h3>
-            <p class="muted">The main page stays commercial. This compact technical overview is for teams that want a quick field-level review during pilot evaluation. A separate pilot pack page is also available for teams that need a buyer-facing summary of scope, verdicts, reason codes, and current limits.</p>
+            <p class="muted">The main page stays commercial. The technical overview is for teams that want a quick field-level review during pilot evaluation. A separate pilot pack page is also available for teams that want a clear summary of scope, verdicts, reason codes, and current limits.</p>
             <details class="code-shell">
-              <summary>Open compact technical overview</summary>
+              <summary>Open technical overview</summary>
 <pre>POST /api/preflight-check
 {
   "expected": {
@@ -956,7 +956,7 @@ POST /api/recovery-copilot
         <div class="grid three-col" style="margin-top:34px;">
           <article class="card panel">
             <h3 style="font-size:22px; margin-bottom:12px;">Pilot evaluation</h3>
-            <p class="muted">Best for one workflow, one operational pain point, and one success criterion. Good for fast internal review.</p>
+            <p class="muted">Best for one workflow, one operational pain point, and one success criterion. Good for a fast review.</p>
           </article>
           <article class="card panel">
             <h3 style="font-size:22px; margin-bottom:12px;">Custom integration</h3>
@@ -2129,7 +2129,7 @@ POST /api/recovery-copilot
           reason_code: 'UNSUPPORTED_ASSET_OR_NETWORK',
           next_action: 'BLOCK_AND_REVERIFY',
           summary: 'Unsupported asset / network combination.',
-          explanation: 'This sample shows how the product can present unsupported combinations without exposing raw internal language.',
+          explanation: 'This sample shows how the product can present unsupported combinations with clear status wording.',
           _why: 'The payout details are not automatically verifiable in the current supported scope. Re-check the pair or route it for manual review.',
           checked_at: now,
           risk_flags: ['unsupported_setup'],
