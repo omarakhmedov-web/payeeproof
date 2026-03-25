@@ -186,6 +186,10 @@
     .result-kv.wide { grid-column: 1 / -1; }
     .result-k { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #a1a1aa; margin-bottom: 8px; }
     .result-v { font-size: 13px; color: #f4f4f5; word-break: break-word; }
+    .result-list { margin: 0; padding-left: 18px; }
+    .result-list li + li { margin-top: 6px; }
+    .result-code-main { font-weight: 700; }
+    .result-code-help { display: block; margin-top: 4px; color: var(--muted); }
     .check-list { display: grid; gap: 8px; }
     .check-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .check-row span:first-child { color: #d4d4d8; }
@@ -471,11 +475,11 @@
 
           <div class="proof-record">
             <div class="proof-row"><div class="proof-label">Record id</div><div class="proof-value">ppf_demo_2026_03_24_001</div></div>
-            <div class="proof-row"><div class="proof-label">Checked at</div><div class="proof-value">2026-03-24T19:12:08Z</div></div>
+            <div class="proof-row"><div class="proof-label">Time checked</div><div class="proof-value">2026-03-24T19:12:08Z</div></div>
             <div class="proof-row"><div class="proof-label">Verdict</div><div class="proof-value">SAFE</div></div>
-            <div class="proof-row"><div class="proof-label">Reason code</div><div class="proof-value">OK</div></div>
+            <div class="proof-row"><div class="proof-label">System reference</div><div class="proof-value">OK</div></div>
             <div class="proof-row"><div class="proof-label">Confidence</div><div class="proof-value">High</div></div>
-            <div class="proof-row"><div class="proof-label">Destination class</div><div class="proof-value">Personal wallet</div></div>
+            <div class="proof-row"><div class="proof-label">Destination type</div><div class="proof-value">Personal wallet</div></div>
             <div class="proof-row"><div class="proof-label">Source</div><div class="proof-value">Live RPC lookup</div></div>
             <div class="proof-row"><div class="proof-label">Next action</div><div class="proof-value">Approve payout</div></div>
             <div class="proof-row"><div class="proof-label">Why this verdict</div><div class="proof-value">Network, asset, address, and memo checks matched. The destination classified as a personal wallet.</div></div>
@@ -593,7 +597,7 @@
           <div class="result" id="pfResult">
             <div class="result-top">
               <div>
-                <div class="result-status" id="pfResultStatus">WAITING</div>
+                <div class="result-status" id="pfResultStatus">READY</div>
                 <div class="result-title" id="pfResultTitle">No verification record yet.</div>
                 <div class="result-text" id="pfResultText">Run a live check to generate a proof-style result card. Pilot review scenarios stay available below if you need examples.</div>
               </div>
@@ -601,11 +605,11 @@
             </div>
             <div class="result-kv-grid">
               <div class="result-kv"><div class="result-k">Next step</div><div class="result-v" id="pfNext">Run live check</div></div>
-              <div class="result-kv"><div class="result-k">Checked at</div><div class="result-v" id="pfCheckedAt">—</div></div>
+              <div class="result-kv"><div class="result-k">Time checked</div><div class="result-v" id="pfCheckedAt">—</div></div>
               <div class="result-kv"><div class="result-k">Confidence</div><div class="result-v" id="pfConfidence">—</div></div>
-              <div class="result-kv"><div class="result-k">Reason code</div><div class="result-v" id="pfReasonCode">—</div></div>
+              <div class="result-kv"><div class="result-k">System reference</div><div class="result-v" id="pfReasonCode">—</div></div>
               <div class="result-kv wide"><div class="result-k">Why this verdict</div><div class="result-v" id="pfWhy">Waiting for a live or pilot-review result.</div></div>
-              <div class="result-kv"><div class="result-k">Destination class</div><div class="result-v" id="pfDestType">Unknown</div></div>
+              <div class="result-kv"><div class="result-k">Destination type</div><div class="result-v" id="pfDestType">Unknown</div></div>
               <div class="result-kv"><div class="result-k">Risk flags</div><div class="result-v" id="pfFlags">—</div></div>
               <div class="result-kv wide"><div class="result-k">Checks</div><div class="result-v check-list" id="pfChecks"><div class="check-row"><span>Live verification</span><span>Waiting</span></div></div></div>
             </div>
@@ -681,14 +685,14 @@
               <div class="list" style="margin-top:0;">
                 <div class="list-item"><strong>Status</strong><span>Confirmed / failed / not found / unavailable</span></div>
                 <div class="list-item"><strong>What was detected</strong><span>Network, status, recipient, transfer hints, and whether the recipient is a wallet, contract, or app</span></div>
-                <div class="list-item"><strong>Recoverability</strong><span>Possible / manual review / unlikely / depends</span></div>
+                <div class="list-item"><strong>Recovery outlook</strong><span>Possible / manual review / unlikely / depends</span></div>
                 <div class="list-item"><strong>Next actions</strong><span>Practical steps for the user or support team</span></div>
               </div>
             </div>
           </div>
 
           <div class="panel-actions">
-            <button class="btn btn-primary" id="rcRunBtn" type="button">Analyze transaction</button>
+            <button class="btn btn-primary" id="rcRunBtn" type="button">Check recovery path</button>
             <button class="btn btn-secondary" id="rcClearBtn" type="button">Clear</button>
           </div>
           <details class="code-shell" style="margin-top:16px;">
@@ -698,26 +702,26 @@
               <button class="btn btn-ghost" id="rcNotFoundDemoBtn" type="button">Show transaction-not-found example</button>
             </div>
           </details>
-          <div class="note" id="rcState">Ready for recovery analysis.</div>
+          <div class="note" id="rcState">Ready to check a transaction.</div>
 
           <div class="result compact" id="rcResult">
             <div class="result-top">
               <div>
-                <div class="result-status" id="rcResultStatus">WAITING</div>
-                <div class="result-title" id="rcResultTitle">No transaction analyzed yet.</div>
-                <div class="result-text" id="rcResultText">Paste a real transaction hash to generate a recovery record.</div>
+                <div class="result-status" id="rcResultStatus">READY</div>
+                <div class="result-title" id="rcResultTitle">No transaction checked yet.</div>
+                <div class="result-text" id="rcResultText">Paste a real transaction hash to see what likely happened and what to do next.</div>
               </div>
               <div class="panel-badge" id="rcReason">—</div>
             </div>
             <div class="result-kv-grid">
-              <div class="result-kv"><div class="result-k">Recoverability</div><div class="result-v" id="rcRecoverability">—</div></div>
-              <div class="result-kv"><div class="result-k">Destination class</div><div class="result-v" id="rcDestination">—</div></div>
-              <div class="result-kv"><div class="result-k">On-chain status</div><div class="result-v" id="rcObservedStatus">—</div></div>
-              <div class="result-kv"><div class="result-k">Checked at</div><div class="result-v" id="rcCheckedAt">—</div></div>
+              <div class="result-kv"><div class="result-k">Recovery outlook</div><div class="result-v" id="rcRecoverability">—</div></div>
+              <div class="result-kv"><div class="result-k">Destination type</div><div class="result-v" id="rcDestination">—</div></div>
+              <div class="result-kv"><div class="result-k">Transaction status</div><div class="result-v" id="rcObservedStatus">—</div></div>
+              <div class="result-kv"><div class="result-k">Time checked</div><div class="result-v" id="rcCheckedAt">—</div></div>
               <div class="result-kv"><div class="result-k">Confidence</div><div class="result-v" id="rcConfidence">—</div></div>
-              <div class="result-kv"><div class="result-k">Reason code</div><div class="result-v" id="rcReasonCode">—</div></div>
-              <div class="result-kv wide"><div class="result-k">Why this result</div><div class="result-v" id="rcWhy">Waiting for a live or pilot-review result.</div></div>
-              <div class="result-kv wide"><div class="result-k">Recommended next actions</div><div class="result-v" id="rcNextActions">—</div></div>
+              <div class="result-kv"><div class="result-k">System reference</div><div class="result-v" id="rcReasonCode">—</div></div>
+              <div class="result-kv wide"><div class="result-k">Why we say this</div><div class="result-v" id="rcWhy">Waiting for a live or pilot-review result.</div></div>
+              <div class="result-kv wide"><div class="result-k">What to do next</div><div class="result-v" id="rcNextActions">—</div></div>
             </div>
           </div>
         </div>
@@ -1548,9 +1552,41 @@ POST /api/recovery-copilot
 
     function normalizeList(value) {
       if (Array.isArray(value)) return value.map((item) => normalizeTextValue(item)).filter(Boolean);
-      if (typeof value === 'string') return value.split(/\n+/).map((item) => item.trim()).filter(Boolean);
+      if (typeof value === 'string') {
+        return value
+          .split(/\n+|\s\|\s|\|/)
+          .map((item) => item.trim())
+          .filter(Boolean);
+      }
       if (value && typeof value === 'object') return Object.values(value).map((item) => normalizeTextValue(item)).filter(Boolean);
       return [];
+    }
+
+    function hasMeaningfulExtraDestinationNote(baseNote, extraNote) {
+      const base = normalizedComparisonText(baseNote);
+      const extra = normalizedComparisonText(extraNote);
+      if (!extra) return false;
+      if (!base) return true;
+      if (extra === base) return false;
+      if (extra.includes(base) || base.includes(extra)) return false;
+      return true;
+    }
+
+    function renderRecoveryNextActions(actions) {
+      const items = normalizeList(actions);
+      if (!items.length) return '—';
+      return `<ul class="result-list">${items.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+    }
+
+    function formatRecoveryReasonCode(value) {
+      const raw = formatReasonCodeRaw(value);
+      if (raw === '—') return '—';
+      const label = formatReasonLabel(raw);
+      const humanized = humanizeCode(raw);
+      if (!label || label === raw || label === humanized) {
+        return `<span class="result-code-main">${escapeHtml(raw)}</span>`;
+      }
+      return `<span class="result-code-main">${escapeHtml(raw)}</span><span class="result-code-help">${escapeHtml(label)}</span>`;
     }
 
     function getRecoveryDestinationMeta(data, observed) {
@@ -1778,7 +1814,7 @@ POST /api/recovery-copilot
       if (data && data.confidence) return data.confidence;
       const status = String(data?.status || '').toLowerCase();
       const observedStatus = String((data?.observed || {}).tx_status || '').toLowerCase();
-      if (status === 'not_found') return 'High';
+      if (status === 'not_found') return 'Clear result';
       if (['confirmed', 'failed', 'reverted'].includes(observedStatus) || status === 'found') return 'High';
       if (observedStatus === 'pending') return 'Medium';
       return 'Limited';
@@ -1792,7 +1828,7 @@ POST /api/recovery-copilot
       const destinationProfile = getDestinationProfile(destinationType);
       const why = buildRecoveryWhy(data);
       const nextActions = normalizeList(data?.next_actions);
-      const destinationNoteHtml = destinationNote && normalizedComparisonText(destinationNote) !== normalizedComparisonText(destinationProfile.note)
+      const destinationNoteHtml = hasMeaningfulExtraDestinationNote(destinationProfile.note, destinationNote)
         ? `<br><span class="muted">${escapeHtml(destinationNote)}</span>`
         : '';
       const liveExplanation = normalizeTextValue(data?.explanation);
@@ -1811,9 +1847,9 @@ POST /api/recovery-copilot
       el('rcObservedStatus').textContent = formatStatusLabel(observed.tx_status || data?.status || '—');
       el('rcCheckedAt').textContent = toDisplayTime(data?.proof?.checked_at || data?._checked_at_label || data?.checked_at || new Date().toISOString());
       el('rcConfidence').textContent = inferRecoveryConfidence(data);
-      el('rcReasonCode').textContent = reasonCode;
+      el('rcReasonCode').innerHTML = formatRecoveryReasonCode(reasonCode);
       el('rcWhy').textContent = why || 'Recovery guidance was generated from the live transaction analysis.';
-      el('rcNextActions').textContent = nextActions.join(' | ') || '—';
+      el('rcNextActions').innerHTML = renderRecoveryNextActions(nextActions);
     }
 
     function previewPreflightScenario(kind) {
@@ -2035,7 +2071,7 @@ POST /api/recovery-copilot
       el('rcConfidence').textContent = '—';
       el('rcReasonCode').textContent = '—';
       el('rcWhy').textContent = 'Waiting for a live or pilot-review result.';
-      el('rcNextActions').textContent = '—';
+      el('rcNextActions').innerHTML = '—';
       el('rcState').textContent = 'Cleared.';
     }
 
