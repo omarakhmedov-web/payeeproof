@@ -8,8 +8,8 @@
   "confidence": "High",
   "source": "rpc",
   "classification": "personal_wallet",
-  "raw_type": "eoa",
-  "next_action": "SAFE_TO_PROCEED",
+  "raw_type": "personal_wallet",
+  "next_action": "APPROVE_PAYOUT",
   "why_this_verdict": "Network, asset, address, and memo checks matched. The destination classified as a personal wallet.",
   "scope": {
     "network": "ethereum",
