@@ -734,15 +734,15 @@
                   <div class="quick-answer-card"><div class="quick-answer-label">First step</div><div class="quick-answer-value" id="rcQuickStep">Start with a live transaction lookup.</div></div>
                 </div>
               </div>
-              <div class="result-kv"><div class="result-k">What this means</div><div class="result-v" id="rcVerdict">—</div></div>
+              <div class="result-kv"><div class="result-k">Recovery verdict</div><div class="result-v" id="rcVerdict">—</div></div>
               <div class="result-kv"><div class="result-k">Recovery chance</div><div class="result-v" id="rcRecoverability">—</div></div>
               <div class="result-kv"><div class="result-k">Recipient type</div><div class="result-v" id="rcDestination">—</div></div>
-              <div class="result-kv"><div class="result-k">Contact first</div><div class="result-v" id="rcContactTarget">—</div></div>
-              <div class="result-kv"><div class="result-k">First step</div><div class="result-v" id="rcBestStep">—</div></div>
+              <div class="result-kv"><div class="result-k">Contact path</div><div class="result-v" id="rcContactTarget">—</div></div>
+              <div class="result-kv"><div class="result-k">Detailed next step</div><div class="result-v" id="rcBestStep">—</div></div>
               <div class="result-kv"><div class="result-k">On-chain status</div><div class="result-v" id="rcObservedStatus">—</div></div>
               <div class="result-kv"><div class="result-k">Checked at</div><div class="result-v" id="rcCheckedAt">—</div></div>
               <div class="result-kv"><div class="result-k">Confidence</div><div class="result-v" id="rcConfidence">—</div></div>
-              <div class="result-kv"><div class="result-k">Internal reference</div><div class="result-v" id="rcReasonCode">—</div></div>
+              <div class="result-kv"><div class="result-k">Case reference</div><div class="result-v" id="rcReasonCode">—</div></div>
               <div class="result-kv wide"><div class="result-k">Why this result</div><div class="result-v" id="rcWhy">Waiting for a live or pilot-review result.</div></div>
               <div class="result-kv wide"><div class="result-k">Action plan</div><div class="result-v" id="rcNextActions">—</div></div>
               <div class="result-kv wide"><div class="result-k">Support message</div><div class="result-v"><pre class="preview-box" id="rcSupportPreview">Run a check to generate a ready-to-send support message.</pre></div></div>
@@ -1485,6 +1485,19 @@ POST /api/recovery-copilot
       return formatNetworkName(value || '—');
     }
 
+    function normalizeChainMentions(value) {
+      const text = normalizeTextValue(value);
+      if (!text) return '';
+      return text
+        .replace(/\bbnb smart chain\b/gi, 'BNB Chain')
+        .replace(/\bbsc\b/gi, 'BNB Chain')
+        .replace(/\bethereum\b/gi, 'Ethereum')
+        .replace(/\barbitrum\b/gi, 'Arbitrum')
+        .replace(/\bbase\b/gi, 'Base')
+        .replace(/\bpolygon\b/gi, 'Polygon')
+        .replace(/\bsolana\b/gi, 'Solana');
+    }
+
     function formatStatusLabel(value) {
       const labels = {
         found: 'Result ready',
@@ -1766,7 +1779,7 @@ POST /api/recovery-copilot
       const actions = normalizeList(packet.next_actions || data?.next_actions);
       if (actions.length) actions.forEach((item, idx) => lines.push(`${idx + 1}. ${item}`));
       else lines.push('1. Review manually.');
-      return lines.join('\n');
+      return normalizeChainMentions(lines.join('\n'));
     }
 
     function buildRecoverySupportMessageText(data) {
@@ -1795,7 +1808,7 @@ POST /api/recovery-copilot
         '',
         'Please confirm whether this destination is controlled by your platform or team, whether recovery or manual credit is possible, and what exact steps or information you need from me next.'
       ];
-      return message.join('\n');
+      return normalizeChainMentions(message.join('\n'));
     }
 
     async function copyRecoveryPacket() {
@@ -2010,13 +2023,13 @@ POST /api/recovery-copilot
         : '';
       const liveExplanation = normalizeTextValue(data?.explanation);
       const resultText = source === 'demo'
-        ? (liveExplanation || 'Reference scenario loaded. This is local example data.')
-        : (liveExplanation || why);
+        ? normalizeChainMentions(liveExplanation || 'Reference scenario loaded. This is local example data.')
+        : normalizeChainMentions(liveExplanation || why);
 
       setRecoveryExpanded(true);
       setResultBox(el('rcResult'), outcome === 'UNAVAILABLE' ? 'unavailable' : outcome === 'NOT FOUND' ? 'not_found' : 'found');
       el('rcResultStatus').textContent = outcome;
-      el('rcResultTitle').textContent = normalizeTextValue(data?.summary) || (outcome === 'NOT FOUND' ? 'No matching transaction was found.' : 'Recovery analysis ready.');
+      el('rcResultTitle').textContent = normalizeChainMentions(normalizeTextValue(data?.summary) || (outcome === 'NOT FOUND' ? 'No matching transaction was found.' : 'Recovery analysis ready.'));
       el('rcResultText').textContent = resultText;
       el('rcReason').textContent = formatReasonLabel(data?.reason_code || outcome);
       const verdict = deriveRecoveryVerdict(data);
@@ -2036,10 +2049,10 @@ POST /api/recovery-copilot
       el('rcCheckedAt').textContent = toDisplayTime(data?.proof?.checked_at || data?._checked_at_label || data?.checked_at || new Date().toISOString());
       el('rcConfidence').textContent = confidence;
       el('rcReasonCode').innerHTML = formatRecoveryReasonCode(reasonCode);
-      el('rcWhy').textContent = why || 'Recovery guidance was generated from the live transaction analysis.';
+      el('rcWhy').textContent = normalizeChainMentions(why || 'Recovery guidance was generated from the live transaction analysis.');
       el('rcNextActions').innerHTML = renderRecoveryNextActions(nextActions);
-      el('rcSupportPreview').textContent = buildRecoverySupportMessageText(data);
-      el('rcPacketPreview').textContent = buildRecoveryPacketText(data);
+      el('rcSupportPreview').textContent = normalizeChainMentions(buildRecoverySupportMessageText(data));
+      el('rcPacketPreview').textContent = normalizeChainMentions(buildRecoveryPacketText(data));
     }
 
     function previewPreflightScenario(kind) {
