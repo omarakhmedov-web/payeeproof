@@ -649,14 +649,16 @@
                   </select>
                 </div>
                 <div class="field">
-                  <label for="rcIssueType">Issue type</label>
+                  <label for="rcIssueType">What happened? <span style="opacity:.7; font-weight:500;">(optional hint)</span></label>
                   <select id="rcIssueType">
+                    <option value="auto" selected>Auto-detect / I’m not sure</option>
                     <option value="wrong_network">Wrong network</option>
                     <option value="wrong_address">Wrong address</option>
                     <option value="sent_to_contract">Sent to smart contract / app</option>
                     <option value="missing_memo">Missing memo / tag</option>
                     <option value="unknown">General analysis</option>
                   </select>
+                  <div class="note" style="margin-top:8px; padding:10px 12px; font-size:13px;">Optional hint. Leave this on <strong>Auto-detect</strong> if you are not fully sure what went wrong.</div>
                 </div>
                 <div class="field wide">
                   <label for="rcHash">Transaction hash</label>
@@ -695,7 +697,7 @@
           <div class="panel-actions">
             <button class="btn btn-primary" id="rcRunBtn" type="button">Check recovery path</button>
             <button class="btn btn-secondary" id="rcCopyPacketBtn" type="button">Copy recovery packet</button>
-            <button class="btn btn-secondary" id="rcCopyMessageBtn" type="button">Copy support message</button>
+            <button class="btn btn-secondary" id="rcCopyMessageBtn" type="button">Copy ready support message</button>
             <button class="btn btn-secondary" id="rcClearBtn" type="button">Clear</button>
           </div>
           <details class="code-shell" style="margin-top:16px;">
@@ -827,7 +829,7 @@ POST /api/recovery-copilot
 {
   "chain": "polygon",
   "tx_hash": "0x...",
-  "issue_type": "wrong_network",
+  "issue_type": "auto",
   "intended_chain": "ethereum"
 }</pre>
             </details>
@@ -2174,7 +2176,7 @@ POST /api/recovery-copilot
         const payload = {
           chain: el('rcChain').value,
           tx_hash: el('rcHash').value.trim(),
-          issue_type: el('rcIssueType').value,
+          issue_type: el('rcIssueType').value || 'auto',
           intended_address: el('rcIntendedAddress').value.trim(),
           intended_chain: el('rcIntendedChain').value,
         };
@@ -2223,6 +2225,7 @@ POST /api/recovery-copilot
       latestRecoveryData = null;
       el('rcHash').value = '';
       el('rcIntendedAddress').value = '';
+      el('rcIssueType').value = 'auto';
       el('rcIntendedChain').value = '';
       const box = el('rcResult');
       setRecoveryExpanded(false);
