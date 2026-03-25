@@ -13,6 +13,10 @@ servers:
 tags:
   - name: Preflight
     description: Pre-send verification before payout approval
+  - name: Records
+    description: Verification history and searchable records for authenticated clients
+  - name: Webhooks
+    description: Delivery acknowledgements for outbound verification events
 paths:
   /api/preflight-check:
     post:
@@ -148,6 +152,156 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /api/verification-records:
+    get:
+      tags: [Records]
+      operationId: listVerificationRecords
+      summary: List verification records
+      description: >
+        Returns searchable verification history for the authenticated client.
+        Records are scoped to the API key owner.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: query
+          name: service
+          schema: { type: string, enum: [preflight-check, recovery-copilot] }
+        - in: query
+          name: network
+          schema: { type: string }
+        - in: query
+          name: reason_code
+          schema: { type: string }
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: request_id
+          schema: { type: string }
+        - in: query
+          name: reference_id
+          schema: { type: string }
+        - in: query
+          name: address
+          schema: { type: string }
+        - in: query
+          name: tx_hash
+          schema: { type: string }
+        - in: query
+          name: q
+          schema: { type: string }
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+        - in: query
+          name: offset
+          schema: { type: integer, minimum: 0, default: 0 }
+      responses:
+        '200':
+          description: Verification history page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationRecordListResponse'
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/verification-records/{record_id}:
+    get:
+      tags: [Records]
+      operationId: getVerificationRecord
+      summary: Get one verification record
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: record_id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Verification record detail with webhook delivery history
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationRecordDetailResponse'
+        '404':
+          description: Record not found for this client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/webhooks/ack:
+    post:
+      tags: [Webhooks]
+      operationId: acknowledgeWebhookDelivery
+      summary: Confirm webhook processing
+      description: >
+        Optional application-level acknowledgement after the receiver accepts
+        a webhook event. HTTP 2xx from the receiver still counts as delivery.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookAckRequest'
+      responses:
+        '200':
+          description: Delivery acknowledgement accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookAckResponse'
+        '403':
+          description: Invalid delivery token or unknown delivery
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+webhooks:
+  verificationEvent:
+    post:
+      tags: [Webhooks]
+      summary: Verification event delivery
+      description: >
+        Sent by PayeeProof to the client webhook URL when a verification record
+        is ready. Signatures use HMAC-SHA256 over `${timestamp}.${raw_body}`.
+      parameters:
+        - in: header
+          name: X-PayeeProof-Event
+          required: true
+          schema: { type: string, enum: [preflight_run, recovery_run] }
+        - in: header
+          name: X-PayeeProof-Delivery-ID
+          required: true
+          schema: { type: string }
+        - in: header
+          name: X-PayeeProof-Record-ID
+          required: true
+          schema: { type: string }
+        - in: header
+          name: X-PayeeProof-Timestamp
+          required: true
+          schema: { type: string, format: date-time }
+        - in: header
+          name: X-PayeeProof-Signature
+          required: true
+          schema: { type: string, example: sha256=<hex_digest> }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificationWebhookEvent'
+      responses:
+        '200':
+          description: Delivery accepted by receiver
+
 components:
   securitySchemes:
     ApiKeyAuth:
@@ -332,3 +486,132 @@ components:
           type:
             - string
             - 'null'
+
+    WebhookDeliverySummary:
+      type: object
+      additionalProperties: true
+      properties:
+        delivery_id: { type: string }
+        event_name: { type: string }
+        delivery_status: { type: string }
+        ack_status: { type: string }
+        attempt_count: { type: integer }
+        max_attempts: { type: integer }
+        next_attempt_at: { type: [string, 'null'], format: date-time }
+        last_attempt_at: { type: [string, 'null'], format: date-time }
+        delivered_at: { type: [string, 'null'], format: date-time }
+        acknowledged_at: { type: [string, 'null'], format: date-time }
+        last_response_code: { type: [integer, 'null'] }
+        last_response_excerpt: { type: [string, 'null'] }
+        last_error: { type: [string, 'null'] }
+    VerificationRecordSummary:
+      type: object
+      additionalProperties: true
+      properties:
+        record_id: { type: string }
+        created_at: { type: string, format: date-time }
+        service: { type: string }
+        network: { type: string }
+        status: { type: string }
+        reason_code: { type: string }
+        request_id: { type: string }
+        reference_id: { type: [string, 'null'] }
+        address: { type: [string, 'null'] }
+        tx_hash: { type: [string, 'null'] }
+        webhook_delivery_status: { type: [string, 'null'] }
+        webhook_attempt_count: { type: [integer, 'null'] }
+        webhook_delivered_at: { type: [string, 'null'], format: date-time }
+        webhook_acknowledged_at: { type: [string, 'null'], format: date-time }
+    VerificationRecordListResponse:
+      type: object
+      additionalProperties: true
+      properties:
+        ok: { type: boolean }
+        trace_id: { type: string }
+        total: { type: integer }
+        limit: { type: integer }
+        offset: { type: integer }
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/VerificationRecordSummary'
+    VerificationRecord:
+      type: object
+      additionalProperties: true
+      properties:
+        record_id: { type: string }
+        created_at: { type: string, format: date-time }
+        request_id: { type: string }
+        service: { type: string }
+        event_name: { type: string }
+        client_label: { type: string }
+        access_mode: { type: string }
+        source_ip: { type: [string, 'null'] }
+        reference_id: { type: [string, 'null'] }
+        network: { type: [string, 'null'] }
+        status: { type: [string, 'null'] }
+        verdict: { type: [string, 'null'] }
+        reason_code: { type: [string, 'null'] }
+        address: { type: [string, 'null'] }
+        counterparty_address: { type: [string, 'null'] }
+        tx_hash: { type: [string, 'null'] }
+        payload:
+          type: object
+          additionalProperties: true
+        response:
+          type: object
+          additionalProperties: true
+        webhook_deliveries:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookDeliverySummary'
+    VerificationRecordDetailResponse:
+      type: object
+      additionalProperties: true
+      properties:
+        ok: { type: boolean }
+        trace_id: { type: string }
+        record:
+          $ref: '#/components/schemas/VerificationRecord'
+    WebhookAckRequest:
+      type: object
+      additionalProperties: false
+      required: [delivery_id, token]
+      properties:
+        delivery_id: { type: string }
+        token: { type: string }
+        status: { type: string, example: processed }
+        detail: { type: [string, 'null'] }
+    WebhookAckResponse:
+      type: object
+      additionalProperties: true
+      properties:
+        ok: { type: boolean }
+        delivery_id: { type: string }
+        status: { type: string }
+        acknowledged_at: { type: string, format: date-time }
+        trace_id: { type: string }
+    VerificationWebhookEvent:
+      type: object
+      additionalProperties: true
+      properties:
+        delivery_id: { type: string }
+        event: { type: string }
+        record_id: { type: string }
+        request_id: { type: string }
+        created_at: { type: string, format: date-time }
+        service: { type: string }
+        network: { type: string }
+        status: { type: string }
+        reason_code: { type: [string, 'null'] }
+        client_label: { type: string }
+        verification:
+          type: object
+          additionalProperties: true
+        ack:
+          type: object
+          additionalProperties: true
+          properties:
+            url: { type: string }
+            delivery_id: { type: string }
+            token: { type: string }
