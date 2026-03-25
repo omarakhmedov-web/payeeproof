@@ -353,7 +353,7 @@
         <a href="#contact">Pilot</a>
       </nav>
       <div class="btn-row">
-        <a class="btn btn-secondary" href="#record">See sample record</a>
+        <a class="btn btn-secondary" href="#record">See verification record</a>
         <a class="btn btn-primary" href="#contact">Request pilot</a>
       </div>
     </div>
@@ -368,7 +368,7 @@
           <p class="lead">PayeeProof gives payout teams one clear answer before approval: <strong>SAFE</strong>, <strong>BLOCK</strong>, or <strong>REVERIFY</strong>. Recovery guidance remains available as a secondary module after a bad send.</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="#preflight">Run pre-send check →</a>
-            <a class="btn btn-secondary" href="#record">View sample record</a>
+            <a class="btn btn-secondary" href="#record">View verification record</a>
             <a class="btn btn-ghost" href="#contact">Request pilot by email</a>
           </div>
           <div class="tag-row">
@@ -450,7 +450,7 @@
       <div class="container">
         <div class="eyebrow">Proof format</div>
         <h2>A verification result should read like a record, not a chatbot answer.</h2>
-        <p class="lead" style="max-width:900px; margin-top:14px;">This sample shows the format the product is moving toward: a compact verification record with a stable verdict, reason code, confidence level, destination class, and operational next step.</p>
+        <p class="lead" style="max-width:900px; margin-top:14px;">This page shows the record format the product is built around: a compact verification record with a stable verdict, reason code, confidence level, destination class, and operational next step.</p>
 
         <div class="proof-grid">
           <div class="card panel">
@@ -462,11 +462,11 @@
               <div class="list-item"><strong>Reviewability</strong><span>A result that can be pasted into an internal workflow, ticket, or approval log without rewriting it.</span></div>
             </div>
             <div class="artifact-links">
-              <a class="btn btn-primary" href="./sample-verification-record.html">Open sample record</a>
-              <a class="btn btn-secondary" href="./sample-verification-record.json" download>Download sample JSON</a>
-              <a class="btn btn-secondary" href="./policy-examples.html">Open policy examples</a>
+              <a class="btn btn-primary" href="./sample-verification-record.html">Open verification record</a>
+              <a class="btn btn-secondary" href="./sample-verification-record.json" download>Download record JSON</a>
+              <a class="btn btn-secondary" href="./policy_examples.html">Open policy examples</a>
             </div>
-            <p class="mini-note">Illustrative sample only. It shows the intended record format, not a signed legal artifact.</p>
+            <p class="mini-note">Format preview only. Signed records are produced inside controlled workflows.</p>
           </div>
 
           <div class="proof-record">
@@ -790,14 +790,14 @@
             <div class="artifact-links">
               <a class="btn btn-primary" href="#contact">Request pilot</a>
               <a class="btn btn-secondary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20request">Email integration brief</a>
-              <a class="btn btn-ghost" href="./sample-verification-record.html">See sample record</a>
+              <a class="btn btn-ghost" href="./sample-verification-record.html">See verification record</a>
             </div>
           </div>
           <div class="card panel" style="background: rgba(0,0,0,.22);">
             <h3 style="font-size:24px; margin-bottom:14px;">Technical review (optional)</h3>
-            <p class="muted">The main page stays commercial. This compact sample is only for teams that want a quick technical review during pilot evaluation. A separate pilot-flow page is also available for teams that need a clearer review path.</p>
+            <p class="muted">The main page stays commercial. This compact technical overview is for teams that want a quick field-level review during pilot evaluation. A separate pilot-flow page is also available for teams that need a clearer review path.</p>
             <details class="code-shell">
-              <summary>Open compact technical sample</summary>
+              <summary>Open compact technical overview</summary>
 <pre>POST /api/preflight-check
 {
   "expected": {
@@ -821,7 +821,7 @@ POST /api/recovery-copilot
 }</pre>
             </details>
             <div class="artifact-links" style="margin-top:18px;">
-              <a class="btn btn-secondary" href="./technical-sample.html">Open technical sample</a>
+              <a class="btn btn-secondary" href="./technical-sample.html">Open technical overview</a>
               <a class="btn btn-ghost" href="./pilot-flow.html">Open pilot flow</a>
             </div>
           </div>
@@ -997,9 +997,9 @@ POST /api/recovery-copilot
         <a href="#record">Record</a>
         <a href="#scenarios">Scenarios</a>
         <a href="#integration">Integration</a>
-        <a href="./technical-sample.html">Technical sample</a>
+        <a href="./technical-sample.html">Technical overview</a>
         <a href="./pilot-flow.html">Pilot flow</a>
-        <a href="./policy-examples.html">Policy examples</a>
+        <a href="./policy_examples.html">Policy examples</a>
         <a href="./trust-security.html">Trust &amp; security</a>
         <a href="./use-cases.html">Use cases page</a>
         <a href="./pricing.html">Pricing &amp; packages</a>
@@ -1693,7 +1693,7 @@ POST /api/recovery-copilot
       el('pfResultStatus').textContent = verdict.label;
       el('pfResultTitle').textContent = data?.summary || preflightTitleFromVerdict(verdict.label);
       el('pfResultText').textContent = source === 'demo'
-        ? (data?.explanation || 'Sample scenario loaded. This is illustrative local data.')
+        ? (data?.explanation || 'Reference scenario loaded. This is local example data.')
         : (data?.explanation || verdict.why);
       el('pfReason').textContent = formatReasonLabel(data?.reason_code || verdict.label);
       el('pfNext').textContent = nextAction;
@@ -1741,7 +1741,7 @@ POST /api/recovery-copilot
       el('rcResultStatus').textContent = outcome;
       el('rcResultTitle').textContent = data?.summary || (outcome === 'NOT FOUND' ? 'No matching transaction was found.' : 'Recovery analysis ready.');
       el('rcResultText').textContent = source === 'demo'
-        ? (data?.explanation || 'Sample scenario loaded. This is illustrative local data.')
+        ? (data?.explanation || 'Reference scenario loaded. This is local example data.')
         : (data?.explanation || why);
       el('rcReason').textContent = formatReasonLabel(data?.reason_code || outcome);
       el('rcRecoverability').textContent = formatRecoverability(data?.recoverability);
@@ -1824,7 +1824,7 @@ POST /api/recovery-copilot
       };
       const data = scenarios[kind];
       applyPreflightResult(data, 'demo');
-      el('pfState').textContent = 'Sample scenario loaded. This is illustrative local data, not a live API response.';
+      el('pfState').textContent = 'Reference scenario loaded. This is local example data, not a live API response.';
     }
 
     function previewRecoveryNotFound() {
@@ -1846,7 +1846,7 @@ POST /api/recovery-copilot
         ],
       };
       applyRecoveryResult(data, 'demo');
-      el('rcState').textContent = 'Sample scenario loaded. This is illustrative local data, not a live API response.';
+      el('rcState').textContent = 'Reference scenario loaded. This is local example data, not a live API response.';
     }
 
     async function pfLoadHappy() {
