@@ -1526,6 +1526,65 @@ POST /api/recovery-copilot
       return `<strong>${escapeHtml(profile.label)}</strong><br><span class="muted">${escapeHtml(profile.note)}</span>${addressLine}`;
     }
 
+    function normalizeTextValue(value) {
+      if (value == null) return '';
+      if (typeof value === 'string') return value.trim();
+      if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+      if (Array.isArray(value)) return value.map((item) => normalizeTextValue(item)).filter(Boolean).join(' | ');
+      if (typeof value === 'object') {
+        const direct = ['message', 'detail', 'description', 'label', 'title', 'text', 'summary'];
+        for (const key of direct) {
+          const candidate = normalizeTextValue(value[key]);
+          if (candidate) return candidate;
+        }
+        return Object.values(value).map((item) => normalizeTextValue(item)).filter(Boolean).join(' | ');
+      }
+      return String(value).trim();
+    }
+
+    function normalizedComparisonText(value) {
+      return normalizeTextValue(value).toLowerCase().replace(/\s+/g, ' ').trim();
+    }
+
+    function normalizeList(value) {
+      if (Array.isArray(value)) return value.map((item) => normalizeTextValue(item)).filter(Boolean);
+      if (typeof value === 'string') return value.split(/\n+/).map((item) => item.trim()).filter(Boolean);
+      if (value && typeof value === 'object') return Object.values(value).map((item) => normalizeTextValue(item)).filter(Boolean);
+      return [];
+    }
+
+    function getRecoveryDestinationMeta(data, observed) {
+      const destination = data?.destination || {};
+      const destinationType = destination.classification
+        || destination.type
+        || observed.destination_classification
+        || observed.destination_type
+        || data?.destination_classification
+        || data?.destination_type
+        || data?._destination_type
+        || 'unknown';
+      const destinationAddress = destination.address
+        || observed.destination
+        || observed.to
+        || data?.destination_address
+        || data?._destination
+        || '';
+      const destinationNote = destination.explanation
+        || destination.note
+        || data?.destination_explanation
+        || '';
+      return { destinationType, destinationAddress, destinationNote: normalizeTextValue(destinationNote) };
+    }
+
+    function buildRecoveryWhy(data) {
+      return normalizeTextValue(
+        data?.why_this_result
+        || data?._why
+        || data?.explanation
+        || (data?.reason_code ? `Guidance type: ${formatReasonLabel(data?.reason_code)}` : 'Recovery guidance was generated from the live transaction analysis.')
+      );
+    }
+
     function formatRecoverability(value) {
       const labels = {
         possible: 'Recovery may be possible',
@@ -1729,27 +1788,32 @@ POST /api/recovery-copilot
       const observed = data?.observed || {};
       const outcome = recoveryOutcomeLabel(data);
       const reasonCode = formatReasonCodeRaw(data?.reason_code);
-      const destinationType = data?.destination?.classification || observed.destination_classification || observed.destination_type || data?._destination_type || 'unknown';
-      const destinationAddress = data?.destination?.address || observed.destination || data?._destination || '';
-      const destinationNote = data?.destination?.explanation || '';
-      const why = data?.why_this_result || data?._why || data?.explanation || `Guidance type: ${formatReasonLabel(data?.reason_code)}`;
+      const { destinationType, destinationAddress, destinationNote } = getRecoveryDestinationMeta(data, observed);
+      const destinationProfile = getDestinationProfile(destinationType);
+      const why = buildRecoveryWhy(data);
+      const nextActions = normalizeList(data?.next_actions);
+      const destinationNoteHtml = destinationNote && normalizedComparisonText(destinationNote) !== normalizedComparisonText(destinationProfile.note)
+        ? `<br><span class="muted">${escapeHtml(destinationNote)}</span>`
+        : '';
+      const liveExplanation = normalizeTextValue(data?.explanation);
+      const resultText = source === 'demo'
+        ? (liveExplanation || 'Reference scenario loaded. This is local example data.')
+        : (liveExplanation || why);
 
       setRecoveryExpanded(true);
       setResultBox(el('rcResult'), outcome === 'UNAVAILABLE' ? 'unavailable' : outcome === 'NOT FOUND' ? 'not_found' : 'found');
       el('rcResultStatus').textContent = outcome;
-      el('rcResultTitle').textContent = data?.summary || (outcome === 'NOT FOUND' ? 'No matching transaction was found.' : 'Recovery analysis ready.');
-      el('rcResultText').textContent = source === 'demo'
-        ? (data?.explanation || 'Reference scenario loaded. This is local example data.')
-        : (data?.explanation || why);
+      el('rcResultTitle').textContent = normalizeTextValue(data?.summary) || (outcome === 'NOT FOUND' ? 'No matching transaction was found.' : 'Recovery analysis ready.');
+      el('rcResultText').textContent = resultText;
       el('rcReason').textContent = formatReasonLabel(data?.reason_code || outcome);
       el('rcRecoverability').textContent = formatRecoverability(data?.recoverability);
-      el('rcDestination').innerHTML = formatDestinationProfile(destinationType, destinationAddress) + (destinationNote ? `<br><span class="muted">${escapeHtml(destinationNote)}</span>` : '');
+      el('rcDestination').innerHTML = formatDestinationProfile(destinationType, destinationAddress) + destinationNoteHtml;
       el('rcObservedStatus').textContent = formatStatusLabel(observed.tx_status || data?.status || '—');
       el('rcCheckedAt').textContent = toDisplayTime(data?.proof?.checked_at || data?._checked_at_label || data?.checked_at || new Date().toISOString());
       el('rcConfidence').textContent = inferRecoveryConfidence(data);
       el('rcReasonCode').textContent = reasonCode;
-      el('rcWhy').textContent = why;
-      el('rcNextActions').textContent = (data?.next_actions || []).join(' | ') || '—';
+      el('rcWhy').textContent = why || 'Recovery guidance was generated from the live transaction analysis.';
+      el('rcNextActions').textContent = nextActions.join(' | ') || '—';
     }
 
     function previewPreflightScenario(kind) {
@@ -1930,7 +1994,7 @@ POST /api/recovery-copilot
           intended_address: el('rcIntendedAddress').value.trim(),
           intended_chain: el('rcIntendedChain').value,
         };
-        const data = await fetchJson(RECOVERY_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const data = await fetchJson(RECOVERY_URL, { method: 'POST', body: JSON.stringify(payload), timeoutMs: 40000 });
         applyRecoveryResult(data, 'live');
         el('rcState').textContent = 'Recovery analysis complete.';
       } catch (err) {
