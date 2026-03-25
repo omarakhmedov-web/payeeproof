@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PayeeProof Pilot Pack — scope, verdicts, reason codes, and pilot terms</title>
+  <meta name="description" content="Buyer-facing pilot pack for PayeeProof: what the product checks, verdicts, reason codes, supported scope, pilot model, and current limitations." />
+  <meta property="og:title" content="PayeeProof Pilot Pack" />
+  <meta property="og:description" content="What PayeeProof checks, what it returns, what is in scope today, and what a pilot includes." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://payeeproof.com/payeeproof-logo.png" />
+  <meta name="theme-color" content="#06080d" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./payeeproof-favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./payeeproof-favicon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./payeeproof-favicon-180.png" />
+  <link rel="shortcut icon" href="./payeeproof-favicon.ico" />
+  <style>
+    :root {
+      --bg: #06080d;
+      --panel: rgba(255,255,255,.05);
+      --panel-2: rgba(255,255,255,.03);
+      --line: rgba(255,255,255,.10);
+      --text: #f4f4f5;
+      --muted: #a1a1aa;
+      --white: #ffffff;
+      --ok: #86efac;
+      --warn: #fcd34d;
+      --bad: #fca5a5;
+      --ok-bg: rgba(16,185,129,.10);
+      --warn-bg: rgba(245,158,11,.10);
+      --bad-bg: rgba(239,68,68,.10);
+      --ok-line: rgba(16,185,129,.22);
+      --warn-line: rgba(245,158,11,.22);
+      --bad-line: rgba(239,68,68,.22);
+      --radius-xl: 28px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1200px, calc(100% - 32px)); margin: 0 auto; }
+    .section { padding: 84px 0; }
+    .section-sm { padding: 62px 0; }
+    .grid { display: grid; gap: 24px; }
+    .two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .three-col { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid var(--line);
+      background: rgba(6,8,13,.82);
+      backdrop-filter: blur(16px);
+    }
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 16px 0;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 42px; height: 42px; border-radius: 14px; overflow: hidden;
+      border: 1px solid var(--line); background: var(--panel); flex: 0 0 42px;
+      display: grid; place-items: center;
+    }
+    .logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .brand-title { font-weight: 700; letter-spacing: -.02em; }
+    .brand-sub { font-size: 12px; color: #71717a; }
+    nav { display: flex; gap: 20px; flex-wrap: wrap; }
+    nav a { color: var(--muted); font-size: 14px; }
+    nav a:hover { color: var(--white); }
+    .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 14px 18px; border-radius: 16px; border: 1px solid var(--line);
+      font-weight: 700; font-size: 14px; cursor: pointer; transition: .18s ease;
+      text-align: center;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--white); color: #000; border-color: transparent; }
+    .btn-secondary { background: transparent; color: var(--text); }
+    .btn-ghost { background: rgba(255,255,255,.03); color: #d4d4d8; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px; width: fit-content;
+      border: 1px solid var(--line); background: var(--panel); color: #e4e4e7;
+      padding: 9px 14px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+    }
+    .eyebrow { color: #a1a1aa; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .22em; margin-bottom: 12px; }
+    h1,h2,h3,p { margin: 0; }
+    h1 { font-size: clamp(40px, 7vw, 68px); line-height: .98; letter-spacing: -.04em; max-width: 980px; }
+    h2 { font-size: clamp(30px, 4vw, 46px); line-height: 1.04; letter-spacing: -.03em; }
+    h3 { font-size: 24px; line-height: 1.1; letter-spacing: -.02em; }
+    .lead { font-size: clamp(18px, 2vw, 22px); color: var(--muted); max-width: 900px; line-height: 1.7; }
+    .hero {
+      position: relative; overflow: hidden; border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255,255,255,.08), transparent 26%),
+        radial-gradient(circle at 86% 8%, rgba(59,130,246,.14), transparent 16%),
+        var(--bg);
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: 1.06fr .94fr; gap: 32px; align-items: start;
+      min-height: 78vh; padding: 54px 0;
+    }
+    .hero-copy { display: grid; gap: 22px; align-content: center; }
+    .muted { color: var(--muted); }
+    .tag-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .tag {
+      border: 1px solid var(--line); background: rgba(255,255,255,.03); color: #d4d4d8;
+      padding: 10px 14px; border-radius: 999px; font-size: 13px;
+    }
+    .panel { padding: 26px; }
+    .mini-shell {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(0,0,0,.22);
+      overflow: hidden;
+    }
+    .mini-shell-bar {
+      display: flex;
+      gap: 8px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .mini-shell-bar span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.22);
+      display: inline-block;
+    }
+    .shell-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      font-size: 14px;
+      color: #d4d4d8;
+    }
+    .shell-line:last-child { border-bottom: 0; }
+    .shell-line strong { color: var(--white); font-weight: 700; }
+    .kpi-grid { display:grid; gap:16px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top:28px; }
+    .kpi-card { padding:18px; border:1px solid var(--line); border-radius:20px; background: rgba(255,255,255,.03); }
+    .kpi-label { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:#a1a1aa; margin-bottom:8px; }
+    .kpi-value { font-size:24px; font-weight:700; letter-spacing:-.02em; }
+    .list { display: grid; gap: 10px; margin-top: 16px; }
+    .list-item {
+      display: flex; gap: 12px; padding: 14px; border: 1px solid var(--line);
+      background: rgba(0,0,0,.20); border-radius: 16px; color: #d4d4d8;
+    }
+    .list-item strong { color: var(--white); }
+    .flow-grid { display: grid; gap: 16px; margin-top: 26px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .flow-step { padding: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.03); border-radius: 20px; }
+    .flow-step-num { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #a1a1aa; margin-bottom: 8px; }
+    .flow-step h3 { font-size: 20px; margin-bottom: 8px; }
+    .flow-step p { color: #d4d4d8; font-size: 14px; }
+    .table-card { overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 16px 18px; text-align: left; vertical-align: top; }
+    th {
+      font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: #a1a1aa;
+      background: rgba(255,255,255,.03); border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    td { font-size: 14px; color: #e4e4e7; border-bottom: 1px solid rgba(255,255,255,.08); }
+    tr:last-child td { border-bottom: 0; }
+    .badge {
+      display:inline-flex; align-items:center; justify-content:center; min-width:94px;
+      padding:8px 12px; border-radius:999px; font-size:12px; font-weight:700; letter-spacing:.06em;
+      border:1px solid var(--line); background: rgba(255,255,255,.04);
+    }
+    .badge.safe { color: var(--ok); border-color: var(--ok-line); background: var(--ok-bg); }
+    .badge.block { color: var(--bad); border-color: var(--bad-line); background: var(--bad-bg); }
+    .badge.review { color: var(--warn); border-color: var(--warn-line); background: var(--warn-bg); }
+    .badge.neutral { color: #d4d4d8; }
+    .note {
+      margin-top: 16px;
+      font-size: 13px;
+      color: #a1a1aa;
+    }
+    .check-grid { display:grid; gap:24px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top:28px; }
+    .check-card { padding: 28px; }
+    .check-list { display:grid; gap:12px; margin-top:16px; }
+    .check-row {
+      display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
+      padding:14px 16px; border:1px solid var(--line); border-radius:16px; background: rgba(0,0,0,.20);
+    }
+    .check-row strong { display:block; color:var(--white); margin-bottom:4px; }
+    .check-row span { color:#d4d4d8; font-size:14px; }
+    .check-state { font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#e4e4e7; white-space:nowrap; }
+    .scope-chip-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; }
+    .scope-chip { padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.03); color:#d4d4d8; font-size:13px; }
+    .limit-grid { display:grid; gap:16px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top:26px; }
+    .limit-card { padding:20px; border:1px solid var(--line); border-radius:20px; background: rgba(255,255,255,.03); }
+    .limit-card h3 { font-size:20px; margin-bottom:10px; }
+    .limit-card p { color:#d4d4d8; font-size:14px; }
+    .footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 0 40px;
+      background: rgba(255,255,255,.02);
+    }
+    .footer-inner {
+      display:flex; align-items:flex-start; justify-content:space-between; gap:18px; flex-wrap:wrap;
+    }
+    .footer-links { display:flex; gap:16px; flex-wrap:wrap; color:var(--muted); font-size:14px; }
+
+    @media (max-width: 1060px) {
+      .hero-grid,
+      .two-col,
+      .three-col,
+      .check-grid,
+      .limit-grid,
+      .flow-grid,
+      .kpi-grid { grid-template-columns: 1fr; }
+      nav { display:none; }
+      .topbar-inner { align-items:flex-start; flex-direction:column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
+        <div>
+          <div class="brand-title">PayeeProof</div>
+          <div class="brand-sub">Pilot pack · buyer-facing review page</div>
+        </div>
+      </div>
+      <nav>
+        <a href="#checks">Checks</a>
+        <a href="#verdicts">Verdicts</a>
+        <a href="#reason-codes">Reason codes</a>
+        <a href="#scope">Scope</a>
+        <a href="#integration">Integration</a>
+        <a href="#pilot">Pilot</a>
+        <a href="#limits">Limits</a>
+      </nav>
+      <div class="btn-row">
+        <a class="btn btn-secondary" href="./index.html">Back to main site</a>
+        <a class="btn btn-primary" href="./index.html#contact">Request pilot</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="pill">Pilot pack · what it checks · what is in scope today</div>
+          <h1>One page a buyer can review before deciding whether to start a PayeeProof pilot.</h1>
+          <p class="lead">This page answers the commercial questions first: what the product checks, what verdict language it returns, which reason codes exist, what is supported today, how a pilot fits into a workflow, and where the current limits still are.</p>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="#checks">See what gets checked</a>
+            <a class="btn btn-secondary" href="#pilot">See what is in the pilot</a>
+            <a class="btn btn-ghost" href="./technical-sample.html">Open technical overview</a>
+            <a class="btn btn-ghost" href="./sample-verification-record.html">Open sample record</a>
+          </div>
+          <div class="tag-row">
+            <div class="tag">Pre-send verification</div>
+            <div class="tag">Recovery guidance</div>
+            <div class="tag">Six live networks</div>
+            <div class="tag">Reason-code driven outputs</div>
+          </div>
+        </div>
+        <div class="card panel">
+          <div class="mini-shell">
+            <div class="mini-shell-bar"><span></span><span></span><span></span></div>
+            <div class="shell-line"><strong>Main buyer question</strong><span>Can this reduce payout mistakes before funds move?</span></div>
+            <div class="shell-line"><strong>Core outputs</strong><span>SAFE · BLOCK · REVERIFY · TEST FIRST · UNAVAILABLE</span></div>
+            <div class="shell-line"><strong>Recovery outputs</strong><span>RESULT READY · NOT FOUND · FAILED ON-CHAIN · UNAVAILABLE</span></div>
+            <div class="shell-line"><strong>Current live scope</strong><span>Ethereum, Arbitrum, Base, Polygon, BNB Chain, Solana</span></div>
+            <div class="shell-line"><strong>Integration style</strong><span>Simple API call before release or during support review</span></div>
+            <div class="shell-line"><strong>Pilot posture</strong><span>Email-first, narrow scope, live checks, clear limitations</span></div>
+          </div>
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Pre-send endpoint</div>
+              <div class="kpi-value">1</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Recovery endpoint</div>
+              <div class="kpi-value">1</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Pilot intake</div>
+              <div class="kpi-value">Live</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Networks today</div>
+              <div class="kpi-value">6</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="checks">
+      <div class="container">
+        <div class="eyebrow">What the product checks</div>
+        <h2>Two modules, each with a narrow operational job.</h2>
+        <div class="check-grid">
+          <article class="card check-card">
+            <h3>Pre-Send Check</h3>
+            <p class="lead" style="font-size:16px; max-width:none; margin-top:10px;">Used before approval, release, or manual send. It is designed to catch preventable routing mistakes while the transfer is still stoppable.</p>
+            <div class="check-list">
+              <div class="check-row">
+                <div><strong>Network match</strong><span>Compares expected and provided chain.</span></div>
+                <div class="check-state">Core</div>
+              </div>
+              <div class="check-row">
+                <div><strong>Asset match</strong><span>Checks whether the submitted asset matches the approved route and is in supported scope.</span></div>
+                <div class="check-state">Core</div>
+              </div>
+              <div class="check-row">
+                <div><strong>Address validity</strong><span>Validates format and blocks obvious failures such as invalid or zero address.</span></div>
+                <div class="check-state">Core</div>
+              </div>
+              <div class="check-row">
+                <div><strong>Memo or tag alignment</strong><span>Flags memo-sensitive deposit flows where a missing or mismatched memo can break crediting.</span></div>
+                <div class="check-state">Context</div>
+              </div>
+              <div class="check-row">
+                <div><strong>Destination classification</strong><span>Labels destination as personal wallet, contract or app, exchange-like deposit, bridge-router, unknown, or unavailable.</span></div>
+                <div class="check-state">Live lookup</div>
+              </div>
+              <div class="check-row">
+                <div><strong>Operational next step</strong><span>Returns the action language a workflow can use immediately: proceed, block, re-verify, or test first.</span></div>
+                <div class="check-state">Output</div>
+              </div>
+            </div>
+          </article>
+          <article class="card check-card">
+            <h3>Recovery Copilot</h3>
+            <p class="lead" style="font-size:16px; max-width:none; margin-top:10px;">Used after a transfer has already happened. It does not promise recovery. It gives a clearer first diagnosis and a better support packet.</p>
+            <div class="check-list">
+              <div class="check-row">
+                <div><strong>On-chain transaction lookup</strong><span>Looks up the transaction on the selected chain, or auto-detects across supported chains when chain is omitted.</span></div>
+                <div class="check-state">Live lookup</div>
+              </div>
+              <div class="check-row">
+                <div><strong>Execution status</strong><span>Distinguishes result ready, not found, failed on-chain, or lookup unavailable.</span></div>
+                <div class="check-state">Core</div>
+              </div>
+              <div class="check-row">
+                <div><strong>Issue-type guidance</strong><span>Handles auto, wrong network, wrong address, sent to contract or app, and missing memo or tag flows.</span></div>
+                <div class="check-state">Core</div>
+              </div>
+              <div class="check-row">
+                <div><strong>Destination profile</strong><span>Summarizes who likely needs to help: recipient, platform support, or app operator.</span></div>
+                <div class="check-state">Decision aid</div>
+              </div>
+              <div class="check-row">
+                <div><strong>Support packet</strong><span>Returns a concise operator-ready summary with best next step, contact target, and reusable support text.</span></div>
+                <div class="check-state">Output</div>
+              </div>
+              <div class="check-row">
+                <div><strong>Traceable proof block</strong><span>Includes checked time, chain, trace id, outcome, confidence, and reason code.</span></div>
+                <div class="check-state">Proof</div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-sm" id="verdicts">
+      <div class="container">
+        <div class="eyebrow">Verdict language</div>
+        <h2>Simple outputs first. Nuance stays in reason codes and next steps.</h2>
+        <div class="grid two-col" style="margin-top:28px; align-items:start;">
+          <div class="card table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Pre-send verdict</th>
+                  <th>Meaning</th>
+                  <th>Typical action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge safe">SAFE</span></td>
+                  <td>Core details match and the destination looks like a normal personal-wallet style route.</td>
+                  <td>Approve and keep the proof record.</td>
+                </tr>
+                <tr>
+                  <td><span class="badge block">BLOCK</span></td>
+                  <td>The route is wrong, unsupported, invalid, or operationally unsafe to approve.</td>
+                  <td>Stop the transfer and re-verify the request.</td>
+                </tr>
+                <tr>
+                  <td><span class="badge review">REVERIFY</span></td>
+                  <td>Core details may match, but deposit-style or unclear destination context still needs a human confirmation.</td>
+                  <td>Pause and re-check venue, memo, or destination context.</td>
+                </tr>
+                <tr>
+                  <td><span class="badge review">TEST FIRST</span></td>
+                  <td>The destination looks like infrastructure, a contract, an app, or a bridge-router flow.</td>
+                  <td>Use a small test before any full send.</td>
+                </tr>
+                <tr>
+                  <td><span class="badge neutral">UNAVAILABLE</span></td>
+                  <td>Live destination lookup did not complete, so the result should not be treated as final approval.</td>
+                  <td>Retry or send to manual review.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Recovery outcome</th>
+                  <th>Meaning</th>
+                  <th>Typical action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge safe">RESULT READY</span></td>
+                  <td>A matching on-chain transaction was found and the API returned a diagnosis plus next steps.</td>
+                  <td>Use the support packet and act on the recommended path.</td>
+                </tr>
+                <tr>
+                  <td><span class="badge review">NOT FOUND</span></td>
+                  <td>No matching transaction was found on the selected network or in supported auto-detect scope.</td>
+                  <td>Re-check chain and hash before assuming funds moved.</td>
+                </tr>
+                <tr>
+                  <td><span class="badge block">FAILED ON-CHAIN</span></td>
+                  <td>The transaction failed or reverted on-chain.</td>
+                  <td>Do not resend until the failure reason is understood.</td>
+                </tr>
+                <tr>
+                  <td><span class="badge neutral">UNAVAILABLE</span></td>
+                  <td>Live lookup did not complete, so the result is unavailable rather than final.</td>
+                  <td>Retry the lookup or route to manual review.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="reason-codes">
+      <div class="container">
+        <div class="eyebrow">Reason codes</div>
+        <h2>Stable machine-readable labels, with plain-English meaning for operators.</h2>
+        <div class="grid two-col" style="margin-top:28px; align-items:start;">
+          <div class="card table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Pre-send reason code</th>
+                  <th>What it means</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>OK</strong></td><td>Route matched and looks safe enough to proceed.</td></tr>
+                <tr><td><strong>NETWORK_MISMATCH</strong></td><td>Provided network does not match the approved route.</td></tr>
+                <tr><td><strong>ASSET_MISMATCH</strong></td><td>Provided asset does not match the approved route.</td></tr>
+                <tr><td><strong>ADDRESS_MISMATCH</strong></td><td>Provided destination differs from the approved destination.</td></tr>
+                <tr><td><strong>MEMO_MISMATCH</strong></td><td>Memo or tag differs from the approved route.</td></tr>
+                <tr><td><strong>INVALID_ADDRESS</strong></td><td>Address format failed validation for the selected network.</td></tr>
+                <tr><td><strong>ZERO_ADDRESS</strong></td><td>Destination is the EVM zero address and must be blocked.</td></tr>
+                <tr><td><strong>DESTINATION_IS_BRIDGE_ROUTER</strong></td><td>Destination looks like bridge or router infrastructure.</td></tr>
+                <tr><td><strong>DESTINATION_IS_CONTRACT_OR_APP</strong></td><td>Destination looks like a contract or app rather than a personal wallet.</td></tr>
+                <tr><td><strong>DESTINATION_REQUIRES_MEMO_OR_VENUE_CHECK</strong></td><td>Destination looks like a deposit-style route that may depend on venue and memo.</td></tr>
+                <tr><td><strong>DESTINATION_NOT_CLASSIFIED</strong></td><td>Core details matched, but live classification stayed inconclusive.</td></tr>
+                <tr><td><strong>DESTINATION_LOOKUP_UNAVAILABLE</strong></td><td>Live destination lookup did not complete.</td></tr>
+                <tr><td><strong>UNSUPPORTED_NETWORK</strong></td><td>Selected chain is outside current supported scope.</td></tr>
+                <tr><td><strong>UNSUPPORTED_ASSET_OR_NETWORK</strong></td><td>Asset-network combination is outside current supported scope.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Recovery reason code</th>
+                  <th>What it means</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>TX_NOT_FOUND</strong></td><td>No transaction match was found on the selected chain.</td></tr>
+                <tr><td><strong>RPC_UNAVAILABLE</strong></td><td>Live chain lookup did not complete.</td></tr>
+                <tr><td><strong>TX_REVERTED</strong></td><td>EVM transaction reverted on-chain.</td></tr>
+                <tr><td><strong>TX_FAILED</strong></td><td>Transaction failed on-chain.</td></tr>
+                <tr><td><strong>WRONG_NETWORK_DETECTED</strong></td><td>Transaction exists, but on a different chain than intended.</td></tr>
+                <tr><td><strong>WRONG_ADDRESS_DETECTED</strong></td><td>Observed destination differs from intended destination in auto-detect context.</td></tr>
+                <tr><td><strong>WRONG_ADDRESS_CONFIRMED</strong></td><td>Observed destination is confirmed to differ from intended destination.</td></tr>
+                <tr><td><strong>DESTINATION_IS_PROGRAM</strong></td><td>Solana destination looks like a program account, so recovery depends on operator behavior.</td></tr>
+                <tr><td><strong>MISSING_MEMO_SUPPORT_PATH</strong></td><td>Likely support-led recovery path for memo-sensitive deposit flow.</td></tr>
+                <tr><td><strong>GENERAL_ONCHAIN_GUIDANCE</strong></td><td>Transaction was found, but recovery depends on who controls the receiving destination.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p class="note">Reason codes are meant to stay stable enough for workflow routing, support playbooks, and lightweight policy logic during the pilot.</p>
+      </div>
+    </section>
+
+    <section class="section-sm" id="scope">
+      <div class="container">
+        <div class="eyebrow">Supported scope</div>
+        <h2>What is live today, and where the scope is intentionally narrow.</h2>
+        <div class="card table-card" style="margin-top:28px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Network</th>
+                <th>Current asset support</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Ethereum</strong></td><td>USDC, USDT, DAI, USDS, PYUSD</td><td>Full pre-send and recovery scope in current API surface.</td></tr>
+              <tr><td><strong>Arbitrum</strong></td><td>USDC, USDT, DAI, USDS</td><td>Full pre-send and recovery scope in current API surface.</td></tr>
+              <tr><td><strong>Base</strong></td><td>USDC, USDT</td><td>Full pre-send and recovery scope in current API surface.</td></tr>
+              <tr><td><strong>Polygon</strong></td><td>USDC, USDT</td><td>Full pre-send and recovery scope in current API surface.</td></tr>
+              <tr><td><strong>BNB Chain</strong></td><td>USDC, USDT</td><td>Full pre-send and recovery scope in current API surface.</td></tr>
+              <tr><td><strong>Solana</strong></td><td>USDC, USDT</td><td>Recovery supports Solana transaction signatures; pre-send supports Solana address validation and route checks.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="grid two-col" style="margin-top:24px; align-items:start;">
+          <div class="card panel">
+            <h3>Endpoints in the current pilot surface</h3>
+            <div class="scope-chip-row">
+              <div class="scope-chip">GET /health</div>
+              <div class="scope-chip">POST /api/preflight-check</div>
+              <div class="scope-chip">POST /api/recovery-copilot</div>
+              <div class="scope-chip">POST /pilot-request</div>
+            </div>
+            <p class="note">The public website demo stays narrower than the API surface. It focuses on the clearest buyer story first.</p>
+          </div>
+          <div class="card panel">
+            <h3>Issue types in recovery today</h3>
+            <div class="scope-chip-row">
+              <div class="scope-chip">auto</div>
+              <div class="scope-chip">wrong_network</div>
+              <div class="scope-chip">wrong_address</div>
+              <div class="scope-chip">sent_to_contract</div>
+              <div class="scope-chip">missing_memo</div>
+            </div>
+            <p class="note">The recovery module is a decision-support layer. It explains likely paths and escalation targets. It does not guarantee fund recovery.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="integration">
+      <div class="container">
+        <div class="eyebrow">Integration scenario</div>
+        <h2>How a pilot fits into a real payout or support workflow.</h2>
+        <div class="flow-grid">
+          <div class="flow-step">
+            <div class="flow-step-num">Step 1</div>
+            <h3>Workflow identifies a check point</h3>
+            <p>Usually the last pause before release, approval, or manual support escalation.</p>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num">Step 2</div>
+            <h3>Client sends a narrow request</h3>
+            <p>Either expected-versus-provided payout details, or a tx hash for recovery review.</p>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num">Step 3</div>
+            <h3>PayeeProof returns action language</h3>
+            <p>Verdict or outcome, reason code, confidence, traceable proof block, and next action.</p>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num">Step 4</div>
+            <h3>Client routes the case</h3>
+            <p>Approve, block, re-verify, small test, or escalate to support or operator review.</p>
+          </div>
+        </div>
+        <div class="grid two-col" style="margin-top:28px; align-items:start;">
+          <div class="card panel">
+            <h3>Where it usually lands first</h3>
+            <div class="list">
+              <div class="list-item"><strong>Payout ops</strong><span>Use pre-send check before release.</span></div>
+              <div class="list-item"><strong>Treasury</strong><span>Add a lightweight approval control without changing custody.</span></div>
+              <div class="list-item"><strong>Support</strong><span>Use recovery for better first-line diagnosis after a bad send.</span></div>
+              <div class="list-item"><strong>Risk or compliance ops</strong><span>Keep the proof block and reason codes for workflow evidence.</span></div>
+            </div>
+          </div>
+          <div class="card panel">
+            <h3>What the integration is not</h3>
+            <div class="list">
+              <div class="list-item"><strong>Not a custodian</strong><span>PayeeProof does not move or hold funds.</span></div>
+              <div class="list-item"><strong>Not a wallet replacement</strong><span>Execution stays with the operator or client workflow.</span></div>
+              <div class="list-item"><strong>Not a universal guarantee</strong><span>Reason codes and guidance help reduce mistakes, but cannot override partner-side platform rules.</span></div>
+              <div class="list-item"><strong>Not an infinite scope pilot</strong><span>The pilot stays intentionally narrow so teams can judge the product on a real workflow.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-sm" id="pilot">
+      <div class="container">
+        <div class="eyebrow">What is included in the pilot</div>
+        <h2>A narrow package meant to prove usefulness, not bury the buyer in features.</h2>
+        <div class="grid three-col" style="margin-top:28px;">
+          <div class="card panel">
+            <h3>Commercial review layer</h3>
+            <div class="list">
+              <div class="list-item"><strong>Main site</strong><span>Buyer-facing positioning and scope story.</span></div>
+              <div class="list-item"><strong>Pilot pack</strong><span>This page: scope, verdicts, reason codes, flow, and limitations.</span></div>
+              <div class="list-item"><strong>Sample record</strong><span>Structured result format the buyer can review without reading code first.</span></div>
+            </div>
+          </div>
+          <div class="card panel">
+            <h3>Live pilot surface</h3>
+            <div class="list">
+              <div class="list-item"><strong>Keyed access</strong><span>One API key per pilot client.</span></div>
+              <div class="list-item"><strong>Rate-limited endpoints</strong><span>Basic guardrails for pilot usage.</span></div>
+              <div class="list-item"><strong>Traceable responses</strong><span>Request trace id and proof block included in responses.</span></div>
+            </div>
+          </div>
+          <div class="card panel">
+            <h3>Practical pilot process</h3>
+            <div class="list">
+              <div class="list-item"><strong>Email-first intake</strong><span>Review flow, use case, and fit without requiring an initial call.</span></div>
+              <div class="list-item"><strong>Test case review</strong><span>Walk through real examples the buyer wants to validate.</span></div>
+              <div class="list-item"><strong>Clear outputs</strong><span>Verdict, reason code, confidence, and next action fit into existing operations.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="limits">
+      <div class="container">
+        <div class="eyebrow">Current limitations</div>
+        <h2>What is deliberately not over-claimed in the current pilot.</h2>
+        <div class="limit-grid">
+          <div class="limit-card">
+            <h3>Scope is selective</h3>
+            <p>Only the currently supported networks and asset combinations are in scope. Anything else should be treated as unsupported, not hand-waved into a false green light.</p>
+          </div>
+          <div class="limit-card">
+            <h3>Recovery is guidance, not rescue magic</h3>
+            <p>The recovery module improves diagnosis and support readiness. It cannot guarantee the funds come back, especially for self-custody or platform-dependent flows.</p>
+          </div>
+          <div class="limit-card">
+            <h3>Destination classification can stay conservative</h3>
+            <p>Some destinations will still land in REVERIFY, TEST FIRST, or UNAVAILABLE. That is intentional. The product should stop bad certainty, not manufacture fake certainty.</p>
+          </div>
+          <div class="limit-card">
+            <h3>No webhook or record-history layer yet</h3>
+            <p>The current pilot surface focuses on synchronous API calls and proof-style responses. Webhooks, delivery retries, and searchable verification history belong to a later maturity layer.</p>
+          </div>
+          <div class="limit-card">
+            <h3>No multi-tenant admin surface yet</h3>
+            <p>The pilot is not pretending to be a full enterprise console. It is a focused live-check product with a narrow operational API.</p>
+          </div>
+          <div class="limit-card">
+            <h3>Human review still matters</h3>
+            <p>Some flows, especially exchange-like deposits, platform-specific memo rules, and app-owned destinations, still need a support or operations decision even after the API response.</p>
+          </div>
+        </div>
+        <div class="card panel" style="margin-top:26px;">
+          <h3>Bottom line</h3>
+          <p class="lead" style="font-size:18px; max-width:none; margin-top:10px;">PayeeProof is currently strongest when used as a focused transfer-safety layer for stablecoin payout workflows: narrow scope, live checks, explainable outputs, and a pilot model that is honest about what is automated versus what still needs operator judgment.</p>
+          <div class="btn-row" style="margin-top:18px;">
+            <a class="btn btn-primary" href="./index.html#contact">Request pilot</a>
+            <a class="btn btn-secondary" href="./technical-sample.html">Open technical overview</a>
+            <a class="btn btn-ghost" href="./sample-verification-record.html">Open sample record</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="brand">
+        <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
+        <div>© 2026 PayeeProof</div>
+      </div>
+      <div class="footer-links">
+        <a href="#checks">Checks</a>
+        <a href="#verdicts">Verdicts</a>
+        <a href="#reason-codes">Reason codes</a>
+        <a href="#scope">Scope</a>
+        <a href="#integration">Integration</a>
+        <a href="#pilot">Pilot</a>
+        <a href="#limits">Limits</a>
+        <a href="./technical-sample.html">Technical overview</a>
+        <a href="./sample-verification-record.html">Sample record</a>
+        <a href="./index.html">Main site</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
