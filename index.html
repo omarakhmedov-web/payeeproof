@@ -2352,7 +2352,7 @@ POST /api/recovery-copilot
         el('pilotState').textContent = 'Sending pilot request…';
         const data = await fetchJson(PILOT_URL, { method: 'POST', body: JSON.stringify(payload) });
         el('pilotState').textContent = data.message
-          ? `${data.message}${data.email_notification ? ` Email: ${data.email_notification}.` : ''}${data.submitted_at ? ` Submitted at ${data.submitted_at}` : ''}`
+          ? `${data.message}${data.request_id ? ` Ref: ${data.request_id}.` : ''}${data.email_notification ? ` Email: ${data.email_notification}.` : ''}${data.submitted_at ? ` Submitted at ${data.submitted_at}.` : ''}${typeof data.persisted === 'boolean' ? ` Stored: ${data.persisted ? 'yes' : 'no'}.` : ''}`
           : 'Pilot request received.';
         event.target.reset();
         resetPilotGuards();
