@@ -990,6 +990,8 @@ POST /api/recovery-copilot
           <h3 style="font-size:24px; margin-bottom:14px;">Request pilot</h3>
           <p class="muted" style="margin-bottom:18px;">Use a work email and include enough context for a serious fit review, not just a one-line intro.</p>
           <form class="grid" id="pilotForm" novalidate>
+            <input id="pilotWebsite" type="text" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute; left:-10000px; opacity:0; pointer-events:none;" />
+            <input id="pilotStartedAt" type="hidden" />
             <div class="field-grid">
               <div class="field"><input id="pilotName" placeholder="Full name" autocomplete="name" /></div>
               <div class="field"><input id="pilotCompany" placeholder="Company / team" autocomplete="organization" /></div>
@@ -2320,6 +2322,13 @@ POST /api/recovery-copilot
       return parts.length === 2 && PERSONAL_DOMAINS.has(parts[1]);
     }
 
+    function resetPilotGuards() {
+      const startedAt = el('pilotStartedAt');
+      const website = el('pilotWebsite');
+      if (startedAt) startedAt.value = String(Date.now());
+      if (website) website.value = '';
+    }
+
     function buildPilotPayload() {
       const payload = {
         name: el('pilotName').value.trim(),
@@ -2327,6 +2336,8 @@ POST /api/recovery-copilot
         email: el('pilotEmail').value.trim(),
         volume: el('pilotVolume').value.trim(),
         notes: el('pilotNotes').value.trim(),
+        website: el('pilotWebsite') ? el('pilotWebsite').value.trim() : '',
+        form_started_at: el('pilotStartedAt') ? el('pilotStartedAt').value : '',
       };
       if (!payload.name || !payload.company || !payload.email || !payload.notes) throw new Error('Complete name, company, work email, and use case first.');
       if (!validEmail(payload.email)) throw new Error('Please enter a valid work email.');
@@ -2344,6 +2355,7 @@ POST /api/recovery-copilot
           ? `${data.message}${data.email_notification ? ` Email: ${data.email_notification}.` : ''}${data.submitted_at ? ` Submitted at ${data.submitted_at}` : ''}`
           : 'Pilot request received.';
         event.target.reset();
+        resetPilotGuards();
       } catch (err) {
         el('pilotState').textContent = err.message || 'Pilot request failed.';
       }
@@ -2390,6 +2402,7 @@ POST /api/recovery-copilot
     el('rcCopyMessageBtn').addEventListener('click', copyRecoverySupportMessage);
     el('rcClearBtn').addEventListener('click', clearRecovery);
     el('rcNotFoundDemoBtn').addEventListener('click', previewRecoveryNotFound);
+    resetPilotGuards();
     el('pilotForm').addEventListener('submit', submitPilot);
     el('pilotCopyBtn').addEventListener('click', copyPilot);
 
