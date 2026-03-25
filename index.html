@@ -1060,7 +1060,13 @@ POST /api/recovery-copilot
         const text = await res.text();
         let data = {};
         try { data = text ? JSON.parse(text) : {}; } catch (e) {}
-        if (!res.ok) throw new Error(data.error || data.message || `Request failed (${res.status})`);
+        const requestId = res.headers.get('X-Request-ID') || '';
+        if (data && typeof data === 'object' && requestId && !data._request_id) data._request_id = requestId;
+        if (!res.ok) {
+          const error = new Error(data.error || data.message || `Request failed (${res.status})`);
+          if (requestId) error.requestId = requestId;
+          throw error;
+        }
         return data;
       } catch (err) {
         if (err && err.name === 'AbortError') {
@@ -1096,6 +1102,11 @@ POST /api/recovery-copilot
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+    }
+
+    function traceSuffix(source, label = 'Ref') {
+      const traceId = source?._request_id || source?.trace_id || source?.requestId || '';
+      return traceId ? ` ${label}: ${traceId}.` : '';
     }
 
 
@@ -2203,7 +2214,7 @@ POST /api/recovery-copilot
         };
         const data = await fetchJson(PRECHECK_URL, { method: 'POST', body: JSON.stringify(payload), timeoutMs: 15000 });
         applyPreflightResult(data, 'live');
-        el('pfState').textContent = 'Pre-send verification complete.';
+        el('pfState').textContent = `Pre-send verification complete.${traceSuffix(data)}`;
       } catch (err) {
         const data = {
           _verdict: 'UNAVAILABLE',
@@ -2218,7 +2229,7 @@ POST /api/recovery-copilot
           checks: {},
         };
         applyPreflightResult(data, 'live');
-        el('pfState').textContent = 'Live verification request failed.';
+        el('pfState').textContent = `Live verification request failed.${traceSuffix(err)}`;
       } finally {
         setPreflightButtonsBusy(false);
       }
@@ -2238,7 +2249,7 @@ POST /api/recovery-copilot
         const data = await fetchJson(RECOVERY_URL, { method: 'POST', body: JSON.stringify(payload), timeoutMs: 40000 });
         try {
           applyRecoveryResult(data, 'live');
-          el('rcState').textContent = 'Recovery analysis complete.';
+          el('rcState').textContent = `Recovery analysis complete.${traceSuffix(data)}`;
         } catch (renderErr) {
           console.error('Recovery render error:', renderErr);
           const fallback = {
@@ -2254,7 +2265,7 @@ POST /api/recovery-copilot
             next_actions: ['Refresh the page once and try again.', 'If the problem repeats, replace the site file with the latest fixed version.'],
           };
           applyRecoveryResult(fallback, 'live');
-          el('rcState').textContent = 'Recovery render failed.';
+          el('rcState').textContent = `Recovery render failed.${traceSuffix(data)}`;
         }
       } catch (err) {
         const data = {
@@ -2270,7 +2281,7 @@ POST /api/recovery-copilot
           next_actions: ['Check whether the service is live and whether network connections are healthy.'],
         };
         applyRecoveryResult(data, 'live');
-        el('rcState').textContent = 'Backend request failed.';
+        el('rcState').textContent = `Backend request failed.${traceSuffix(err)}`;
       } finally {
         setRecoveryButtonsBusy(false);
       }
@@ -2352,8 +2363,8 @@ POST /api/recovery-copilot
         el('pilotState').textContent = 'Sending pilot request…';
         const data = await fetchJson(PILOT_URL, { method: 'POST', body: JSON.stringify(payload) });
         el('pilotState').textContent = data.message
-          ? `${data.message}${data.request_id ? ` Ref: ${data.request_id}.` : ''}${data.email_notification ? ` Email: ${data.email_notification}.` : ''}${data.submitted_at ? ` Submitted at ${data.submitted_at}.` : ''}${typeof data.persisted === 'boolean' ? ` Stored: ${data.persisted ? 'yes' : 'no'}.` : ''}`
-          : 'Pilot request received.';
+          ? `${data.message}${data.request_id ? ` Ref: ${data.request_id}.` : ''}${traceSuffix(data, 'Trace')}${data.email_notification ? ` Email: ${data.email_notification}.` : ''}${data.submitted_at ? ` Submitted at ${data.submitted_at}.` : ''}${typeof data.persisted === 'boolean' ? ` Stored: ${data.persisted ? 'yes' : 'no'}.` : ''}`
+          : `Pilot request received.${traceSuffix(data, 'Trace')}`;
         event.target.reset();
         resetPilotGuards();
       } catch (err) {
