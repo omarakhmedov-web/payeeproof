@@ -1,15 +1,16 @@
 {
-  "record_id": "ppf_demo_2026_03_24_001",
+  "ok": true,
+  "api_version": "v1",
+  "request_id": "ppf_req_01HZZZZZZZZZZZZZZZZZZZZZZ",
+  "record_id": "ppf_demo_2026_03_26_001",
   "issuer": "PayeeProof",
   "service": "preflight-check",
-  "checked_at": "2026-03-24T19:12:08Z",
+  "checked_at": "2026-03-26T10:12:08Z",
   "verdict": "SAFE",
   "reason_code": "OK",
   "confidence": "High",
-  "source": "rpc",
-  "classification": "personal_wallet",
-  "raw_type": "personal_wallet",
-  "next_action": "APPROVE_PAYOUT",
+  "destination_type": "personal_wallet",
+  "next_action": "SAFE_TO_PROCEED",
   "why_this_verdict": "Network, asset, address, and memo checks matched. The destination classified as a personal wallet.",
   "scope": {
     "network": "ethereum",
@@ -26,12 +27,14 @@
   "expected": {
     "network": "ethereum",
     "asset": "USDC",
-    "address": "0x59d779BED4dB1E734D3fDa3172d45bc3063eCD69"
+    "address": "0x59d779BED4dB1E734D3fDa3172d45bc3063eCD69",
+    "memo": null
   },
   "provided": {
     "network": "ethereum",
     "asset": "USDC",
-    "address": "0x59d779BED4dB1E734D3fDa3172d45bc3063eCD69"
+    "address": "0x59d779BED4dB1E734D3fDa3172d45bc3063eCD69",
+    "memo": null
   },
-  "note": "Illustrative sample record for product presentation. Not a signed legal artifact."
+  "note": "Illustrative sample record for the current buyer-facing API contract."
 }
