@@ -186,6 +186,11 @@
     .result-kv.wide { grid-column: 1 / -1; }
     .result-k { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #a1a1aa; margin-bottom: 8px; }
     .result-v { font-size: 13px; color: #f4f4f5; word-break: break-word; }
+    .quick-answer-grid { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+    .quick-answer-card { border: 1px solid var(--line); background: rgba(255,255,255,.03); border-radius: 14px; padding: 12px; }
+    .quick-answer-label { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #a1a1aa; margin-bottom: 8px; }
+    .quick-answer-value { font-size: 14px; color: #fafafa; font-weight: 700; line-height: 1.45; }
+    .preview-box { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; line-height: 1.65; background: rgba(255,255,255,.03); border: 1px dashed rgba(255,255,255,.10); border-radius: 12px; padding: 14px; }
     .result-list { margin: 0; padding-left: 18px; }
     .result-list li + li { margin-top: 6px; }
     .result-code-main { font-weight: 700; }
@@ -721,18 +726,27 @@
               <div class="panel-badge" id="rcReason">—</div>
             </div>
             <div class="result-kv-grid">
-              <div class="result-kv"><div class="result-k">Recovery verdict</div><div class="result-v" id="rcVerdict">—</div></div>
-              <div class="result-kv"><div class="result-k">Recovery outlook</div><div class="result-v" id="rcRecoverability">—</div></div>
-              <div class="result-kv"><div class="result-k">Destination type</div><div class="result-v" id="rcDestination">—</div></div>
-              <div class="result-kv"><div class="result-k">Who to contact</div><div class="result-v" id="rcContactTarget">—</div></div>
-              <div class="result-kv"><div class="result-k">Best next move</div><div class="result-v" id="rcBestStep">—</div></div>
-              <div class="result-kv"><div class="result-k">Transaction status</div><div class="result-v" id="rcObservedStatus">—</div></div>
-              <div class="result-kv"><div class="result-k">Time checked</div><div class="result-v" id="rcCheckedAt">—</div></div>
+              <div class="result-kv wide">
+                <div class="result-k">Quick answer</div>
+                <div class="quick-answer-grid">
+                  <div class="quick-answer-card"><div class="quick-answer-label">What this means</div><div class="quick-answer-value" id="rcQuickOutcome">Run a check to get a clear answer.</div></div>
+                  <div class="quick-answer-card"><div class="quick-answer-label">Contact first</div><div class="quick-answer-value" id="rcQuickContact">We will suggest the right contact path after a live check.</div></div>
+                  <div class="quick-answer-card"><div class="quick-answer-label">First step</div><div class="quick-answer-value" id="rcQuickStep">Start with a live transaction lookup.</div></div>
+                </div>
+              </div>
+              <div class="result-kv"><div class="result-k">What this means</div><div class="result-v" id="rcVerdict">—</div></div>
+              <div class="result-kv"><div class="result-k">Recovery chance</div><div class="result-v" id="rcRecoverability">—</div></div>
+              <div class="result-kv"><div class="result-k">Recipient type</div><div class="result-v" id="rcDestination">—</div></div>
+              <div class="result-kv"><div class="result-k">Contact first</div><div class="result-v" id="rcContactTarget">—</div></div>
+              <div class="result-kv"><div class="result-k">First step</div><div class="result-v" id="rcBestStep">—</div></div>
+              <div class="result-kv"><div class="result-k">On-chain status</div><div class="result-v" id="rcObservedStatus">—</div></div>
+              <div class="result-kv"><div class="result-k">Checked at</div><div class="result-v" id="rcCheckedAt">—</div></div>
               <div class="result-kv"><div class="result-k">Confidence</div><div class="result-v" id="rcConfidence">—</div></div>
-              <div class="result-kv"><div class="result-k">System reference</div><div class="result-v" id="rcReasonCode">—</div></div>
-              <div class="result-kv wide"><div class="result-k">Why we say this</div><div class="result-v" id="rcWhy">Waiting for a live or pilot-review result.</div></div>
-              <div class="result-kv wide"><div class="result-k">What to do next</div><div class="result-v" id="rcNextActions">—</div></div>
-              <div class="result-kv wide"><div class="result-k">Recovery packet preview</div><div class="result-v"><pre id="rcPacketPreview" style="margin:0; white-space:pre-wrap; word-break:break-word; font:inherit;">Run a check to generate a copy-ready packet.</pre></div></div>
+              <div class="result-kv"><div class="result-k">Internal reference</div><div class="result-v" id="rcReasonCode">—</div></div>
+              <div class="result-kv wide"><div class="result-k">Why this result</div><div class="result-v" id="rcWhy">Waiting for a live or pilot-review result.</div></div>
+              <div class="result-kv wide"><div class="result-k">Action plan</div><div class="result-v" id="rcNextActions">—</div></div>
+              <div class="result-kv wide"><div class="result-k">Support message</div><div class="result-v"><pre class="preview-box" id="rcSupportPreview">Run a check to generate a ready-to-send support message.</pre></div></div>
+              <div class="result-kv wide"><div class="result-k">Recovery packet</div><div class="result-v"><pre class="preview-box" id="rcPacketPreview">Run a check to generate a copy-ready packet.</pre></div></div>
             </div>
           </div>
         </div>
@@ -2005,17 +2019,26 @@ POST /api/recovery-copilot
       el('rcResultTitle').textContent = normalizeTextValue(data?.summary) || (outcome === 'NOT FOUND' ? 'No matching transaction was found.' : 'Recovery analysis ready.');
       el('rcResultText').textContent = resultText;
       el('rcReason').textContent = formatReasonLabel(data?.reason_code || outcome);
-      el('rcVerdict').textContent = deriveRecoveryVerdict(data);
-      el('rcRecoverability').textContent = formatRecoverability(data?.recoverability);
+      const verdict = deriveRecoveryVerdict(data);
+      const contactTarget = deriveRecoveryContactTarget(data, destinationType);
+      const bestStep = deriveRecoveryBestStep(data, destinationType);
+      const recoverability = formatRecoverability(data?.recoverability);
+      const confidence = inferRecoveryConfidence(data);
+      el('rcQuickOutcome').textContent = verdict;
+      el('rcQuickContact').textContent = contactTarget;
+      el('rcQuickStep').textContent = bestStep;
+      el('rcVerdict').textContent = verdict;
+      el('rcRecoverability').textContent = recoverability;
       el('rcDestination').innerHTML = formatDestinationProfile(destinationType, destinationAddress) + destinationNoteHtml;
-      el('rcContactTarget').textContent = deriveRecoveryContactTarget(data, destinationType);
-      el('rcBestStep').textContent = deriveRecoveryBestStep(data, destinationType);
+      el('rcContactTarget').textContent = contactTarget;
+      el('rcBestStep').textContent = bestStep;
       el('rcObservedStatus').textContent = formatStatusLabel(observed.tx_status || data?.status || '—');
       el('rcCheckedAt').textContent = toDisplayTime(data?.proof?.checked_at || data?._checked_at_label || data?.checked_at || new Date().toISOString());
-      el('rcConfidence').textContent = inferRecoveryConfidence(data);
+      el('rcConfidence').textContent = confidence;
       el('rcReasonCode').innerHTML = formatRecoveryReasonCode(reasonCode);
       el('rcWhy').textContent = why || 'Recovery guidance was generated from the live transaction analysis.';
       el('rcNextActions').innerHTML = renderRecoveryNextActions(nextActions);
+      el('rcSupportPreview').textContent = buildRecoverySupportMessageText(data);
       el('rcPacketPreview').textContent = buildRecoveryPacketText(data);
     }
 
@@ -2252,6 +2275,9 @@ POST /api/recovery-copilot
       el('rcResultTitle').textContent = 'No transaction analyzed yet.';
       el('rcResultText').textContent = 'Paste a real transaction hash to get a live recovery result.';
       el('rcReason').textContent = '—';
+      el('rcQuickOutcome').textContent = 'Run a check to get a clear answer.';
+      el('rcQuickContact').textContent = 'We will suggest the right contact path after a live check.';
+      el('rcQuickStep').textContent = 'Start with a live transaction lookup.';
       el('rcVerdict').textContent = '—';
       el('rcRecoverability').textContent = '—';
       el('rcDestination').textContent = '—';
@@ -2263,6 +2289,7 @@ POST /api/recovery-copilot
       el('rcReasonCode').textContent = '—';
       el('rcWhy').textContent = 'Waiting for a live or pilot-review result.';
       el('rcNextActions').innerHTML = '—';
+      el('rcSupportPreview').textContent = 'Run a check to generate a ready-to-send support message.';
       el('rcPacketPreview').textContent = 'Run a check to generate a copy-ready packet.';
       el('rcState').textContent = 'Cleared.';
     }
