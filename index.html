@@ -784,12 +784,12 @@
             <div class="list" style="margin-top:0;">
               <div class="list-item"><strong>Pre-Send verification</strong><span>Live validation for network, asset, address, memo or tag, and destination classification.</span></div>
               <div class="list-item"><strong>Recovery guidance</strong><span>Live transaction lookup with recoverability guidance and next actions.</span></div>
-              <div class="list-item"><strong>Pilot intake</strong><span>Teams can submit their flow and get a practical pilot fit review by email.</span></div>
+              <div class="list-item"><strong>Pilot intake</strong><span>Teams can submit their flow and get a practical pilot fit review through the request form.</span></div>
             </div>
             <p class="note" style="margin-top:16px;">Exchange-side verification still depends on direct partner integrations. Public chain checks and guided recovery are already live.</p>
             <div class="artifact-links">
               <a class="btn btn-primary" href="#contact">Request pilot</a>
-              <a class="btn btn-secondary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20request">Email integration brief</a>
+              <a class="btn btn-secondary" href="./pilot-flow.html">Open pilot flow</a>
               <a class="btn btn-ghost" href="./sample-verification-record.html">See verification record</a>
             </div>
           </div>
@@ -949,12 +949,11 @@ POST /api/recovery-copilot
         <div>
           <div class="eyebrow">Pilot</div>
           <h2>Request a pilot</h2>
-          <p class="lead" style="max-width:760px; margin-top:14px;">Use the form to describe the payout or recovery flow you want to protect. Pilot intake is email-first, and an introductory call is not required to start a fit review.</p>
+          <p class="lead" style="max-width:760px; margin-top:14px;">Use the form to describe the payout or recovery flow you want to protect. Share enough detail for a serious fit review and a clear next-step recommendation.</p>
           <div class="list" style="margin-top:24px;">
             <div class="list-item"><strong>Best fit</strong><span>Treasury teams, payroll flows, payout ops, exchanges, marketplaces, OTC desks.</span></div>
             <div class="list-item"><strong>What to include</strong><span>Networks, assets, destination types, where mistakes happen today, and what decision your team needs before approval.</span></div>
-            <div class="list-item"><strong>Pilot review output</strong><span>A practical fit check, an initial pilot direction, and a clear email thread for next steps.</span></div>
-            <div class="list-item"><strong>Business contact</strong><span><span style="text-decoration:underline;">hello@payeeproof.com</span></span></div>
+            <div class="list-item"><strong>Pilot review output</strong><span>A practical fit check, an initial pilot direction, and clear next steps.</span></div>
           </div>
         </div>
 
@@ -971,10 +970,9 @@ POST /api/recovery-copilot
             </div>
             <div class="panel-actions">
               <button class="btn btn-primary" id="pilotSubmitBtn" type="submit">Request pilot</button>
-              <a class="btn btn-secondary" href="mailto:hello@payeeproof.com?subject=PayeeProof%20pilot%20request">Email hello@payeeproof.com</a>
               <button class="btn btn-secondary" id="pilotCopyBtn" type="button">Copy request</button>
             </div>
-            <div class="note" id="pilotState">Ready. Email-first pilot intake.</div>
+            <div class="note" id="pilotState">Ready. Pilot intake form.</div>
           </form>
         </div>
       </div>
