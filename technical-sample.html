@@ -6,7 +6,7 @@
   <title>PayeeProof API — v1 pilot contract</title>
   <meta name="description" content="Buyer-facing technical contract for the current PayeeProof pre-send verification API." />
   <meta property="og:title" content="PayeeProof API — v1 pilot contract" />
-  <meta property="og:description" content="Pre-send verification for stablecoin payouts. Current buyer-facing API contract, examples, reason codes, and versioning." />
+  <meta property="og:description" content="Pre-send verification for stablecoin payouts. API contract, examples, reason codes, and versioning." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -218,12 +218,12 @@
     <section class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <span class="pill">PayeeProof API · v1 draft</span>
+          <span class="pill">PayeeProof API · v1</span>
           <div>
-            <div class="eyebrow">Buyer-facing technical contract</div>
+            <div class="eyebrow">Technical overview</div>
             <h1>Pre-send verification for stablecoin payouts.</h1>
           </div>
-          <p class="lead">This page documents the current pilot API as a product contract, not as an internal script. It defines the current endpoint, auth model, stable response fields, reason codes, and versioning direction for teams that want to evaluate integration seriously.</p>
+          <p class="lead">This page explains the current pilot API for teams evaluating integration. It covers the endpoint, auth model, response fields, reason codes, and versioning approach.</p>
           <div class="tag-row">
             <span class="tag">B2B pre-send verification</span>
             <span class="tag">Current contract: v1</span>
@@ -231,9 +231,9 @@
             <span class="tag">Primary endpoint: /api/preflight-check</span>
           </div>
           <div class="btn-row">
-            <a class="btn btn-primary" href="./openapi.yaml">OpenAPI</a>
-            <a class="btn btn-secondary" href="./reason-codes.md">Reason codes</a>
-            <a class="btn btn-ghost" href="./sample-verification-record.json">Sample record</a>
+            <a class="btn btn-primary" href="./openapi.yaml">Open API spec</a>
+            <a class="btn btn-secondary" href="./reason-codes.md">Open reason codes</a>
+            <a class="btn btn-ghost" href="./sample-verification-record.json">Open sample record</a>
           </div>
         </div>
 
@@ -258,7 +258,7 @@
             </div>
           </div>
           <div class="list">
-            <div class="list-item"><strong>Why this matters</strong><span>Buyers need one stable decision object they can route in an approval workflow. They do not need a mystery endpoint and an apology afterward.</span></div>
+            <div class="list-item"><strong>Why this matters</strong><span>Teams need one stable decision object they can route in an approval workflow.</span></div>
             <div class="list-item"><strong>Current promise</strong><span>Stop wrong-network and wrong-destination mistakes before funds move.</span></div>
             <div class="list-item"><strong>How to integrate</strong><span>Call the API before release, approval, or payout dispatch. Use the returned verdict and next action inside your ops or product flow.</span></div>
           </div>
@@ -393,8 +393,8 @@
     <section class="section" id="reason-codes">
       <div class="container">
         <div class="eyebrow">Stable reason codes</div>
-        <h2>Reason codes should be boring. That is the point.</h2>
-        <p class="lead" style="margin-top:14px;">Reason codes exist so a buyer can wire PayeeProof into policy logic without reverse-engineering English phrasing.</p>
+        <h2>Reason codes should stay stable.</h2>
+        <p class="lead" style="margin-top:14px;">Reason codes let teams wire PayeeProof into policy logic without depending on free-form wording.</p>
 
         <div class="table-wrap" style="margin-top:28px;">
           <table>
@@ -438,21 +438,21 @@
     <section class="section-sm" id="versioning">
       <div class="container">
         <div class="eyebrow">Versioning</div>
-        <h2>Document the contract now, so future changes have somewhere to go.</h2>
-        <p class="lead" style="margin-top:14px;">The current API should be treated as <strong>v1</strong>. New optional fields can be added without drama. Breaking meaning changes belong in a new version, not in a surprise Friday deploy.</p>
+        <h2>Keep versioning explicit.</h2>
+        <p class="lead" style="margin-top:14px;">The current API should be treated as <strong>v1</strong>. Optional fields can be added, but meaning changes should move to a new version.</p>
 
         <div class="grid three-col" style="margin-top:28px;">
           <div class="card panel">
             <h3 style="margin-bottom:10px;">Safe in v1</h3>
-            <p class="muted">Add optional fields, add extra trace metadata, or improve English explanation text without breaking policy routing.</p>
+            <p class="muted">Optional fields, extra trace metadata, and clearer explanation text can be added without breaking routing logic.</p>
           </div>
           <div class="card panel">
             <h3 style="margin-bottom:10px;">Not safe in v1</h3>
-            <p class="muted">Changing what a stable <code>reason_code</code> means, changing the meaning of a <code>verdict</code>, or silently removing required routing fields.</p>
+            <p class="muted">Do not change the meaning of a <code>reason_code</code> or <code>verdict</code>, and do not remove required routing fields without a new version.</p>
           </div>
           <div class="card panel">
             <h3 style="margin-bottom:10px;">Buyer rule</h3>
-            <p class="muted">Integrators should route on <code>verdict</code>, <code>reason_code</code>, and <code>next_action</code> — not on free-form summary text.</p>
+            <p class="muted">Integrators should route on <code>verdict</code>, <code>reason_code</code>, and <code>next_action</code>, not on summary text.</p>
           </div>
         </div>
       </div>
@@ -480,7 +480,7 @@
 
   <footer>
     <div class="container">
-      PayeeProof API — current buyer-facing v1 draft for pre-send verification. Recovery is intentionally outside the current pilot API offer.
+      PayeeProof API for pre-send verification.
     </div>
   </footer>
 </body>
