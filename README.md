@@ -1,4 +1,4 @@
-[README (19).md](https://github.com/user-attachments/files/26256117/README.19.md)
+[README.md](https://github.com/user-attachments/files/26256117/README.19.md)
 # PayeeProof API
 
 **PayeeProof** is a pre-send verification layer for stablecoin payouts.
