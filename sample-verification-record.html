@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PayeeProof — sample verification record</title>
-  <meta name="description" content="Illustrative PayeeProof verification record showing verdict, proof fields, and operational next step." />
+  <meta name="description" content="Reference PayeeProof verification record showing verdict, proof fields, and operational next step." />
   <style>
     :root {
       --bg: #06080d;
@@ -77,14 +77,14 @@
   <div class="top">
     <div class="container">
       <div class="brand">PayeeProof</div>
-      <div class="sub">Illustrative verification record</div>
+      <div class="sub">Reference verification record</div>
     </div>
   </div>
 
   <div class="container hero">
-    <div class="pill">Sample record</div>
+    <div class="pill">Verification record</div>
     <h1>Example of a proof-style verification result.</h1>
-    <p class="lead">This page is an illustrative record format for product presentation. It shows how a verification result can be read by operations without turning into a wall of internal API language.</p>
+    <p class="lead">This page is a reference record format for product presentation. It shows how a verification result can be read by operations without turning into a wall of internal API language.</p>
   </div>
 
   <section class="section">
@@ -100,8 +100,8 @@
           <div class="kv"><div class="k">Source</div><div class="v">Live RPC lookup</div></div>
           <div class="kv"><div class="k">Network</div><div class="v">Ethereum</div></div>
           <div class="kv"><div class="k">Asset</div><div class="v">USDC</div></div>
-          <div class="kv"><div class="k">Next action</div><div class="v">SAFE_TO_PROCEED</div></div>
-          <div class="kv"><div class="k">Raw type</div><div class="v">EOA</div></div>
+          <div class="kv"><div class="k">Next action</div><div class="v">Approve payout</div></div>
+          <div class="kv"><div class="k">Raw type</div><div class="v">Personal wallet</div></div>
           <div class="kv wide"><div class="k">Why this verdict</div><div class="v">Network, asset, address, and memo checks matched. The destination classified as a personal wallet.</div></div>
           <div class="kv wide"><div class="k">Address</div><div class="v">0x59d779BED4dB1E734D3fDa3172d45bc3063eCD69</div></div>
         </div>
@@ -109,7 +109,7 @@
           <a class="btn primary" href="./sample-verification-record.json" download>Download JSON</a>
           <a class="btn" href="./index.html#contact">Request pilot</a>
         </div>
-        <div class="note">Illustrative sample only. This page demonstrates a product record format and is not a signed legal artifact.</div>
+        <div class="note">Reference format only. Signed records are produced inside controlled workflows.</div>
       </div>
 
       <div class="code" style="margin-top:24px;">
@@ -124,8 +124,8 @@
   "confidence": "High",
   "source": "rpc",
   "classification": "personal_wallet",
-  "raw_type": "eoa",
-  "next_action": "SAFE_TO_PROCEED",
+  "raw_type": "personal_wallet",
+  "next_action": "APPROVE_PAYOUT",
   "why_this_verdict": "Network, asset, address, and memo checks matched. The destination classified as a personal wallet."
 }</pre>
       </div>
