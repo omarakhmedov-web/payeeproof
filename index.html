@@ -1448,6 +1448,10 @@ POST /api/recovery-copilot
       return labels[String(value || '').toLowerCase()] || humanizeCode(value);
     }
 
+    function formatChainLabel(value) {
+      return formatNetworkName(value || '—');
+    }
+
     function formatStatusLabel(value) {
       const labels = {
         found: 'Result ready',
@@ -2175,8 +2179,26 @@ POST /api/recovery-copilot
           intended_chain: el('rcIntendedChain').value,
         };
         const data = await fetchJson(RECOVERY_URL, { method: 'POST', body: JSON.stringify(payload), timeoutMs: 40000 });
-        applyRecoveryResult(data, 'live');
-        el('rcState').textContent = 'Recovery analysis complete.';
+        try {
+          applyRecoveryResult(data, 'live');
+          el('rcState').textContent = 'Recovery analysis complete.';
+        } catch (renderErr) {
+          console.error('Recovery render error:', renderErr);
+          const fallback = {
+            _outcome: 'UNAVAILABLE',
+            status: 'error',
+            reason_code: 'RENDER_FAILED',
+            summary: 'Recovery result could not be displayed.',
+            explanation: renderErr.message || 'The page could not render the live response.',
+            _why: 'The API returned a response, but the page hit a rendering error.',
+            checked_at: new Date().toISOString(),
+            recoverability: 'unknown',
+            observed: { destination_type: 'unknown', tx_status: 'unavailable' },
+            next_actions: ['Refresh the page once and try again.', 'If the problem repeats, replace the site file with the latest fixed version.'],
+          };
+          applyRecoveryResult(fallback, 'live');
+          el('rcState').textContent = 'Recovery render failed.';
+        }
       } catch (err) {
         const data = {
           _outcome: 'UNAVAILABLE',
