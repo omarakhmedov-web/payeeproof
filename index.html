@@ -640,6 +640,7 @@
                 <div class="field">
                   <label for="rcChain">Network</label>
                   <select id="rcChain">
+                    <option value="auto" selected>Auto-detect / I'm not sure</option>
                     <option value="ethereum">Ethereum</option>
                     <option value="arbitrum">Arbitrum</option>
                     <option value="base">Base</option>
@@ -677,7 +678,8 @@
                     <option value="base">Base</option>
                     <option value="polygon">Polygon</option>
                     <option value="bsc">BNB Chain</option>
-                                      </select>
+                    <option value="solana">Solana</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -1421,9 +1423,23 @@ POST /api/recovery-copilot
     function updateRecoveryHashHint() {
       const hash = el('rcHash').value.trim();
       const hint = el('rcState');
+      const network = el('rcChain').value;
       if (!hash) return;
       if (isLikelyEvmTxHash(hash)) {
-        hint.textContent = 'EVM transaction hash detected. Select the exact network where the transfer was broadcast.';
+        if (network === 'auto') {
+          hint.textContent = 'EVM transaction hash detected. Network will be auto-detected across supported EVM chains.';
+        } else {
+          hint.textContent = `EVM transaction hash detected. Using ${formatNetworkName(network)}.`;
+        }
+        return;
+      }
+      if (isLikelySolanaAddress(hash)) {
+        if (network === 'auto') {
+          el('rcChain').value = 'solana';
+          hint.textContent = 'Solana signature format detected. Network switched to Solana automatically.';
+        } else {
+          hint.textContent = 'Solana signature format detected.';
+        }
       }
     }
 
@@ -1445,6 +1461,7 @@ POST /api/recovery-copilot
         base: 'Base',
         polygon: 'Polygon',
         bsc: 'BNB Chain',
+        auto: 'Auto-detect scope',
         solana: 'Solana',
       };
       return labels[String(value || '').toLowerCase()] || humanizeCode(value);
@@ -2225,6 +2242,7 @@ POST /api/recovery-copilot
       latestRecoveryData = null;
       el('rcHash').value = '';
       el('rcIntendedAddress').value = '';
+      el('rcChain').value = 'auto';
       el('rcIssueType').value = 'auto';
       el('rcIntendedChain').value = '';
       const box = el('rcResult');
