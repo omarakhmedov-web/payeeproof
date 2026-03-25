@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PayeeProof Pilot Pack — scope, verdicts, reason codes, and pilot terms</title>
-  <meta name="description" content="Buyer-facing pilot pack for PayeeProof: what the product checks, verdicts, reason codes, supported scope, pilot model, and current limitations." />
+  <title>PayeeProof Pilot Pack — Pre-send verification for stablecoin payouts</title>
+  <meta name="description" content="PayeeProof is a pre-send verification layer for stablecoin payouts. Review scope, verdicts, reason codes, pilot flow, and current limitations." />
   <meta property="og:title" content="PayeeProof Pilot Pack" />
-  <meta property="og:description" content="What PayeeProof checks, what it returns, what is in scope today, and what a pilot includes." />
+  <meta property="og:description" content="Pre-send verification for stablecoin payouts: scope, verdicts, reason codes, pilot flow, and current limitations." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -268,8 +268,8 @@
       <div class="container hero-grid">
         <div class="hero-copy">
           <div class="pill">Pilot pack · what it checks · what is in scope today</div>
-          <h1>One page a buyer can review before deciding whether to start a PayeeProof pilot.</h1>
-          <p class="lead">This page answers the commercial questions first: what the product checks, what verdict language it returns, which reason codes exist, what is supported today, how a pilot fits into a workflow, and where the current limits still are.</p>
+          <h1>Pre-send verification for stablecoin payouts.</h1>
+          <p class="lead">Stop wrong-network and wrong-destination mistakes before funds move. This pilot pack shows what PayeeProof checks, which verdicts and reason codes it returns, what is supported today, and how a pilot fits into a payout workflow.</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="#checks">See what gets checked</a>
             <a class="btn btn-secondary" href="#pilot">See what is in the pilot</a>
@@ -278,19 +278,18 @@
           </div>
           <div class="tag-row">
             <div class="tag">Pre-send verification</div>
-            <div class="tag">Recovery guidance</div>
-            <div class="tag">Six live networks</div>
+                        <div class="tag">Six live networks</div>
             <div class="tag">Reason-code driven outputs</div>
           </div>
         </div>
         <div class="card panel">
           <div class="mini-shell">
             <div class="mini-shell-bar"><span></span><span></span><span></span></div>
-            <div class="shell-line"><strong>Main buyer question</strong><span>Can this reduce payout mistakes before funds move?</span></div>
+            <div class="shell-line"><strong>Main buyer question</strong><span>Can this stop preventable payout mistakes before funds move?</span></div>
             <div class="shell-line"><strong>Core outputs</strong><span>SAFE · BLOCK · REVERIFY · TEST FIRST · UNAVAILABLE</span></div>
-            <div class="shell-line"><strong>Recovery outputs</strong><span>RESULT READY · NOT FOUND · FAILED ON-CHAIN · UNAVAILABLE</span></div>
+            <div class="shell-line"><strong>Primary use case</strong><span>Pre-send verification before approval, release, or manual payout</span></div>
             <div class="shell-line"><strong>Current live scope</strong><span>Ethereum, Arbitrum, Base, Polygon, BNB Chain, Solana</span></div>
-            <div class="shell-line"><strong>Integration style</strong><span>Simple API call before release or during support review</span></div>
+            <div class="shell-line"><strong>Integration style</strong><span>Simple API call before release, approval, or manual payout</span></div>
             <div class="shell-line"><strong>Pilot posture</strong><span>Email-first, narrow scope, live checks, clear limitations</span></div>
           </div>
           <div class="kpi-grid">
@@ -299,8 +298,8 @@
               <div class="kpi-value">1</div>
             </div>
             <div class="kpi-card">
-              <div class="kpi-label">Recovery endpoint</div>
-              <div class="kpi-value">1</div>
+              <div class="kpi-label">Pre-send verdicts</div>
+              <div class="kpi-value">5</div>
             </div>
             <div class="kpi-card">
               <div class="kpi-label">Pilot intake</div>
@@ -318,7 +317,7 @@
     <section class="section" id="checks">
       <div class="container">
         <div class="eyebrow">What the product checks</div>
-        <h2>Two modules, each with a narrow operational job.</h2>
+        <h2>One focused module with a narrow operational job.</h2>
         <div class="check-grid">
           <article class="card check-card">
             <h3>Pre-Send Check</h3>
@@ -347,36 +346,6 @@
               <div class="check-row">
                 <div><strong>Operational next step</strong><span>Returns the action language a workflow can use immediately: proceed, block, re-verify, or test first.</span></div>
                 <div class="check-state">Output</div>
-              </div>
-            </div>
-          </article>
-          <article class="card check-card">
-            <h3>Recovery Copilot</h3>
-            <p class="lead" style="font-size:16px; max-width:none; margin-top:10px;">Used after a transfer has already happened. It does not promise recovery. It gives a clearer first diagnosis and a better support packet.</p>
-            <div class="check-list">
-              <div class="check-row">
-                <div><strong>On-chain transaction lookup</strong><span>Looks up the transaction on the selected chain, or auto-detects across supported chains when chain is omitted.</span></div>
-                <div class="check-state">Live lookup</div>
-              </div>
-              <div class="check-row">
-                <div><strong>Execution status</strong><span>Distinguishes result ready, not found, failed on-chain, or lookup unavailable.</span></div>
-                <div class="check-state">Core</div>
-              </div>
-              <div class="check-row">
-                <div><strong>Issue-type guidance</strong><span>Handles auto, wrong network, wrong address, sent to contract or app, and missing memo or tag flows.</span></div>
-                <div class="check-state">Core</div>
-              </div>
-              <div class="check-row">
-                <div><strong>Destination profile</strong><span>Summarizes who likely needs to help: recipient, platform support, or app operator.</span></div>
-                <div class="check-state">Decision aid</div>
-              </div>
-              <div class="check-row">
-                <div><strong>Support packet</strong><span>Returns a concise operator-ready summary with best next step, contact target, and reusable support text.</span></div>
-                <div class="check-state">Output</div>
-              </div>
-              <div class="check-row">
-                <div><strong>Traceable proof block</strong><span>Includes checked time, chain, trace id, outcome, confidence, and reason code.</span></div>
-                <div class="check-state">Proof</div>
               </div>
             </div>
           </article>
@@ -427,38 +396,16 @@
               </tbody>
             </table>
           </div>
-          <div class="card table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Recovery outcome</th>
-                  <th>Meaning</th>
-                  <th>Typical action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="badge safe">RESULT READY</span></td>
-                  <td>A matching on-chain transaction was found and the API returned a diagnosis plus next steps.</td>
-                  <td>Use the support packet and act on the recommended path.</td>
-                </tr>
-                <tr>
-                  <td><span class="badge review">NOT FOUND</span></td>
-                  <td>No matching transaction was found on the selected network or in supported auto-detect scope.</td>
-                  <td>Re-check chain and hash before assuming funds moved.</td>
-                </tr>
-                <tr>
-                  <td><span class="badge block">FAILED ON-CHAIN</span></td>
-                  <td>The transaction failed or reverted on-chain.</td>
-                  <td>Do not resend until the failure reason is understood.</td>
-                </tr>
-                <tr>
-                  <td><span class="badge neutral">UNAVAILABLE</span></td>
-                  <td>Live lookup did not complete, so the result is unavailable rather than final.</td>
-                  <td>Retry the lookup or route to manual review.</td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="card panel">
+            <h3>What sits next to the verdict</h3>
+            <div class="list">
+              <div class="list-item"><strong>reason_code</strong><span>Machine-readable explanation for routing and policy logic.</span></div>
+              <div class="list-item"><strong>confidence</strong><span>Signals whether the response should be treated as straightforward or conservative.</span></div>
+              <div class="list-item"><strong>destination_type</strong><span>Personal wallet, contract or app, exchange-like deposit, bridge-router, unknown, or unavailable.</span></div>
+              <div class="list-item"><strong>checked_at / trace_id</strong><span>Gives operators a traceable proof block for review and audit.</span></div>
+              <div class="list-item"><strong>next_action</strong><span>Approve, block, re-verify, test first, or route to manual review.</span></div>
+            </div>
+            <p class="note">The goal is not false precision. The goal is one clear operational answer before funds move, with enough structured context to justify that answer.</p>
           </div>
         </div>
       </div>
@@ -495,27 +442,15 @@
               </tbody>
             </table>
           </div>
-          <div class="card table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Recovery reason code</th>
-                  <th>What it means</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td><strong>TX_NOT_FOUND</strong></td><td>No transaction match was found on the selected chain.</td></tr>
-                <tr><td><strong>RPC_UNAVAILABLE</strong></td><td>Live chain lookup did not complete.</td></tr>
-                <tr><td><strong>TX_REVERTED</strong></td><td>EVM transaction reverted on-chain.</td></tr>
-                <tr><td><strong>TX_FAILED</strong></td><td>Transaction failed on-chain.</td></tr>
-                <tr><td><strong>WRONG_NETWORK_DETECTED</strong></td><td>Transaction exists, but on a different chain than intended.</td></tr>
-                <tr><td><strong>WRONG_ADDRESS_DETECTED</strong></td><td>Observed destination differs from intended destination in auto-detect context.</td></tr>
-                <tr><td><strong>WRONG_ADDRESS_CONFIRMED</strong></td><td>Observed destination is confirmed to differ from intended destination.</td></tr>
-                <tr><td><strong>DESTINATION_IS_PROGRAM</strong></td><td>Solana destination looks like a program account, so recovery depends on operator behavior.</td></tr>
-                <tr><td><strong>MISSING_MEMO_SUPPORT_PATH</strong></td><td>Likely support-led recovery path for memo-sensitive deposit flow.</td></tr>
-                <tr><td><strong>GENERAL_ONCHAIN_GUIDANCE</strong></td><td>Transaction was found, but recovery depends on who controls the receiving destination.</td></tr>
-              </tbody>
-            </table>
+          <div class="card panel">
+            <h3>How reason codes are meant to be used</h3>
+            <div class="list">
+              <div class="list-item"><strong>Allow</strong><span><code>OK</code> supports a controlled SAFE outcome.</span></div>
+              <div class="list-item"><strong>Block</strong><span><code>NETWORK_MISMATCH</code>, <code>ASSET_MISMATCH</code>, <code>ADDRESS_MISMATCH</code>, <code>INVALID_ADDRESS</code>, and <code>ZERO_ADDRESS</code> stop the transfer.</span></div>
+              <div class="list-item"><strong>Re-check</strong><span><code>MEMO_MISMATCH</code> and <code>DESTINATION_REQUIRES_MEMO_OR_VENUE_CHECK</code> push the case into human confirmation.</span></div>
+              <div class="list-item"><strong>Test first</strong><span><code>DESTINATION_IS_BRIDGE_ROUTER</code> and <code>DESTINATION_IS_CONTRACT_OR_APP</code> keep operators from treating infrastructure routes like personal wallets.</span></div>
+              <div class="list-item"><strong>Fallback</strong><span><code>DESTINATION_NOT_CLASSIFIED</code>, <code>DESTINATION_LOOKUP_UNAVAILABLE</code>, and unsupported-scope codes prevent fake green lights.</span></div>
+            </div>
           </div>
         </div>
         <p class="note">Reason codes are meant to stay stable enough for workflow routing, support playbooks, and lightweight policy logic during the pilot.</p>
@@ -536,12 +471,12 @@
               </tr>
             </thead>
             <tbody>
-              <tr><td><strong>Ethereum</strong></td><td>USDC, USDT, DAI, USDS, PYUSD</td><td>Full pre-send and recovery scope in current API surface.</td></tr>
-              <tr><td><strong>Arbitrum</strong></td><td>USDC, USDT, DAI, USDS</td><td>Full pre-send and recovery scope in current API surface.</td></tr>
-              <tr><td><strong>Base</strong></td><td>USDC, USDT</td><td>Full pre-send and recovery scope in current API surface.</td></tr>
-              <tr><td><strong>Polygon</strong></td><td>USDC, USDT</td><td>Full pre-send and recovery scope in current API surface.</td></tr>
-              <tr><td><strong>BNB Chain</strong></td><td>USDC, USDT</td><td>Full pre-send and recovery scope in current API surface.</td></tr>
-              <tr><td><strong>Solana</strong></td><td>USDC, USDT</td><td>Recovery supports Solana transaction signatures; pre-send supports Solana address validation and route checks.</td></tr>
+              <tr><td><strong>Ethereum</strong></td><td>USDC, USDT, DAI, USDS, PYUSD</td><td>Pre-send verification is in current pilot scope.</td></tr>
+              <tr><td><strong>Arbitrum</strong></td><td>USDC, USDT, DAI, USDS</td><td>Pre-send verification is in current pilot scope.</td></tr>
+              <tr><td><strong>Base</strong></td><td>USDC, USDT</td><td>Pre-send verification is in current pilot scope.</td></tr>
+              <tr><td><strong>Polygon</strong></td><td>USDC, USDT</td><td>Pre-send verification is in current pilot scope.</td></tr>
+              <tr><td><strong>BNB Chain</strong></td><td>USDC, USDT</td><td>Pre-send verification is in current pilot scope.</td></tr>
+              <tr><td><strong>Solana</strong></td><td>USDC, USDT</td><td>Pre-send supports Solana address validation and route checks.</td></tr>
             </tbody>
           </table>
         </div>
@@ -551,21 +486,20 @@
             <div class="scope-chip-row">
               <div class="scope-chip">GET /health</div>
               <div class="scope-chip">POST /api/preflight-check</div>
-              <div class="scope-chip">POST /api/recovery-copilot</div>
-              <div class="scope-chip">POST /pilot-request</div>
+                            <div class="scope-chip">POST /pilot-request</div>
             </div>
             <p class="note">The public website demo stays narrower than the API surface. It focuses on the clearest buyer story first.</p>
           </div>
           <div class="card panel">
-            <h3>Issue types in recovery today</h3>
+            <h3>Where the pilot stays intentionally conservative</h3>
             <div class="scope-chip-row">
-              <div class="scope-chip">auto</div>
-              <div class="scope-chip">wrong_network</div>
-              <div class="scope-chip">wrong_address</div>
-              <div class="scope-chip">sent_to_contract</div>
-              <div class="scope-chip">missing_memo</div>
+              <div class="scope-chip">exchange-like deposit</div>
+              <div class="scope-chip">memo-sensitive route</div>
+              <div class="scope-chip">contract or app</div>
+              <div class="scope-chip">bridge-router</div>
+              <div class="scope-chip">lookup unavailable</div>
             </div>
-            <p class="note">The recovery module is a decision-support layer. It explains likely paths and escalation targets. It does not guarantee fund recovery.</p>
+            <p class="note">The pilot is designed to stop false confidence. Some routes should land in REVERIFY, TEST FIRST, or UNAVAILABLE instead of being forced into SAFE.</p>
           </div>
         </div>
       </div>
@@ -579,22 +513,22 @@
           <div class="flow-step">
             <div class="flow-step-num">Step 1</div>
             <h3>Workflow identifies a check point</h3>
-            <p>Usually the last pause before release, approval, or manual support escalation.</p>
+            <p>Usually the last pause before release, approval, or manual payout execution.</p>
           </div>
           <div class="flow-step">
             <div class="flow-step-num">Step 2</div>
             <h3>Client sends a narrow request</h3>
-            <p>Either expected-versus-provided payout details, or a tx hash for recovery review.</p>
+            <p>Expected-versus-provided payout details are sent for a narrow pre-send decision.</p>
           </div>
           <div class="flow-step">
             <div class="flow-step-num">Step 3</div>
             <h3>PayeeProof returns action language</h3>
-            <p>Verdict or outcome, reason code, confidence, traceable proof block, and next action.</p>
+            <p>Verdict, reason code, confidence, traceable proof block, and next action.</p>
           </div>
           <div class="flow-step">
             <div class="flow-step-num">Step 4</div>
             <h3>Client routes the case</h3>
-            <p>Approve, block, re-verify, small test, or escalate to support or operator review.</p>
+            <p>Approve, block, re-verify, use a small test, or route to manual review.</p>
           </div>
         </div>
         <div class="grid two-col" style="margin-top:28px; align-items:start;">
@@ -603,7 +537,7 @@
             <div class="list">
               <div class="list-item"><strong>Payout ops</strong><span>Use pre-send check before release.</span></div>
               <div class="list-item"><strong>Treasury</strong><span>Add a lightweight approval control without changing custody.</span></div>
-              <div class="list-item"><strong>Support</strong><span>Use recovery for better first-line diagnosis after a bad send.</span></div>
+              <div class="list-item"><strong>Support or customer ops</strong><span>Use the same verdict language during manual payout review or customer-confirmation flows.</span></div>
               <div class="list-item"><strong>Risk or compliance ops</strong><span>Keep the proof block and reason codes for workflow evidence.</span></div>
             </div>
           </div>
@@ -637,8 +571,8 @@
             <h3>Live pilot surface</h3>
             <div class="list">
               <div class="list-item"><strong>Keyed access</strong><span>One API key per pilot client.</span></div>
-              <div class="list-item"><strong>Rate-limited endpoints</strong><span>Basic guardrails for pilot usage.</span></div>
-              <div class="list-item"><strong>Traceable responses</strong><span>Request trace id and proof block included in responses.</span></div>
+              <div class="list-item"><strong>Rate-limited endpoint</strong><span>Basic guardrails for pilot usage.</span></div>
+              <div class="list-item"><strong>Traceable responses</strong><span>Trace id and proof block included in responses.</span></div>
             </div>
           </div>
           <div class="card panel">
@@ -663,8 +597,8 @@
             <p>Only the currently supported networks and asset combinations are in scope. Anything else should be treated as unsupported, not hand-waved into a false green light.</p>
           </div>
           <div class="limit-card">
-            <h3>Recovery is guidance, not rescue magic</h3>
-            <p>The recovery module improves diagnosis and support readiness. It cannot guarantee the funds come back, especially for self-custody or platform-dependent flows.</p>
+            <h3>Not every route should become SAFE</h3>
+            <p>Exchange-like deposits, memo-sensitive flows, contracts, apps, bridge routes, and lookup failures should stay conservative instead of being forced into a false green light.</p>
           </div>
           <div class="limit-card">
             <h3>Destination classification can stay conservative</h3>
@@ -685,7 +619,7 @@
         </div>
         <div class="card panel" style="margin-top:26px;">
           <h3>Bottom line</h3>
-          <p class="lead" style="font-size:18px; max-width:none; margin-top:10px;">PayeeProof is currently strongest when used as a focused transfer-safety layer for stablecoin payout workflows: narrow scope, live checks, explainable outputs, and a pilot model that is honest about what is automated versus what still needs operator judgment.</p>
+          <p class="lead" style="font-size:18px; max-width:none; margin-top:10px;">PayeeProof is strongest as a focused pre-send verification layer for stablecoin payouts. It helps teams stop preventable transfer mistakes before execution with narrow scope, live checks, and explainable outputs.</p>
           <div class="btn-row" style="margin-top:18px;">
             <a class="btn btn-primary" href="./index.html#contact">Request pilot</a>
             <a class="btn btn-secondary" href="./technical-sample.html">Open technical overview</a>
