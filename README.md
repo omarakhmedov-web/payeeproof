@@ -1,4 +1,4 @@
-[README.md](https://github.com/user-attachments/files/26256117/README.19.md)
+[README.md](https://github.com/user-attachments/files/26256474/README_task7_clean.md)
 # PayeeProof API
 
 **PayeeProof** is a pre-send verification layer for stablecoin payouts.
@@ -7,9 +7,9 @@ It helps a payout, treasury, OTC, or operations workflow stop wrong-network and 
 
 ## Current product focus
 
-This API contract is for the **B2B pre-send verification** product.
+This API contract covers **pre-send verification** for payout workflows.
 
-Recovery guidance exists as a separate public/product path and is **not** part of the current pilot API offer.
+Recovery guidance is a separate product path and is not included in this API surface.
 
 ## What the API returns
 
@@ -22,7 +22,7 @@ The API is designed to return one compact operational record per check:
 - `next_action` — what the operator or workflow should do next
 - `checked_at` and `request_id` — traceability for logs and support review
 
-## Current stable pilot surface
+## Current API surface
 
 - **Base URL:** `https://payeeproof-api.onrender.com`
 - **Primary endpoint:** `POST /api/preflight-check`
@@ -122,8 +122,6 @@ Core set for `v1`:
 - `REQUEST_FAILED`
 - `RENDER_FAILED`
 
-Detailed routing notes are in `reason-codes.md`.
-
 ## Versioning policy
 
 - The current documented contract is **`v1`**.
@@ -136,12 +134,6 @@ Detailed routing notes are in `reason-codes.md`.
 
 They should not depend on free-form English summary text for policy decisions.
 
-## Files included in this docs layer
-
-- `openapi.yaml` — draft OpenAPI spec for the pilot contract
-- `reason-codes.md` — stable reason-code mapping
-- `sample-verification-record.json` — reference response example
-- `technical-sample.html` — buyer-facing technical contract page
 
 ## Example cURL
 
