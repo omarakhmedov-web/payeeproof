@@ -687,12 +687,15 @@
                 <div class="list-item"><strong>What was detected</strong><span>Network, status, recipient, transfer hints, and whether the recipient is a wallet, contract, or app</span></div>
                 <div class="list-item"><strong>Recovery outlook</strong><span>Possible / manual review / unlikely / depends</span></div>
                 <div class="list-item"><strong>Next actions</strong><span>Practical steps for the user or support team</span></div>
+                <div class="list-item"><strong>Recovery packet</strong><span>A copy-ready summary and support message built from the live result</span></div>
               </div>
             </div>
           </div>
 
           <div class="panel-actions">
             <button class="btn btn-primary" id="rcRunBtn" type="button">Check recovery path</button>
+            <button class="btn btn-secondary" id="rcCopyPacketBtn" type="button">Copy recovery packet</button>
+            <button class="btn btn-secondary" id="rcCopyMessageBtn" type="button">Copy support message</button>
             <button class="btn btn-secondary" id="rcClearBtn" type="button">Clear</button>
           </div>
           <details class="code-shell" style="margin-top:16px;">
@@ -714,14 +717,18 @@
               <div class="panel-badge" id="rcReason">—</div>
             </div>
             <div class="result-kv-grid">
+              <div class="result-kv"><div class="result-k">Recovery verdict</div><div class="result-v" id="rcVerdict">—</div></div>
               <div class="result-kv"><div class="result-k">Recovery outlook</div><div class="result-v" id="rcRecoverability">—</div></div>
               <div class="result-kv"><div class="result-k">Destination type</div><div class="result-v" id="rcDestination">—</div></div>
+              <div class="result-kv"><div class="result-k">Who to contact</div><div class="result-v" id="rcContactTarget">—</div></div>
+              <div class="result-kv"><div class="result-k">Best next move</div><div class="result-v" id="rcBestStep">—</div></div>
               <div class="result-kv"><div class="result-k">Transaction status</div><div class="result-v" id="rcObservedStatus">—</div></div>
               <div class="result-kv"><div class="result-k">Time checked</div><div class="result-v" id="rcCheckedAt">—</div></div>
               <div class="result-kv"><div class="result-k">Confidence</div><div class="result-v" id="rcConfidence">—</div></div>
               <div class="result-kv"><div class="result-k">System reference</div><div class="result-v" id="rcReasonCode">—</div></div>
               <div class="result-kv wide"><div class="result-k">Why we say this</div><div class="result-v" id="rcWhy">Waiting for a live or pilot-review result.</div></div>
               <div class="result-kv wide"><div class="result-k">What to do next</div><div class="result-v" id="rcNextActions">—</div></div>
+              <div class="result-kv wide"><div class="result-k">Recovery packet preview</div><div class="result-v"><pre id="rcPacketPreview" style="margin:0; white-space:pre-wrap; word-break:break-word; font:inherit;">Run a check to generate a copy-ready packet.</pre></div></div>
             </div>
           </div>
         </div>
@@ -1014,6 +1021,7 @@ POST /api/recovery-copilot
     const API_BASE = window.PAYEEPROOF_API_BASE || 'https://payeeproof-api.onrender.com';
     const PRECHECK_URL = `${API_BASE}/api/preflight-check`;
     const RECOVERY_URL = `${API_BASE}/api/recovery-copilot`;
+    let latestRecoveryData = null;
     const PILOT_URL = `${API_BASE}/pilot-request`;
     const HEALTH_URL = `${API_BASE}/health`;
 
@@ -1481,6 +1489,11 @@ POST /api/recovery-copilot
         TX_REVERTED: 'Transaction reverted',
         TX_FAILED: 'Transaction failed',
         RPC_UNAVAILABLE: 'Service unavailable',
+        MISSING_MEMO_SUPPORT_PATH: 'Missing memo or tag',
+        WRONG_NETWORK_SUSPECTED: 'Wrong network suspected',
+        INTENDED_ADDRESS_MATCHES: 'Intended address matches',
+        TOKEN_TRANSFER_OBSERVED: 'Token transfer observed',
+        CONTRACT_DESTINATION_NOT_CONFIRMED: 'Contract destination not confirmed',
       };
       return labels[String(value || '').toUpperCase()] || humanizeCode(value || '—');
     }
@@ -1627,7 +1640,13 @@ POST /api/recovery-copilot
         manual_review: 'Needs manual review',
         unlikely: 'Recovery is unlikely',
         depends: 'Depends on the recipient and platform',
+        likely: 'Likely recoverable',
+        possible: 'Recovery may be possible',
+        manual_review: 'Needs manual review',
+        unlikely: 'Recovery is unlikely',
+        depends: 'Depends on the recipient and platform',
         unknown: 'Not clear yet',
+        'n/a': 'Not applicable',
       };
       return labels[String(value || '').toLowerCase()] || humanizeCode(value || '—');
     }
@@ -1640,6 +1659,126 @@ POST /api/recovery-copilot
     function formatReasonCodeRaw(value) {
       const code = String(value || '').trim();
       return code ? code.toUpperCase() : '—';
+    }
+
+    function deriveRecoveryVerdict(data) {
+      return normalizeTextValue(
+        data?.recovery_verdict
+        || data?.support_packet?.verdict
+        || (recoveryOutcomeLabel(data) === 'NOT FOUND' ? 'No on-chain match yet' : '')
+        || (String(data?.recoverability || '').toLowerCase() === 'unlikely' ? 'Recovery unlikely' : '')
+        || (String(data?.recoverability || '').toLowerCase() === 'possible' ? 'Possible with support' : '')
+        || (['manual_review', 'depends'].includes(String(data?.recoverability || '').toLowerCase()) ? 'Depends on platform or operator' : '')
+        || 'Needs review'
+      );
+    }
+
+    function deriveRecoveryContactTarget(data, destinationType = '') {
+      const explicit = normalizeTextValue(data?.contact_target || data?.support_packet?.contact_target);
+      if (explicit) return explicit;
+      const issueType = String(data?.issue_type || '').toLowerCase();
+      const classification = String(destinationType || '').toLowerCase();
+      const reasonCode = formatReasonCodeRaw(data?.reason_code);
+      if (reasonCode === 'TX_NOT_FOUND') return 'Sender or exchange support';
+      if (issueType === 'missing_memo' || classification === 'exchange_like_deposit') return 'Destination platform support';
+      if (classification === 'contract_or_app' || classification === 'bridge_router' || issueType === 'sent_to_contract') return 'App, protocol, or contract operator';
+      if (issueType === 'wrong_address' && classification === 'personal_wallet') return 'Owner of the receiving wallet';
+      if (classification === 'personal_wallet') return 'Recipient or wallet owner';
+      return 'Recipient or platform support';
+    }
+
+    function deriveRecoveryBestStep(data, destinationType = '') {
+      const explicit = normalizeTextValue(data?.best_next_step || data?.support_packet?.best_next_step);
+      if (explicit) return explicit;
+      const reasonCode = formatReasonCodeRaw(data?.reason_code);
+      const issueType = String(data?.issue_type || '').toLowerCase();
+      const classification = String(destinationType || '').toLowerCase();
+      if (reasonCode === 'TX_NOT_FOUND') return 'Verify the chain and transaction hash before doing anything else.';
+      if (['TX_REVERTED', 'TX_FAILED'].includes(reasonCode)) return 'Do not resend. Find the failure reason first.';
+      if (issueType === 'missing_memo' || classification === 'exchange_like_deposit') return 'Open a support ticket with the destination platform and include the full transaction record.';
+      if (classification === 'contract_or_app' || classification === 'bridge_router' || issueType === 'sent_to_contract') return 'Contact the app or protocol and ask whether a rescue path exists for this transfer.';
+      if (issueType === 'wrong_network') return 'Check whether the recipient controls the same address on the chain where funds actually arrived.';
+      if (issueType === 'wrong_address') return 'Confirm whether the receiving address belongs to you, your team, or a platform that can help.';
+      return 'Use the tx hash as the anchor and contact the party that controls the destination.';
+    }
+
+    function buildRecoveryPacketText(data) {
+      const packet = data?.support_packet || {};
+      const lines = [
+        'PayeeProof recovery packet',
+        '',
+        `Checked at: ${normalizeTextValue(packet.checked_at || data?.checked_at || new Date().toISOString()) || '—'}`,
+        `Verdict: ${normalizeTextValue(packet.verdict || deriveRecoveryVerdict(data)) || '—'}`,
+        `Recovery outlook: ${formatRecoverability(packet.recoverability || data?.recoverability)}`,
+        `Confidence: ${normalizeTextValue(packet.confidence || inferRecoveryConfidence(data)) || '—'}`,
+        `System reference: ${formatReasonCodeRaw(packet.reason_code || data?.reason_code)}`,
+        '',
+        `Network: ${formatChainLabel(packet.chain || (data?.observed || {}).chain || data?.chain || '—')}`,
+        `Transaction hash: ${normalizeTextValue(packet.tx_hash || (data?.observed || {}).tx_hash || '') || '—'}`,
+        `Transaction status: ${formatStatusLabel(packet.tx_status || (data?.observed || {}).tx_status || data?.status || '—')}`,
+        `Destination: ${normalizeTextValue(packet.destination || (data?.observed || {}).destination || (data?.observed || {}).to || '') || '—'}`,
+        `Destination type: ${normalizeTextValue(packet.destination_type || ((data?.destination || {}).label) || getDestinationProfile((data?.destination || {}).classification || (data?.observed || {}).destination_type || 'unknown').label) || '—'}`,
+        `Who to contact: ${normalizeTextValue(packet.contact_target || deriveRecoveryContactTarget(data, (data?.destination || {}).classification || (data?.observed || {}).destination_type || 'unknown')) || '—'}`,
+        `Best next move: ${normalizeTextValue(packet.best_next_step || deriveRecoveryBestStep(data, (data?.destination || {}).classification || (data?.observed || {}).destination_type || 'unknown')) || '—'}`,
+      ];
+      const sender = normalizeTextValue(packet.sender || (data?.observed || {}).from || (data?.observed || {}).signer || '');
+      const assetHint = normalizeTextValue(packet.asset_hint || '');
+      if (sender) lines.push(`Sender: ${sender}`);
+      if (assetHint) lines.push(`Asset hint: ${assetHint}`);
+      lines.push('', 'Summary:', normalizeTextValue(packet.summary || data?.summary || '—') || '—', '', 'Why this result:', buildRecoveryWhy(data) || '—', '', 'Recommended next actions:');
+      const actions = normalizeList(packet.next_actions || data?.next_actions);
+      if (actions.length) actions.forEach((item, idx) => lines.push(`${idx + 1}. ${item}`));
+      else lines.push('1. Review manually.');
+      return lines.join('\n');
+    }
+
+    function buildRecoverySupportMessageText(data) {
+      const explicit = normalizeTextValue(data?.support_message);
+      if (explicit) return explicit;
+      const destinationType = (data?.destination || {}).classification || (data?.observed || {}).destination_type || 'unknown';
+      const packetText = buildRecoveryPacketText(data).split('\n');
+      const txHash = normalizeTextValue((data?.support_packet || {}).tx_hash || (data?.observed || {}).tx_hash || '') || 'Not provided';
+      const network = formatChainLabel((data?.support_packet || {}).chain || (data?.observed || {}).chain || data?.chain || '—');
+      const destination = normalizeTextValue((data?.support_packet || {}).destination || (data?.observed || {}).destination || (data?.observed || {}).to || '') || 'Unknown';
+      const message = [
+        'Hello,',
+        '',
+        'I need help reviewing a crypto transfer that may have been sent incorrectly.',
+        '',
+        `Transaction hash: ${txHash}`,
+        `Network: ${network}`,
+        `Destination: ${destination}`,
+        `Destination type: ${getDestinationProfile(destinationType).label}`,
+        '',
+        'PayeeProof summary:',
+        normalizeTextValue((data?.support_packet || {}).summary || data?.summary || 'No summary returned.') || 'No summary returned.',
+        '',
+        'Why this result:',
+        buildRecoveryWhy(data) || 'No explanation returned.',
+        '',
+        'Please confirm whether this destination is controlled by your platform or team, whether recovery or manual credit is possible, and what exact steps or information you need from me next.'
+      ];
+      return message.join('\n');
+    }
+
+    async function copyRecoveryPacket() {
+      try {
+        if (!latestRecoveryData) throw new Error('Run a recovery check first.');
+        await navigator.clipboard.writeText(buildRecoveryPacketText(latestRecoveryData));
+        el('rcState').textContent = 'Recovery packet copied to clipboard.';
+      } catch (err) {
+        el('rcState').textContent = err.message || 'Clipboard copy failed.';
+      }
+    }
+
+    async function copyRecoverySupportMessage() {
+      try {
+        if (!latestRecoveryData) throw new Error('Run a recovery check first.');
+        await navigator.clipboard.writeText(buildRecoverySupportMessageText(latestRecoveryData));
+        el('rcState').textContent = 'Support message copied to clipboard.';
+      } catch (err) {
+        el('rcState').textContent = err.message || 'Clipboard copy failed.';
+      }
     }
 
     function renderChecks(checks) {
@@ -1821,13 +1960,14 @@ POST /api/recovery-copilot
     }
 
     function applyRecoveryResult(data, source = 'live') {
+      latestRecoveryData = data;
       const observed = data?.observed || {};
       const outcome = recoveryOutcomeLabel(data);
       const reasonCode = formatReasonCodeRaw(data?.reason_code);
       const { destinationType, destinationAddress, destinationNote } = getRecoveryDestinationMeta(data, observed);
       const destinationProfile = getDestinationProfile(destinationType);
       const why = buildRecoveryWhy(data);
-      const nextActions = normalizeList(data?.next_actions);
+      const nextActions = normalizeList((data?.support_packet || {}).next_actions || data?.next_actions);
       const destinationNoteHtml = hasMeaningfulExtraDestinationNote(destinationProfile.note, destinationNote)
         ? `<br><span class="muted">${escapeHtml(destinationNote)}</span>`
         : '';
@@ -1842,14 +1982,18 @@ POST /api/recovery-copilot
       el('rcResultTitle').textContent = normalizeTextValue(data?.summary) || (outcome === 'NOT FOUND' ? 'No matching transaction was found.' : 'Recovery analysis ready.');
       el('rcResultText').textContent = resultText;
       el('rcReason').textContent = formatReasonLabel(data?.reason_code || outcome);
+      el('rcVerdict').textContent = deriveRecoveryVerdict(data);
       el('rcRecoverability').textContent = formatRecoverability(data?.recoverability);
       el('rcDestination').innerHTML = formatDestinationProfile(destinationType, destinationAddress) + destinationNoteHtml;
+      el('rcContactTarget').textContent = deriveRecoveryContactTarget(data, destinationType);
+      el('rcBestStep').textContent = deriveRecoveryBestStep(data, destinationType);
       el('rcObservedStatus').textContent = formatStatusLabel(observed.tx_status || data?.status || '—');
       el('rcCheckedAt').textContent = toDisplayTime(data?.proof?.checked_at || data?._checked_at_label || data?.checked_at || new Date().toISOString());
       el('rcConfidence').textContent = inferRecoveryConfidence(data);
       el('rcReasonCode').innerHTML = formatRecoveryReasonCode(reasonCode);
       el('rcWhy').textContent = why || 'Recovery guidance was generated from the live transaction analysis.';
       el('rcNextActions').innerHTML = renderRecoveryNextActions(nextActions);
+      el('rcPacketPreview').textContent = buildRecoveryPacketText(data);
     }
 
     function previewPreflightScenario(kind) {
@@ -2054,6 +2198,7 @@ POST /api/recovery-copilot
     }
 
     function clearRecovery() {
+      latestRecoveryData = null;
       el('rcHash').value = '';
       el('rcIntendedAddress').value = '';
       el('rcIntendedChain').value = '';
@@ -2064,14 +2209,18 @@ POST /api/recovery-copilot
       el('rcResultTitle').textContent = 'No transaction analyzed yet.';
       el('rcResultText').textContent = 'Paste a real transaction hash to get a live recovery result.';
       el('rcReason').textContent = '—';
+      el('rcVerdict').textContent = '—';
       el('rcRecoverability').textContent = '—';
       el('rcDestination').textContent = '—';
+      el('rcContactTarget').textContent = '—';
+      el('rcBestStep').textContent = '—';
       el('rcObservedStatus').textContent = '—';
       el('rcCheckedAt').textContent = '—';
       el('rcConfidence').textContent = '—';
       el('rcReasonCode').textContent = '—';
       el('rcWhy').textContent = 'Waiting for a live or pilot-review result.';
       el('rcNextActions').innerHTML = '—';
+      el('rcPacketPreview').textContent = 'Run a check to generate a copy-ready packet.';
       el('rcState').textContent = 'Cleared.';
     }
 
@@ -2154,6 +2303,8 @@ POST /api/recovery-copilot
     setPreflightPreviewState('ready');
     el('pfState').textContent = 'Ready for a live verification.';
     el('rcRunBtn').addEventListener('click', runRecovery);
+    el('rcCopyPacketBtn').addEventListener('click', copyRecoveryPacket);
+    el('rcCopyMessageBtn').addEventListener('click', copyRecoverySupportMessage);
     el('rcClearBtn').addEventListener('click', clearRecovery);
     el('rcNotFoundDemoBtn').addEventListener('click', previewRecoveryNotFound);
     el('pilotForm').addEventListener('submit', submitPilot);
