@@ -15,9 +15,98 @@ tags:
     description: Pre-send verification before payout approval
   - name: Records
     description: Verification history and searchable records for authenticated clients
+  - name: Account
+    description: Client account metadata and usage reporting for authenticated clients
   - name: Webhooks
     description: Delivery acknowledgements for outbound verification events
 paths:
+
+  /api/account:
+    get:
+      tags: [Account]
+      operationId: getAccountSummary
+      summary: Get client account summary
+      description: >
+        Returns client metadata for the current API key together with the
+        current-month usage snapshot, plan, environment, and webhook state.
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: Client account summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  trace_id: { type: string }
+                  client:
+                    type: object
+                    properties:
+                      tenant_id: { type: string }
+                      client_label: { type: string }
+                      display_name: { type: string }
+                      environment: { type: string }
+                      role: { type: string }
+                      plan: { type: string }
+                      scopes:
+                        type: array
+                        items: { type: string }
+                  usage:
+                    type: object
+                  webhooks:
+                    type: object
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/usage-summary:
+    get:
+      tags: [Account]
+      operationId: getUsageSummary
+      summary: Get usage summary
+      description: >
+        Returns usage totals and breakdowns for the authenticated client.
+        Useful for tenant-level reporting and future usage-based billing.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: query
+          name: period
+          schema: { type: string, example: 30d }
+          description: Supported values include 7d, 30d, 90d, and this_month.
+      responses:
+        '200':
+          description: Usage summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  trace_id: { type: string }
+                  client: { type: string }
+                  environment: { type: string }
+                  period: { type: string }
+                  since: { type: string }
+                  totals: { type: object }
+                  by_event: { type: object }
+                  by_service: { type: object }
+                  by_status: { type: object }
+                  by_network: { type: object }
+                  by_reason_code: { type: object }
+                  by_verdict: { type: object }
+                  daily: { type: object }
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/preflight-check:
     post:
       tags: [Preflight]
