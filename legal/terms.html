@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Terms of Service — PayeeProof</title>
+  <meta name="description" content="PayeeProof Terms of Service.">
+  <style>
+    :root {
+      --bg: #0b0b0d;
+      --panel: #141419;
+      --text: #ececf1;
+      --muted: #a8a8b3;
+      --line: #27272f;
+      --accent: #e7c67a;
+      --accent-2: #f3dfaa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: linear-gradient(180deg, #09090b 0%, #101014 100%);
+      color: var(--text);
+      line-height: 1.65;
+    }
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 28px 20px 64px;
+    }
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .brand {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+    }
+    .nav a, .back {
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .nav a:hover, .back:hover { color: var(--accent-2); }
+    .hero, .card {
+      background: rgba(20,20,25,0.82);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+    .hero { padding: 28px; margin-bottom: 18px; }
+    .card { padding: 28px; }
+    h1, h2, h3 { line-height: 1.2; margin: 0 0 14px; }
+    h1 { font-size: 2.2rem; }
+    h2 { font-size: 1.2rem; margin-top: 28px; color: var(--accent-2); }
+    p, li { color: var(--text); }
+    .meta, .muted { color: var(--muted); }
+    .meta { margin-top: 8px; font-size: 0.95rem; }
+    ul { padding-left: 22px; }
+    code.inline {
+      background: #1b1b22;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 2px 7px;
+      color: var(--accent-2);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.95em;
+    }
+    .footer {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="brand" href="/">PayeeProof</a>
+      <nav class="nav" aria-label="Legal navigation">
+        <a href="/legal/privacy.html">Privacy</a>
+        <a href="/legal/acceptable-use.html">Acceptable Use</a>
+        <a href="/legal/dpa.html">DPA</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <a class="back" href="/">← Back to home</a>
+      <h1>Terms of Service</h1>
+      <div class="meta">Effective date: March 27, 2026</div>
+      <div class="meta">Version: 2.0</div>
+    </section>
+
+    <section class="card">
+      <p>These Terms of Service (<strong>“Terms”</strong>) govern access to and use of the PayeeProof website, API, verification workflows, verification records, webhooks, documentation, and related services (collectively, the <strong>“Service”</strong>).</p>
+      <p>The Service is made available under the PayeeProof name and may be operated directly or through the legal entity identified in an applicable order form, invoice, or other written agreement. Contact: <a href="mailto:hello@payeeproof.com">hello@payeeproof.com</a>.</p>
+      <p>By accessing or using the Service, you agree to these Terms.</p>
+
+      <h2>1. Eligibility and permitted use</h2>
+      <p>You represent that you are at least 18 years old and authorized to use the Service for yourself or on behalf of the organization you represent. The Service is intended for lawful business, operational, and professional use.</p>
+
+      <h2>2. What the Service does</h2>
+      <p>PayeeProof provides a pre-transfer verification and decision-support layer for digital-asset payment workflows. Depending on the plan or integration, the Service may provide destination checks, network checks, structured verdicts, verification records, API responses, and webhook notifications.</p>
+
+      <h2>3. What the Service does not do</h2>
+      <p>PayeeProof is not a custodian, exchange, broker, money transmitter, bank, wallet provider, law firm, tax adviser, accounting firm, sanctions-screening provider, or AML provider. PayeeProof does not take possession or control of customer funds and does not execute transactions on your behalf unless expressly stated in a separate written agreement.</p>
+      <p>The Service does not guarantee that any transaction, destination, workflow, or counterparty is risk-free, error-free, or recoverable. You remain responsible for deciding whether to approve, delay, reject, or escalate a transfer.</p>
+
+      <h2>4. Accounts, credentials, and security</h2>
+      <p>You must protect all credentials, API keys, webhook secrets, and access tokens associated with the Service. You are responsible for activity conducted through your credentials and for the security of your own downstream systems.</p>
+      <p>If you suspect unauthorized access or credential exposure, notify PayeeProof promptly at <a href="mailto:hello@payeeproof.com">hello@payeeproof.com</a>.</p>
+
+      <h2>5. Acceptable use</h2>
+      <p>You may not use the Service to violate law, regulation, sanctions, or third-party rights, or to probe, overload, scrape, bypass controls, or abuse the Service. Additional restrictions appear in the <a href="/legal/acceptable-use.html">Acceptable Use Policy</a>, which is incorporated into these Terms by reference.</p>
+
+      <h2>6. Customer data</h2>
+      <p>You are responsible for the lawfulness, accuracy, and necessity of any addresses, transaction hashes, notes, metadata, emails, or workflow data submitted through the Service (<strong>“Customer Data”</strong>).</p>
+      <p>Where PayeeProof processes Customer Data on your behalf as a processor or service provider, the <a href="/legal/dpa.html">Data Processing Addendum</a> applies. For data processed for our own operational, legal, security, website, or billing purposes, the <a href="/legal/privacy.html">Privacy Policy</a> applies.</p>
+
+      <h2>7. Verification records and service logs</h2>
+      <p>The Service may create verification records, usage events, webhook delivery logs, security logs, support records, and related operational metadata. Retention periods may vary by plan, security need, legal requirement, or written commercial terms.</p>
+
+      <h2>8. Availability and changes</h2>
+      <p>We do not guarantee uninterrupted availability. The Service may be affected by infrastructure providers, RPC providers, chain conditions, maintenance, abuse controls, outages, or force majeure. We may change features, supported networks, pricing, limits, documentation, or endpoints from time to time.</p>
+
+      <h2>9. Fees</h2>
+      <p>If you purchase a subscription, paid scope, or other commercial package, fees and included usage will be stated in an order form, proposal, invoice, or checkout flow. Unless otherwise agreed in writing, fees are non-refundable and taxes are your responsibility except for taxes based on our net income.</p>
+
+      <h2>10. Intellectual property</h2>
+      <p>The Service, website, code, documentation, verification formats, and related materials are owned by PayeeProof or its licensors. Except for limited access rights needed to use the Service under these Terms, no intellectual-property rights are transferred to you.</p>
+
+      <h2>11. Confidentiality</h2>
+      <p>Each party may receive non-public information from the other. The receiving party will use that information only for the relationship under these Terms and will protect it with reasonable care.</p>
+
+      <h2>12. Disclaimers</h2>
+      <p><strong>THE SERVICE IS PROVIDED “AS IS” AND “AS AVAILABLE.”</strong> TO THE MAXIMUM EXTENT PERMITTED BY LAW, PAYEEPROOF DISCLAIMS ALL WARRANTIES, INCLUDING IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, ACCURACY, SECURITY, AND THAT THE SERVICE WILL DETECT, PREVENT, OR EXPLAIN EVERY PAYMENT ERROR, RISK, OR MISROUTED TRANSACTION.</p>
+
+      <h2>13. Limitation of liability</h2>
+      <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, PAYEEPROOF WILL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES, OR FOR ANY LOSS OF PROFITS, REVENUE, DATA, GOODWILL, OR BUSINESS OPPORTUNITY ARISING OUT OF OR RELATED TO THE SERVICE.</p>
+      <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, PAYEEPROOF’S TOTAL LIABILITY ARISING OUT OF OR RELATED TO THE SERVICE WILL NOT EXCEED THE AMOUNTS PAID BY YOU TO PAYEEPROOF FOR THE SERVICE IN THE THREE MONTHS PRECEDING THE EVENT GIVING RISE TO THE CLAIM, OR <span class="inline-code">USD 100</span> IF NO FEES WERE PAID.</p>
+
+      <h2>14. Suspension and termination</h2>
+      <p>We may suspend or terminate access if we reasonably believe your use violates these Terms, the Acceptable Use Policy, applicable law, or creates security, abuse, or reliability risk for the Service or others.</p>
+
+      <h2>15. Governing law</h2>
+      <p>If your order form or other written commercial agreement specifies governing law or venue, that agreement controls. Otherwise, these Terms are governed by the law of the operator’s principal place of business, excluding conflict-of-law rules, and disputes will be brought in the courts having jurisdiction there, unless applicable law requires otherwise.</p>
+
+      <h2>16. Changes to these Terms</h2>
+      <p>We may update these Terms from time to time. The latest version posted on this page will apply when posted, unless a separate written agreement states otherwise.</p>
+
+      <h2>17. Contact</h2>
+      <p>Email: <a href="mailto:hello@payeeproof.com">hello@payeeproof.com</a><br>
+      Website: <a href="https://payeeproof.com">https://payeeproof.com</a></p>
+
+      <div class="footer">This page is intended as a public-facing legal page for the website. Final legal review for your exact jurisdiction is still recommended before production use.</div>
+    </section>
+  </div>
+</body>
+</html>
