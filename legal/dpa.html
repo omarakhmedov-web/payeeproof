@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data Processing Addendum — PayeeProof</title>
+  <meta name="description" content="PayeeProof Data Processing Addendum.">
+  <style>
+    :root {
+      --bg: #0b0b0d;
+      --panel: #141419;
+      --text: #ececf1;
+      --muted: #a8a8b3;
+      --line: #27272f;
+      --accent-2: #f3dfaa;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: linear-gradient(180deg, #09090b 0%, #101014 100%); color: var(--text); line-height: 1.65; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 28px 20px 64px; }
+    .topbar { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .brand { color: var(--text); text-decoration: none; font-weight: 700; letter-spacing: .02em; }
+    .nav { display: flex; flex-wrap: wrap; gap: 10px 14px; }
+    .nav a, .back { color: var(--muted); text-decoration: none; }
+    .nav a:hover, .back:hover { color: var(--accent-2); }
+    .hero, .card { background: rgba(20,20,25,.82); border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    .hero { padding: 28px; margin-bottom: 18px; }
+    .card { padding: 28px; }
+    h1, h2, h3 { line-height: 1.2; margin: 0 0 14px; }
+    h1 { font-size: 2.2rem; }
+    h2 { font-size: 1.2rem; margin-top: 28px; color: var(--accent-2); }
+    .meta, .footer { color: var(--muted); }
+    ul { padding-left: 22px; }
+    .note {
+      background: #1a1a21;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      color: var(--muted);
+      margin: 14px 0 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="brand" href="/">PayeeProof</a>
+      <nav class="nav" aria-label="Legal navigation">
+        <a href="/legal/terms.html">Terms</a>
+        <a href="/legal/privacy.html">Privacy</a>
+        <a href="/legal/acceptable-use.html">Acceptable Use</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <a class="back" href="/">← Back to home</a>
+      <h1>Data Processing Addendum</h1>
+      <div class="meta">Effective date: March 27, 2026</div>
+      <div class="meta">Version: 2.0</div>
+    </section>
+
+    <section class="card">
+      <div class="note">This page is a public DPA template for customer review. Final named-party details are completed in the applicable order form, invoice, or signed agreement.</div>
+
+      <p>This Data Processing Addendum (<strong>“DPA”</strong>) forms part of the applicable agreement between the customer identified in the relevant order form or written agreement (<strong>“Customer”</strong>) and the operator of the PayeeProof Service (<strong>“PayeeProof”</strong>, <strong>“Processor”</strong>).</p>
+
+      <h2>1. Roles of the parties</h2>
+      <p>To the extent PayeeProof processes Customer Personal Data on behalf of Customer in connection with the Service, Customer acts as controller or equivalent business entity and PayeeProof acts as processor or service provider.</p>
+      <p>This DPA does not apply where PayeeProof acts as an independent controller for its own business operations, such as billing, website administration, security logging, fraud prevention, legal compliance, and direct communications.</p>
+
+      <h2>2. Subject matter and duration</h2>
+      <p>The subject matter of the processing is PayeeProof’s provision of pre-transfer verification, related decision-support outputs, verification records, webhook notifications, and support. Processing continues for the duration of the applicable customer relationship unless earlier terminated.</p>
+
+      <h2>3. Nature and purpose of processing</h2>
+      <p>PayeeProof may process Customer Personal Data to receive and process verification requests, generate verification records, transmit webhooks and delivery metadata, maintain auditability and service reliability, provide support, and comply with documented customer instructions consistent with the Service.</p>
+
+      <h2>4. Types of personal data</h2>
+      <ul>
+        <li>names and work contact details;</li>
+        <li>user or operator identifiers;</li>
+        <li>blockchain addresses and transaction-related metadata;</li>
+        <li>ticket, support, note, or workflow fields submitted by Customer;</li>
+        <li>IP addresses and request metadata generated through use of the Service;</li>
+        <li>records associated with webhook delivery and operational logs.</li>
+      </ul>
+
+      <h2>5. Categories of data subjects</h2>
+      <ul>
+        <li>Customer personnel;</li>
+        <li>Customer end users;</li>
+        <li>payees, counterparties, or recipients referenced in Customer workflows;</li>
+        <li>support or operations contacts.</li>
+      </ul>
+
+      <h2>6. Customer instructions</h2>
+      <p>PayeeProof will process Customer Personal Data only on documented instructions from Customer, unless otherwise required by law. The applicable agreement, API usage, configuration choices, and written support requests constitute Customer’s documented instructions.</p>
+
+      <h2>7. Confidentiality</h2>
+      <p>PayeeProof will ensure that persons authorized to process Customer Personal Data are subject to confidentiality obligations.</p>
+
+      <h2>8. Security measures</h2>
+      <p>PayeeProof will implement reasonable technical and organizational measures appropriate to the risk. Depending on the Service setup, these may include access controls, authentication, secrets management, logging and monitoring, abuse protections, rate limiting, environment separation, transport security, backups, and incident-response procedures.</p>
+
+      <h2>9. Sub-processors</h2>
+      <p>Customer authorizes PayeeProof to use sub-processors for hosting, infrastructure, email delivery, monitoring, analytics, support, logging, and related business operations necessary to provide the Service. PayeeProof will remain responsible for the performance of its sub-processors to the extent required by law.</p>
+
+      <h2>10. Assistance</h2>
+      <p>Taking into account the nature of the processing and the information available to PayeeProof, PayeeProof will provide reasonable assistance with data-subject requests, breach-related obligations, and impact assessments where required, subject to reasonable commercial limits.</p>
+
+      <h2>11. Personal data breaches</h2>
+      <p>If PayeeProof becomes aware of a confirmed personal data breach affecting Customer Personal Data, PayeeProof will notify Customer without undue delay and provide reasonably available information relevant to the incident.</p>
+
+      <h2>12. International transfers</h2>
+      <p>Where Customer Personal Data is transferred across borders, the parties will implement appropriate safeguards where required by applicable data protection law.</p>
+
+      <h2>13. Deletion and return</h2>
+      <p>Upon termination of the applicable services, PayeeProof will delete or return Customer Personal Data as required by the agreement or applicable law, unless retention is required for legal, security, fraud-prevention, backup, or dispute-resolution reasons.</p>
+
+      <h2>14. Audit information</h2>
+      <p>PayeeProof will make available information reasonably necessary to demonstrate compliance with this DPA. If additional audits are requested, the parties will cooperate in good faith to agree on scope, timing, confidentiality, and cost, taking into account security and operational burden.</p>
+
+      <h2>15. Liability</h2>
+      <p>This DPA is subject to the liability limitations in the main agreement except to the extent prohibited by applicable law.</p>
+
+      <h2>16. Order of precedence</h2>
+      <p>If there is a conflict between this DPA and the main agreement regarding the processing of Customer Personal Data, this DPA controls to the extent of that conflict.</p>
+
+      <h2>17. Contact</h2>
+      <p>Privacy / legal contact: <a href="mailto:hello@payeeproof.com">hello@payeeproof.com</a></p>
+
+      <div class="footer">This DPA template intentionally avoids internal project notes and is suitable for public review.</div>
+    </section>
+  </div>
+</body>
+</html>
