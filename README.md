@@ -1,3 +1,4 @@
+[README.md](https://github.com/user-attachments/files/26281215/README_task10_account_usage_v1.md)
 [README.md](https://github.com/user-attachments/files/26256474/README_task7_clean.md)
 # PayeeProof API
 
@@ -26,6 +27,7 @@ The API is designed to return one compact operational record per check:
 
 - **Base URL:** `https://payeeproof-api.onrender.com`
 - **Primary endpoint:** `POST /api/preflight-check`
+- **Additional endpoints:** `GET /api/account`, `GET /api/usage-summary`, `GET /api/verification-records`
 - **Auth:** `X-API-Key: <client_key>`
 - **Contract version:** `v1`
 - **Scope:** pre-send verification for supported stablecoin payout routes
@@ -121,6 +123,18 @@ Core set for `v1`:
 - `UNSUPPORTED_ASSET_OR_NETWORK`
 - `REQUEST_FAILED`
 - `RENDER_FAILED`
+
+## Client account and usage layer
+
+Task 10 starts with the minimum commercial layer rather than full enterprise complexity.
+
+Current additions:
+
+- `GET /api/account` — returns tenant/client metadata, environment, plan, scopes, webhook state, and current-month usage snapshot
+- `GET /api/usage-summary?period=30d` — returns usage totals, breakdown by event / service / network / reason code / verdict, and daily activity
+- API key metadata can now carry: `tenant_id`, `environment`, `role`, `plan`, `usage_limit_monthly`
+
+This makes the product easier to operate as a client-facing service before moving into heavier layers such as billing automation or policy engines.
 
 ## Versioning policy
 
