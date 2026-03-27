@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PayeeProof — technical overview</title>
-  <meta name="description" content="Compact technical overview for teams evaluating PayeeProof during a pilot review." />
+  <meta name="description" content="Clear technical overview for teams evaluating PayeeProof in a real payment workflow." />
   <meta property="og:title" content="PayeeProof — technical overview" />
-  <meta property="og:description" content="Compact technical overview for structured decisions, verification records, and pilot review flows." />
+  <meta property="og:description" content="Clear technical overview for decision outcomes, example records, and pilot review flows." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -310,6 +310,7 @@
         <a href="#overview">Overview</a>
         <a href="#verdicts">Verdicts</a>
         <a href="#flows">Flows</a>
+        <a href="#codes">Decision labels</a>
         <a href="#api">Endpoints</a>
         <a href="./pricing.html">Pricing</a>
         <a href="./index.html">Main site</a>
@@ -325,20 +326,20 @@
     <section class="hero" id="overview">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <div class="pill">Technical sample · compact API review</div>
+          <div class="pill">Technical page · pilot review</div>
           <h1>Technical overview for teams evaluating PayeeProof in a real payout workflow.</h1>
-          <p class="lead">This page stays compact on purpose. It shows the current live endpoints, the structure of a verification record, and the fields a team would review before approving a pilot or broader rollout.</p>
+          <p class="lead">This page keeps the technical layer simple. It shows the decision outcomes, the example record, and the request and response shape a team would review before starting a pilot.</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="#records">See verification record</a>
             <a class="btn btn-secondary" href="./sample-verification-record.html">Open public verification record</a>
             <a class="btn btn-ghost" href="./pilot-flow.html">Open pilot flow</a>
             <a class="btn btn-ghost" href="./pricing.html">Open pricing &amp; packages</a>
-            <a class="btn btn-ghost" href="./openapi.yaml">Open API reference</a>
+            <a class="btn btn-ghost" href="./policy_examples.html">Open policy examples</a>
           </div>
           <div class="tag-row">
-            <div class="tag">Pre-send first</div>
-            <div class="tag">History + activity</div>
-            <div class="tag">API reference available</div>
+            <div class="tag">Non-custodial</div>
+            <div class="tag">Clear outcomes</div>
+            <div class="tag">Pilot-ready</div>
             <div class="tag">6 supported networks</div>
           </div>
         </div>
@@ -349,10 +350,10 @@
             </div>
             <div class="shell-line"><strong>Primary use case</strong><span>Pre-send transfer verification</span></div>
             <div class="shell-line"><strong>Secondary module</strong><span>Post-error recovery guidance</span></div>
-            <div class="shell-line"><strong>Current live endpoints</strong><span>Pre-send, verification history, account, activity, and event delivery</span></div>
-            <div class="shell-line"><strong>Core outputs</strong><span>SAFE · BLOCK · REVERIFY · TEST FIRST · UNAVAILABLE</span></div>
-            <div class="shell-line"><strong>Typical team</strong><span>Ops, payout, treasury, support, risk</span></div>
-            <div class="shell-line"><strong>Review mode</strong><span>Pilot evaluation with live checks</span></div>
+            <div class="shell-line"><strong>Core outcomes</strong><span>SAFE · BLOCK · REVERIFY · TEST FIRST</span></div>
+            <div class="shell-line"><strong>Example record</strong><span>Clear result record for internal review and system storage</span></div>
+            <div class="shell-line"><strong>Typical teams</strong><span>Payments, treasury, support, and risk</span></div>
+            <div class="shell-line"><strong>Review mode</strong><span>Email-first pilot review with live checks</span></div>
           </div>
         </div>
       </div>
@@ -360,8 +361,8 @@
 
     <section class="section-sm" id="verdicts">
       <div class="container">
-        <div class="eyebrow">Operational language</div>
-        <h2>One operational language across the current live surface.</h2>
+        <div class="eyebrow">Decision outcomes</div>
+        <h2>One answer system across pre-send and recovery flows.</h2>
         <div class="scenario-grid" style="margin-top:28px;">
           <article class="scenario-card card">
             <div class="scenario-top"><div class="scenario-type">Verdict</div><div class="scenario-badge safe">SAFE</div></div>
@@ -387,10 +388,39 @@
       </div>
     </section>
 
+    <section class="section-sm" id="codes">
+      <div class="container">
+        <div class="eyebrow">Decision labels</div>
+        <h2>Short labels behind the answer.</h2>
+        <div class="grid two-col" style="margin-top:28px; align-items:start;">
+          <div class="card" style="padding:28px;">
+            <div class="points">
+              <div class="point"><strong>OK</strong><span>Core details matched and the route looks safe enough to approve.</span></div>
+              <div class="point"><strong>NETWORK_MISMATCH</strong><span>The selected network does not match the approved route.</span></div>
+              <div class="point"><strong>ASSET_MISMATCH</strong><span>The selected asset does not match the approved route.</span></div>
+              <div class="point"><strong>INVALID_ADDRESS</strong><span>The destination format is not valid for the selected network.</span></div>
+              <div class="point"><strong>DESTINATION_REQUIRES_MEMO_OR_VENUE_CHECK</strong><span>The route may depend on a venue, memo, or destination tag and needs confirmation.</span></div>
+              <div class="point"><strong>DESTINATION_IS_CONTRACT_OR_APP</strong><span>The destination is not a plain personal wallet and should not be treated like one.</span></div>
+            </div>
+          </div>
+          <div class="card" style="padding:28px;">
+            <div class="points">
+              <div class="point"><strong>DESTINATION_IS_BRIDGE_ROUTER</strong><span>The route looks like bridge or router infrastructure, so a small test is safer.</span></div>
+              <div class="point"><strong>DESTINATION_NOT_CLASSIFIED</strong><span>Core details matched, but the live destination check stayed inconclusive.</span></div>
+              <div class="point"><strong>DESTINATION_LOOKUP_UNAVAILABLE</strong><span>The live destination check did not finish, so the result should not be treated as final approval.</span></div>
+              <div class="point"><strong>UNSUPPORTED_NETWORK</strong><span>The selected network is outside the current live scope.</span></div>
+              <div class="point"><strong>UNSUPPORTED_ASSET_OR_NETWORK</strong><span>The asset and network combination is outside the current live scope.</span></div>
+              <div class="point"><strong>Why these labels matter</strong><span>They keep answers consistent across dashboards, rules, support reviews, and pilot reporting.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="section" id="records">
       <div class="container">
-        <div class="eyebrow">Structured output</div>
-        <h2>What a verification record should show to an ops team.</h2>
+        <div class="eyebrow">Example record</div>
+        <h2>What a verification record should show.</h2>
         <div class="grid two-col" style="align-items:start; margin-top:28px;">
           <div class="card" style="padding:28px;">
             <div class="proof-head">
@@ -401,29 +431,29 @@
               <div class="scenario-badge safe">SAFE</div>
             </div>
             <div class="proof-grid" style="margin-top:22px;">
-              <div class="proof-item"><span>checked_at</span><strong>2026-03-24T19:12:08Z</strong></div>
-              <div class="proof-item"><span>reason_code</span><strong>OK</strong></div>
+              <div class="proof-item"><span>checked_at</span><strong>2026-03-26T10:12:08Z</strong></div>
+              <div class="proof-item"><span>decision label</span><strong>OK</strong></div>
               <div class="proof-item"><span>confidence</span><strong>0.96</strong></div>
               <div class="proof-item"><span>destination type</span><strong>Personal wallet</strong></div>
               <div class="proof-item"><span>network</span><strong>Ethereum</strong></div>
               <div class="proof-item"><span>asset</span><strong>USDC</strong></div>
-              <div class="proof-item"><span>ops action</span><strong>Approve payout</strong></div>
-              <div class="proof-item"><span>record style</span><strong>Readable + machine-friendly</strong></div>
+              <div class="proof-item"><span>recommended action</span><strong>Approve payout</strong></div>
+              <div class="proof-item"><span>format</span><strong>Readable + system-ready</strong></div>
             </div>
             <div class="notes-box" style="margin-top:18px;">
               <strong>Why this verdict</strong>
-              <p style="margin:8px 0 0; color:var(--muted);">The expected transfer route and the provided destination align, and the destination class does not require an escalation path.</p>
+              <p style="margin:8px 0 0; color:var(--muted);">The expected transfer route and the provided destination align, and the destination does not trigger a higher-risk path.</p>
             </div>
           </div>
           <div class="card" style="padding:28px;">
-            <h3 style="margin-top:0;">Recommended public-facing fields</h3>
+            <h3 style="margin-top:0;">Recommended fields on the record</h3>
             <div class="points">
               <div class="point"><strong>checked_at</strong><span>So a team knows exactly when the result was produced.</span></div>
-              <div class="point"><strong>verdict</strong><span>The operational answer the payout team should act on.</span></div>
-              <div class="point"><strong>reason_code</strong><span>Stable classification for logs, rules, and support review.</span></div>
-              <div class="point"><strong>confidence</strong><span>A useful summary layer when the verdict needs nuance.</span></div>
+              <div class="point"><strong>verdict</strong><span>The main answer the team should act on.</span></div>
+              <div class="point"><strong>reason_code</strong><span>Short label that explains why the answer was given.</span></div>
+              <div class="point"><strong>confidence</strong><span>A simple signal for how cautious the team should be.</span></div>
               <div class="point"><strong>destination type</strong><span>Personal wallet, contract, exchange-like deposit, bridge-router, or unknown.</span></div>
-              <div class="point"><strong>why this verdict</strong><span>A short, human-readable explanation for ops and support teams.</span></div>
+              <div class="point"><strong>why this verdict</strong><span>A short explanation people can read without opening a ticket or thread.</span></div>
             </div>
           </div>
         </div>
@@ -442,13 +472,13 @@
           </div>
           <div class="card" style="padding:26px;">
             <div class="mini-pill">2</div>
-            <h3>Verdict + record</h3>
-            <p class="muted">PayeeProof returns a structured verdict and a readable verification record for workflow storage.</p>
+            <h3>Decision + record</h3>
+            <p class="muted">PayeeProof returns one clear answer together with a readable record.</p>
           </div>
           <div class="card" style="padding:26px;">
             <div class="mini-pill">3</div>
             <h3>Escalation only when needed</h3>
-            <p class="muted">Support or ops only intervenes when the answer is BLOCK, REVERIFY, TEST FIRST, or a recovery case.</p>
+            <p class="muted">Human review is only needed when the answer is BLOCK, REVERIFY, TEST FIRST, or a recovery case.</p>
           </div>
         </div>
       </div>
@@ -456,41 +486,38 @@
 
     <section class="section" id="api">
       <div class="container">
-        <div class="eyebrow">Compact endpoint outline</div>
-        <h2>Enough detail for pilot review, without turning this page into API docs.</h2>
+        <div class="eyebrow">Simple integration view</div>
+        <h2>Enough detail for pilot review, without turning this page into a long developer manual.</h2>
         <div class="grid two-col" style="margin-top:28px; align-items:start;">
           <div class="card" style="padding:28px;">
             <h3 style="margin-top:0;">Endpoints currently exposed</h3>
             <div class="points">
-              <div class="point"><strong>GET /health</strong><span>Service health and configured-network visibility.</span></div>
-              <div class="point"><strong>POST /api/preflight-check</strong><span>Primary pre-send verification endpoint.</span></div>
-              <div class="point"><strong>POST /api/recovery-copilot</strong><span>Secondary post-error transaction guidance.</span></div>
-              <div class="point"><strong>GET /api/account</strong><span>Workspace details and plan context.</span></div>
-              <div class="point"><strong>GET /api/usage-summary</strong><span>Activity visibility by period.</span></div>
-              <div class="point"><strong>GET /api/verification-records</strong><span>Verification history for the current workspace.</span></div>
-              <div class="point"><strong>GET /api/verification-records/{id}</strong><span>Single record lookup for workflow review.</span></div>
-              <div class="point"><strong>POST /pilot-request</strong><span>Commercial intake for pilot evaluation and use-case review.</span></div>
+              <div class="point"><strong>GET /health</strong><span>Simple service status and current network availability.</span></div>
+              <div class="point"><strong>POST /api/preflight-check</strong><span>Pre-send verification for network, asset, and destination.</span></div>
+              <div class="point"><strong>POST /api/recovery-copilot</strong><span>Post-error guidance based on a real transaction hash.</span></div>
+              <div class="point"><strong>POST /pilot-request</strong><span>Simple intake step for pilot requests and use-case review.</span></div>
             </div>
             <div class="btn-row" style="margin-top:18px;">
               <a class="btn btn-secondary" href="./sample-verification-record.json">Open record JSON</a>
-              <a class="btn btn-ghost" href="./reason-codes.md">Open decision labels</a>
             </div>
           </div>
           <div class="card" style="padding:28px;">
-            <h3 style="margin-top:0;">Compact request and response examples</h3>
+            <h3 style="margin-top:0;">Request + response examples</h3>
             <details class="code-shell" open>
-              <summary>Open examples</summary>
+              <summary>Open request and response examples</summary>
 <pre>POST /api/preflight-check
 {
   "expected": {
     "network": "ethereum",
     "asset": "USDC",
-    "address": "0x1111111111111111111111111111111111111111"
+    "address": "0x59d779BED4dB1E734D3fDa3172d45bc3063eCD69",
+    "memo": null
   },
   "provided": {
     "network": "ethereum",
     "asset": "USDC",
-    "address": "0x1111111111111111111111111111111111111111"
+    "address": "0x59d779BED4dB1E734D3fDa3172d45bc3063eCD69",
+    "memo": null
   }
 }
 
@@ -499,16 +526,26 @@
   "ok": true,
   "verdict": "SAFE",
   "reason_code": "OK",
+  "confidence": "High",
+  "destination_type": "personal_wallet",
   "next_action": "SAFE_TO_PROCEED",
-  "destination_type": "personal_wallet"
+  "why_this_verdict": "Network, asset, address, and memo checks matched. The destination classified as a personal wallet."
 }
 
 POST /api/recovery-copilot
 {
   "chain": "polygon",
-  "tx_hash": "0x...",
-  "issue_type": "wrong_network",
-  "intended_chain": "ethereum"
+  "tx_hash": "0x974293b260e7be5358a820b664c0f9246a1b307c55e3cbc9e195cd18ada6bd2a"
+}
+
+200 OK
+{
+  "ok": true,
+  "status": "found",
+  "reason_code": "GENERAL_ONCHAIN_GUIDANCE",
+  "confidence": "High",
+  "recoverability": "depends",
+  "destination_type": "contract_or_app"
 }</pre>
             </details>
           </div>
@@ -519,9 +556,9 @@ POST /api/recovery-copilot
     <section id="contact" class="section-sm">
       <div class="container">
         <div class="card" style="padding:32px;">
-          <div class="eyebrow">Technical review</div>
-          <h2 style="margin-top:8px;">Use this page for field review. Keep the main site commercial.</h2>
-          <p class="lead" style="margin-top:14px; max-width:900px;">The clean evaluation path is simple: review the main site, inspect the verification record, review the compact API view here, then decide whether to start with a narrow pre-send pilot.</p>
+          <div class="eyebrow">Pilot evaluation</div>
+          <h2 style="margin-top:8px;">Use this page for the technical review. Use the main site for the commercial story.</h2>
+          <p class="lead" style="margin-top:14px; max-width:900px;">A clean review path is simple: understand the product on the main site, inspect the example record, and use this page for the technical check before a pilot decision.</p>
           <div class="btn-row" style="margin-top:18px;">
             <a class="btn btn-primary" href="./index.html#contact">Request pilot on main site</a>
             <a class="btn btn-secondary" href="./index.html#contact">Open pilot form on main site</a>
@@ -543,6 +580,7 @@ POST /api/recovery-copilot
         <a href="#verdicts">Verdicts</a>
         <a href="#records">Record fields</a>
         <a href="#flows">Flows</a>
+        <a href="#codes">Decision labels</a>
         <a href="#api">Endpoints</a>
         <a href="./use-cases.html">Use cases</a>
         <a href="./pricing.html">Pricing</a>
