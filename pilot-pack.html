@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PayeeProof Pilot Pack — Pre-send verification for stablecoin payouts</title>
-  <meta name="description" content="PayeeProof is a pre-send verification layer for stablecoin payouts. Review what it checks, its decisions, the pilot flow, and current limitations." />
+  <meta name="description" content="PayeeProof is a pre-send verification layer for stablecoin payouts. Review scope, results, pilot flow, package terms, and current limitations." />
   <meta property="og:title" content="PayeeProof Pilot Pack" />
-  <meta property="og:description" content="Pre-send verification for stablecoin payouts: what it checks, its decisions, the pilot flow, and current limitations." />
+  <meta property="og:description" content="Pre-send verification for stablecoin payouts: scope, results, pilot flow, package terms, and current limitations." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -250,8 +250,8 @@
       <nav>
         <a href="#checks">Checks</a>
         <a href="#verdicts">Verdicts</a>
-        <a href="#reason-codes">Decision guide</a>
-        <a href="#scope">Coverage</a>
+        <a href="#reason-codes">Reason codes</a>
+        <a href="#scope">Scope</a>
         <a href="#integration">Integration</a>
         <a href="#pilot">Pilot</a>
         <a href="#limits">Limits</a>
@@ -267,9 +267,9 @@
     <section class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <div class="pill">Pilot pack · what it checks · where it works today</div>
+          <div class="pill">Pilot pack · what it checks · what is in scope today</div>
           <h1>Pre-send verification for stablecoin payouts.</h1>
-          <p class="lead">Stop wrong-network and wrong-destination mistakes before funds move. This pilot pack is designed to stand on its own: what PayeeProof checks, which decisions it returns, what is live today, and why the first commercial path should stay focused on pre-send verification.</p>
+          <p class="lead">Stop wrong-network and wrong-destination mistakes before funds move. This pilot pack shows what PayeeProof checks, what results it returns, what is supported today, and how a pilot fits into a payout workflow.</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="#checks">See what gets checked</a>
             <a class="btn btn-secondary" href="#pilot">See what is in the pilot</a>
@@ -277,9 +277,9 @@
             <a class="btn btn-ghost" href="./sample-verification-record.html">Open sample record</a>
           </div>
           <div class="tag-row">
-            <div class="tag">Pre-send first</div>
-            <div class="tag">Six live networks</div>
-            <div class="tag">Verification history available</div>
+            <div class="tag">Pre-send verification</div>
+                        <div class="tag">Six live networks</div>
+            <div class="tag">Reason-code driven outputs</div>
           </div>
         </div>
         <div class="card panel">
@@ -288,21 +288,21 @@
             <div class="shell-line"><strong>Main question</strong><span>Can this stop preventable payout mistakes before funds move?</span></div>
             <div class="shell-line"><strong>Core outputs</strong><span>SAFE · BLOCK · REVERIFY · TEST FIRST · UNAVAILABLE</span></div>
             <div class="shell-line"><strong>Primary use case</strong><span>Pre-send verification before approval, release, or manual payout</span></div>
-            <div class="shell-line"><strong>Current coverage</strong><span>Ethereum, Arbitrum, Base, Polygon, BNB Chain, Solana</span></div>
+            <div class="shell-line"><strong>Current live scope</strong><span>Ethereum, Arbitrum, Base, Polygon, BNB Chain, Solana</span></div>
             <div class="shell-line"><strong>Integration style</strong><span>Simple API call before release, approval, or manual payout</span></div>
-            <div class="shell-line"><strong>Pilot posture</strong><span>Email-first, scoped pilot, traceable records, clear limitations</span></div>
+            <div class="shell-line"><strong>Pilot posture</strong><span>Email-first, narrow scope, live checks, clear limitations</span></div>
           </div>
           <div class="kpi-grid">
             <div class="kpi-card">
-              <div class="kpi-label">Primary package</div>
-              <div class="kpi-value">Pilot</div>
+              <div class="kpi-label">Pre-send endpoint</div>
+              <div class="kpi-value">1</div>
             </div>
             <div class="kpi-card">
               <div class="kpi-label">Pre-send verdicts</div>
               <div class="kpi-value">5</div>
             </div>
             <div class="kpi-card">
-              <div class="kpi-label">Verification history</div>
+              <div class="kpi-label">Pilot intake</div>
               <div class="kpi-value">Live</div>
             </div>
             <div class="kpi-card">
@@ -328,7 +328,7 @@
                 <div class="check-state">Core</div>
               </div>
               <div class="check-row">
-                <div><strong>Asset match</strong><span>Checks whether the submitted asset matches the approved route and is currently supported.</span></div>
+                <div><strong>Asset match</strong><span>Checks whether the submitted asset matches the approved route and is in supported scope.</span></div>
                 <div class="check-state">Core</div>
               </div>
               <div class="check-row">
@@ -356,7 +356,7 @@
     <section class="section-sm" id="verdicts">
       <div class="container">
         <div class="eyebrow">Verdict language</div>
-        <h2>Simple outputs first. Detail stays in the explanation and next steps.</h2>
+        <h2>Simple outputs first. Details stay in the result and next steps.</h2>
         <div class="grid two-col" style="margin-top:28px; align-items:start;">
           <div class="card table-card">
             <table>
@@ -399,7 +399,7 @@
           <div class="card panel">
             <h3>What sits next to the verdict</h3>
             <div class="list">
-              <div class="list-item"><strong>reason_code</strong><span>Machine-readable explanation for routing and policy logic.</span></div>
+              <div class="list-item"><strong>reason_code</strong><span>Short explanation that helps the team route the case correctly.</span></div>
               <div class="list-item"><strong>confidence</strong><span>Signals whether the response should be treated as straightforward or conservative.</span></div>
               <div class="list-item"><strong>destination_type</strong><span>Personal wallet, contract or app, exchange-like deposit, bridge-router, unknown, or unavailable.</span></div>
               <div class="list-item"><strong>checked_at / trace_id</strong><span>Gives operators a traceable proof block for review and audit.</span></div>
@@ -413,14 +413,14 @@
 
     <section class="section" id="reason-codes">
       <div class="container">
-        <div class="eyebrow">Decision guide</div>
+        <div class="eyebrow">Reason codes</div>
         <h2>Stable machine-readable labels, with plain-English meaning for operators.</h2>
         <div class="grid two-col" style="margin-top:28px; align-items:start;">
           <div class="card table-card">
             <table>
               <thead>
                 <tr>
-                  <th>Decision label</th>
+                  <th>Pre-send reason code</th>
                   <th>What it means</th>
                 </tr>
               </thead>
@@ -437,30 +437,30 @@
                 <tr><td><strong>DESTINATION_REQUIRES_MEMO_OR_VENUE_CHECK</strong></td><td>Destination looks like a deposit-style route that may depend on venue and memo.</td></tr>
                 <tr><td><strong>DESTINATION_NOT_CLASSIFIED</strong></td><td>Core details matched, but live classification stayed inconclusive.</td></tr>
                 <tr><td><strong>DESTINATION_LOOKUP_UNAVAILABLE</strong></td><td>Live destination lookup did not complete.</td></tr>
-                <tr><td><strong>UNSUPPORTED_NETWORK</strong></td><td>Selected chain is outside current supported coverage.</td></tr>
-                <tr><td><strong>UNSUPPORTED_ASSET_OR_NETWORK</strong></td><td>Asset-network combination is outside current supported coverage.</td></tr>
+                <tr><td><strong>UNSUPPORTED_NETWORK</strong></td><td>Selected chain is outside current supported scope.</td></tr>
+                <tr><td><strong>UNSUPPORTED_ASSET_OR_NETWORK</strong></td><td>Asset-network combination is outside current supported scope.</td></tr>
               </tbody>
             </table>
           </div>
           <div class="card panel">
-            <h3>How the decision labels are meant to be used</h3>
+            <h3>How result labels are meant to be used</h3>
             <div class="list">
               <div class="list-item"><strong>Allow</strong><span><code>OK</code> supports a controlled SAFE outcome.</span></div>
               <div class="list-item"><strong>Block</strong><span><code>NETWORK_MISMATCH</code>, <code>ASSET_MISMATCH</code>, <code>ADDRESS_MISMATCH</code>, <code>INVALID_ADDRESS</code>, and <code>ZERO_ADDRESS</code> stop the transfer.</span></div>
               <div class="list-item"><strong>Re-check</strong><span><code>MEMO_MISMATCH</code> and <code>DESTINATION_REQUIRES_MEMO_OR_VENUE_CHECK</code> push the case into human confirmation.</span></div>
               <div class="list-item"><strong>Test first</strong><span><code>DESTINATION_IS_BRIDGE_ROUTER</code> and <code>DESTINATION_IS_CONTRACT_OR_APP</code> keep operators from treating infrastructure routes like personal wallets.</span></div>
-              <div class="list-item"><strong>Fallback</strong><span><code>DESTINATION_NOT_CLASSIFIED</code>, <code>DESTINATION_LOOKUP_UNAVAILABLE</code>, and unsupported coverage labels prevent fake green lights.</span></div>
+              <div class="list-item"><strong>Fallback</strong><span><code>DESTINATION_NOT_CLASSIFIED</code>, <code>DESTINATION_LOOKUP_UNAVAILABLE</code>, and unsupported-scope codes prevent fake green lights.</span></div>
             </div>
           </div>
         </div>
-        <p class="note">These short labels are meant to stay stable enough for workflow routing, support playbooks, and lightweight policy logic during the pilot.</p>
+        <p class="note">These labels are meant to stay stable enough for workflow routing, support playbooks, and clear operational handling during the pilot.</p>
       </div>
     </section>
 
     <section class="section-sm" id="scope">
       <div class="container">
-        <div class="eyebrow">Current coverage</div>
-        <h2>What is live today, and where the product is intentionally narrow.</h2>
+        <div class="eyebrow">Supported scope</div>
+        <h2>What is live today, and where the scope is intentionally narrow.</h2>
         <div class="card table-card" style="margin-top:28px;">
           <table>
             <thead>
@@ -482,13 +482,13 @@
         </div>
         <div class="grid two-col" style="margin-top:24px; align-items:start;">
           <div class="card panel">
-            <h3>Endpoints in the current pilot surface</h3>
+            <h3>Endpoints available in the current pilot</h3>
             <div class="scope-chip-row">
               <div class="scope-chip">GET /health</div>
               <div class="scope-chip">POST /api/preflight-check</div>
                             <div class="scope-chip">POST /pilot-request</div>
             </div>
-            <p class="note">The public website demo stays narrower than the full integration layer. It focuses on the clearest product story first.</p>
+            <p class="note">The public website demo stays narrower than the live product. It focuses on the clearest product story first.</p>
           </div>
           <div class="card panel">
             <h3>Where the pilot stays intentionally conservative</h3>
@@ -538,7 +538,7 @@
               <div class="list-item"><strong>Payout ops</strong><span>Use pre-send check before release.</span></div>
               <div class="list-item"><strong>Treasury</strong><span>Add a lightweight approval control without changing custody.</span></div>
               <div class="list-item"><strong>Support or customer ops</strong><span>Use the same verdict language during manual payout review or customer-confirmation flows.</span></div>
-              <div class="list-item"><strong>Risk or compliance teams</strong><span>Keep the proof block and decision labels for workflow evidence.</span></div>
+              <div class="list-item"><strong>Risk or compliance ops</strong><span>Keep the proof block and result labels for workflow evidence.</span></div>
             </div>
           </div>
           <div class="card panel">
@@ -546,8 +546,8 @@
             <div class="list">
               <div class="list-item"><strong>Not a custodian</strong><span>PayeeProof does not move or hold funds.</span></div>
               <div class="list-item"><strong>Not a wallet replacement</strong><span>Execution stays with the operator or client workflow.</span></div>
-              <div class="list-item"><strong>Not a universal guarantee</strong><span>These decision labels and guidance help reduce mistakes, but cannot override partner-side platform rules.</span></div>
-              <div class="list-item"><strong>Not a broad first rollout</strong><span>The pilot stays intentionally narrow so teams can judge the product on a real workflow.</span></div>
+              <div class="list-item"><strong>Not a universal guarantee</strong><span>Reason codes and guidance help reduce mistakes, but cannot override partner-side platform rules.</span></div>
+              <div class="list-item"><strong>Not an infinite scope pilot</strong><span>The pilot stays intentionally narrow so teams can judge the product on a real workflow.</span></div>
             </div>
           </div>
         </div>
@@ -557,30 +557,33 @@
     <section class="section-sm" id="pilot">
       <div class="container">
         <div class="eyebrow">What is included in the pilot</div>
-        <h2>A narrow package meant to prove usefulness, not bury the team in features.</h2>
+        <h2>Pilot — $399 / month</h2>
+        <p class="lead" style="max-width:760px;">For teams that want to validate PayeeProof in one live payment workflow before broader rollout.</p>
         <div class="grid three-col" style="margin-top:28px;">
           <div class="card panel">
-            <h3>Commercial review layer</h3>
+            <h3>Included</h3>
             <div class="list">
-              <div class="list-item"><strong>Main site</strong><span>Public positioning and product story.</span></div>
-              <div class="list-item"><strong>Pilot pack</strong><span>This page: coverage, decisions, flow, and limitations.</span></div>
-              <div class="list-item"><strong>Sample record</strong><span>Structured result format a team can review without reading code first.</span></div>
+              <div class="list-item"><strong>1 workflow</strong><span>One defined payment or destination-check flow.</span></div>
+              <div class="list-item"><strong>1–2 networks</strong><span>Keep the pilot narrow and operationally clear.</span></div>
+              <div class="list-item"><strong>Up to 1,000 checks / month</strong><span>Enough for a controlled live pilot.</span></div>
+              <div class="list-item"><strong>Up to 2,000 record reads / month</strong><span>Review results and history during the pilot.</span></div>
             </div>
           </div>
           <div class="card panel">
-            <h3>Live pilot surface</h3>
+            <h3>Operational setup</h3>
             <div class="list">
-              <div class="list-item"><strong>Keyed access</strong><span>One API key per pilot client.</span></div>
-              <div class="list-item"><strong>Verification records</strong><span>Workspace-level history and readable record output are already live.</span></div>
-              <div class="list-item"><strong>Usage and webhook layer</strong><span>Activity visibility and event delivery options are available for rollout discussions.</span></div>
+              <div class="list-item"><strong>Verification records</strong><span>Each completed check can be reviewed as a structured result.</span></div>
+              <div class="list-item"><strong>Basic webhook delivery</strong><span>Send key events into the client workflow.</span></div>
+              <div class="list-item"><strong>Email-based onboarding</strong><span>Start without requiring a kickoff call.</span></div>
+              <div class="list-item"><strong>Standard support</strong><span>Practical help during the pilot window.</span></div>
             </div>
           </div>
           <div class="card panel">
-            <h3>Practical pilot process</h3>
+            <h3>What is not included</h3>
             <div class="list">
-              <div class="list-item"><strong>Email-first intake</strong><span>Review flow, use case, and fit without requiring an initial call.</span></div>
-              <div class="list-item"><strong>Primary sell first</strong><span>Keep the first commercial conversation centered on pre-send verification.</span></div>
-              <div class="list-item"><strong>Recovery second</strong><span>Add recovery only when the team also owns a real post-error support flow.</span></div>
+              <div class="list-item"><strong>No mandatory setup fee</strong><span>The standard Pilot does not require a separate implementation fee.</span></div>
+              <div class="list-item"><strong>No broad rollout promise</strong><span>Expanded rollout is quoted separately when the scope grows.</span></div>
+              <div class="list-item"><strong>No feature sprawl</strong><span>The Pilot is intentionally limited so teams can judge it on one real workflow.</span></div>
             </div>
           </div>
         </div>
@@ -594,7 +597,7 @@
         <div class="limit-grid">
           <div class="limit-card">
             <h3>Scope is selective</h3>
-            <p>Only the currently supported networks and asset combinations are currently covered. Anything else should be treated as unsupported, not hand-waved into a false green light.</p>
+            <p>Only the currently supported networks and asset combinations are in scope. Anything else should be treated as unsupported, not hand-waved into a false green light.</p>
           </div>
           <div class="limit-card">
             <h3>Not every route should become SAFE</h3>
@@ -605,12 +608,12 @@
             <p>Some destinations will still land in REVERIFY, TEST FIRST, or UNAVAILABLE. That is intentional. The product should stop bad certainty, not manufacture fake certainty.</p>
           </div>
           <div class="limit-card">
-            <h3>Verification history and event delivery are live</h3>
-            <p>Verification history, activity visibility, and event delivery already exist. They support rollout, but should not distract from the main pre-send decision story in the first sale.</p>
+            <h3>Advanced rollout work is separate</h3>
+            <p>The standard Pilot covers a narrow live workflow. Broader setup, deeper customization, or expanded rollout work is quoted separately.</p>
           </div>
           <div class="limit-card">
-            <h3>Enterprise controls expand after pilot</h3>
-            <p>Workspace separation exists today, but private networking, SSO, and a broader enterprise admin layer belong to later rollout stages rather than the first pilot conversation.</p>
+            <h3>Dedicated admin tooling is not the Pilot</h3>
+            <p>The Pilot is focused on live checks, records, and practical workflow decisions. Broader admin tooling can be discussed if the rollout expands.</p>
           </div>
           <div class="limit-card">
             <h3>Human review still matters</h3>
@@ -619,7 +622,7 @@
         </div>
         <div class="card panel" style="margin-top:26px;">
           <h3>Bottom line</h3>
-          <p class="lead" style="font-size:18px; max-width:none; margin-top:10px;">PayeeProof is strongest when sold first as a focused pre-send verification layer for stablecoin payouts. It helps teams stop preventable transfer mistakes before execution with narrow scope, live checks, explainable outputs, and a clean path into verification history, activity visibility, and later expansion.</p>
+          <p class="lead" style="font-size:18px; max-width:none; margin-top:10px;">PayeeProof is strongest as a focused pre-send verification layer for stablecoin payouts. It helps teams stop preventable transfer mistakes before execution with narrow scope, live checks, and explainable outputs.</p>
           <div class="btn-row" style="margin-top:18px;">
             <a class="btn btn-primary" href="./index.html#contact">Request pilot</a>
             <a class="btn btn-secondary" href="./technical-sample.html">Open technical overview</a>
@@ -639,13 +642,13 @@
       <div class="footer-links">
         <a href="#checks">Checks</a>
         <a href="#verdicts">Verdicts</a>
-        <a href="#reason-codes">Decision guide</a>
-        <a href="#scope">Coverage</a>
+        <a href="#reason-codes">Reason codes</a>
+        <a href="#scope">Scope</a>
         <a href="#integration">Integration</a>
         <a href="#pilot">Pilot</a>
         <a href="#limits">Limits</a>
         <a href="./technical-sample.html">Technical overview</a>
-        <a href="./sample-verification-record.html">Example record</a>
+        <a href="./sample-verification-record.html">Sample record</a>
         <a href="./index.html">Main site</a>
       </div>
     </div>
