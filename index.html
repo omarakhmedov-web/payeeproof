@@ -392,7 +392,7 @@
         <div class="card panel">
           <div class="panel-head">
             <div>
-              <div class="panel-badge">Production scope today</div>
+              <div class="panel-badge">Live today</div>
             </div>
           </div>
           <div class="list">
@@ -415,7 +415,7 @@
           </div>
           <div class="ops-card">
             <h3>Explainable for operations</h3>
-            <p>Results are designed to read like an operational record: verdict, reason code, confidence, timing, destination class, and next step.</p>
+            <p>Results are designed to read like a clear record: verdict, reference, confidence, timing, destination class, and next step.</p>
           </div>
           <div class="ops-card">
             <h3>Pilot intake</h3>
@@ -438,7 +438,7 @@
           </div>
           <div class="ops-card">
             <h3>Exchange-like deposits</h3>
-            <p>Use REVERIFY when a destination looks custodial, route-sensitive, or operationally risky.</p>
+            <p>Use REVERIFY when a destination looks custodial, route-sensitive, or still needs extra confirmation.</p>
           </div>
           <div class="ops-card">
             <h3>Support and recovery</h3>
@@ -460,14 +460,14 @@
       <div class="container">
         <div class="eyebrow">Proof format</div>
         <h2>A verification result should read like a record, not a chatbot answer.</h2>
-        <p class="lead" style="max-width:900px; margin-top:14px;">This page shows the record format the product is built around: a compact verification record with a stable verdict, reason code, confidence level, destination class, and operational next step.</p>
+        <p class="lead" style="max-width:900px; margin-top:14px;">This page shows the record format the product is built around: a compact verification record with a stable verdict, reference, confidence level, destination class, and a clear next step.</p>
 
         <div class="proof-grid">
           <div class="card panel">
             <h3 style="font-size:24px; margin-bottom:14px;">What the record captures</h3>
             <div class="list" style="margin-top:0;">
               <div class="list-item"><strong>Stable verdict</strong><span>SAFE, BLOCK, or REVERIFY — one clear status language.</span></div>
-              <div class="list-item"><strong>Proof fields</strong><span>Checked at, confidence, reason code, destination class, source, and next action.</span></div>
+              <div class="list-item"><strong>Proof fields</strong><span>Checked at, confidence, reference, destination class, source, and next action.</span></div>
               <div class="list-item"><strong>Operational context</strong><span>Short explanation for why the decision was returned and how an ops team should react.</span></div>
               <div class="list-item"><strong>Reviewability</strong><span>A result that can be used in a workflow, ticket, or approval log without rewriting it.</span></div>
             </div>
@@ -634,7 +634,7 @@
           <div class="panel-head">
             <div>
               <h3 style="font-size:24px; margin-bottom:8px;">Analyze a real transaction</h3>
-              <p class="muted">Paste a real transaction hash to get live status, recipient analysis, and practical recovery guidance across the current public network scope.</p>
+              <p class="muted">Paste a real transaction hash to get live status, recipient analysis, and practical recovery guidance across current live network coverage.</p>
             </div>
             <div class="panel-badge">Live analysis</div>
           </div>
@@ -810,7 +810,7 @@
 
         <div class="grid two-col" style="margin-top:28px; grid-template-columns: .95fr 1.05fr;">
           <div class="card panel">
-            <h3 style="font-size:24px; margin-bottom:14px;">Current production scope</h3>
+            <h3 style="font-size:24px; margin-bottom:14px;">Live today</h3>
             <div class="list" style="margin-top:0;">
               <div class="list-item"><strong>Pre-Send verification</strong><span>Live validation for network, asset, address, memo or tag, and destination classification.</span></div>
               <div class="list-item"><strong>Recovery guidance</strong><span>Live transaction lookup with recoverability guidance and next actions.</span></div>
@@ -825,7 +825,7 @@
           </div>
           <div class="card panel" style="background: rgba(0,0,0,.22);">
             <h3 style="font-size:24px; margin-bottom:14px;">Technical review (optional)</h3>
-            <p class="muted">The main page stays commercial. The technical overview is for teams that want a quick field-level review during pilot evaluation. A separate pilot pack page is also available for teams that want a clear summary of scope, verdicts, reason codes, and current limits.</p>
+            <p class="muted">The main page stays commercial. The technical overview is for teams that want a quick field-level review during pilot evaluation. A separate pilot pack page is also available for teams that want a clear summary of coverage, result labels, and current limits.</p>
             <details class="code-shell">
               <summary>Open technical overview</summary>
 <pre>POST /api/preflight-check
@@ -952,7 +952,7 @@ POST /api/recovery-copilot
       <div class="container">
         <div class="eyebrow">Pricing &amp; pilot packages</div>
         <h2>Start with a narrow pilot, then expand only if the workflow proves useful.</h2>
-        <p class="lead" style="max-width:900px; margin-top:14px;">The strongest commercial path is usually not a giant rollout. It is a defined workflow, a reviewable decision layer, and a clear next step after buyers see real records, policy examples, and trust boundaries.</p>
+        <p class="lead" style="max-width:900px; margin-top:14px;">The strongest commercial path is usually not a giant rollout. It is a defined workflow, a reviewable decision layer, and a clear next step after teams review real records, policy examples, and trust boundaries.</p>
         <div class="grid three-col" style="margin-top:34px;">
           <article class="card panel">
             <h3 style="font-size:22px; margin-bottom:12px;">Pilot evaluation</h3>
@@ -1493,7 +1493,7 @@ POST /api/recovery-copilot
         base: 'Base',
         polygon: 'Polygon',
         bsc: 'BNB Chain',
-        auto: 'Auto-detect scope',
+        auto: 'Auto-detect',
         solana: 'Solana',
       };
       return labels[String(value || '').toLowerCase()] || humanizeCode(value);
@@ -2134,7 +2134,7 @@ POST /api/recovery-copilot
           next_action: 'BLOCK_AND_REVERIFY',
           summary: 'Unsupported asset / network combination.',
           explanation: 'This sample shows how the product can present unsupported combinations with clear status wording.',
-          _why: 'The payout details are not automatically verifiable in the current supported scope. Re-check the pair or route it for manual review.',
+          _why: 'The payout details are not automatically verifiable in current live coverage. Re-check the pair or route it for manual review.',
           checked_at: now,
           risk_flags: ['unsupported_setup'],
           onchain: { provided: { address_type: 'unknown' } },
