@@ -6,7 +6,7 @@
   <title>PayeeProof — technical overview</title>
   <meta name="description" content="Clear technical overview for teams evaluating PayeeProof in a real payment workflow." />
   <meta property="og:title" content="PayeeProof — technical overview" />
-  <meta property="og:description" content="Clear technical overview for decision outcomes, example records, and pilot review flows." />
+  <meta property="og:description" content="Clear technical overview for decision outcomes, example records, and public API scope." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -326,11 +326,11 @@
     <section class="hero" id="overview">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <div class="pill">Technical page · pilot review</div>
+          <div class="pill">Technical overview · pre-send first</div>
           <h1>Technical overview for teams evaluating PayeeProof in a real payout workflow.</h1>
-          <p class="lead">This page keeps the technical layer simple. It shows the decision outcomes, the example record, and the request and response shape a team would review before starting a pilot.</p>
+          <p class="lead">This page keeps the technical layer simple. It shows the decision outcomes, the example record, and the request and response shape a team can review before starting a pilot. Public API positioning stays <strong>pre-send first</strong>. Recovery guidance is treated as a separate module/path.</p>
           <div class="btn-row">
-            <a class="btn btn-primary" href="#records">See verification record</a>
+            <a class="btn btn-primary" href="#records">See example record</a>
             <a class="btn btn-secondary" href="./sample-verification-record.html">Open public verification record</a>
             <a class="btn btn-ghost" href="./pilot-flow.html">Open pilot flow</a>
             <a class="btn btn-ghost" href="./pricing.html">Open pricing &amp; packages</a>
@@ -339,7 +339,7 @@
           <div class="tag-row">
             <div class="tag">Non-custodial</div>
             <div class="tag">Clear outcomes</div>
-            <div class="tag">Pilot-ready</div>
+            <div class="tag">Policy presets</div>
             <div class="tag">6 supported networks</div>
           </div>
         </div>
@@ -351,9 +351,9 @@
             <div class="shell-line"><strong>Primary use case</strong><span>Pre-send transfer verification</span></div>
             <div class="shell-line"><strong>Secondary module</strong><span>Post-error recovery guidance</span></div>
             <div class="shell-line"><strong>Core outcomes</strong><span>SAFE · BLOCK · REVERIFY · TEST FIRST</span></div>
-            <div class="shell-line"><strong>Example record</strong><span>Clear result record for internal review and system storage</span></div>
+            <div class="shell-line"><strong>Example record</strong><span>Clear result record for ops review and system storage</span></div>
             <div class="shell-line"><strong>Typical teams</strong><span>Payments, treasury, support, and risk</span></div>
-            <div class="shell-line"><strong>Review mode</strong><span>Email-first pilot review with live checks</span></div>
+            <div class="shell-line"><strong>API focus</strong><span>Public API v1 = pre-send first</span></div>
           </div>
         </div>
       </div>
@@ -362,7 +362,7 @@
     <section class="section-sm" id="verdicts">
       <div class="container">
         <div class="eyebrow">Decision outcomes</div>
-        <h2>One answer system across pre-send and recovery flows.</h2>
+        <h2>One answer system anchored around pre-send checks.</h2>
         <div class="scenario-grid" style="margin-top:28px;">
           <article class="scenario-card card">
             <div class="scenario-top"><div class="scenario-type">Verdict</div><div class="scenario-badge safe">SAFE</div></div>
@@ -382,7 +382,7 @@
           <article class="scenario-card card">
             <div class="scenario-top"><div class="scenario-type">Verdict</div><div class="scenario-badge testfirst">TEST FIRST</div></div>
             <h3>Use a low-risk trial</h3>
-            <p>Used for exchange-like deposits, bridge-router behavior, or other cases where a small test is safer than a full send.</p>
+            <p>Used where the destination is operationally sensitive and a cautious workflow should not treat it like a normal wallet route.</p>
           </article>
         </div>
       </div>
@@ -487,14 +487,14 @@
     <section class="section" id="api">
       <div class="container">
         <div class="eyebrow">Simple integration view</div>
-        <h2>Enough detail for pilot review, without turning this page into a long developer manual.</h2>
+        <h2>Enough detail for implementation review, without turning this page into a long developer manual.</h2>
         <div class="grid two-col" style="margin-top:28px; align-items:start;">
           <div class="card" style="padding:28px;">
             <h3 style="margin-top:0;">Endpoints currently exposed</h3>
             <div class="points">
               <div class="point"><strong>GET /health</strong><span>Simple service status and current network availability.</span></div>
               <div class="point"><strong>POST /api/preflight-check</strong><span>Pre-send verification for network, asset, and destination.</span></div>
-              <div class="point"><strong>POST /api/recovery-copilot</strong><span>Post-error guidance based on a real transaction hash.</span></div>
+              <div class="point"><strong>POST /api/recovery-copilot</strong><span>Secondary recovery path for post-error guidance based on a real transaction hash.</span></div>
               <div class="point"><strong>POST /pilot-request</strong><span>Simple intake step for pilot requests and use-case review.</span></div>
             </div>
             <div class="btn-row" style="margin-top:18px;">
@@ -507,6 +507,7 @@
               <summary>Open request and response examples</summary>
 <pre>POST /api/preflight-check
 {
+  "policy_profile": "payout_strict",
   "expected": {
     "network": "ethereum",
     "asset": "USDC",
@@ -529,7 +530,8 @@
   "confidence": "High",
   "destination_type": "personal_wallet",
   "next_action": "SAFE_TO_PROCEED",
-  "why_this_verdict": "Network, asset, address, and memo checks matched. The destination classified as a personal wallet."
+  "why_this_verdict": "Network, asset, address, and memo checks matched. The destination classified as a personal wallet.",
+  "policy_profile": "payout_strict"
 }
 
 POST /api/recovery-copilot
@@ -557,7 +559,7 @@ POST /api/recovery-copilot
       <div class="container">
         <div class="card" style="padding:32px;">
           <div class="eyebrow">Pilot evaluation</div>
-          <h2 style="margin-top:8px;">Use this page for the technical review. Use the main site for the commercial story.</h2>
+          <h2 style="margin-top:8px;">Use this page for technical review. Use the main site for the commercial story.</h2>
           <p class="lead" style="margin-top:14px; max-width:900px;">A clean review path is simple: understand the product on the main site, inspect the example record, and use this page for the technical check before a pilot decision.</p>
           <div class="btn-row" style="margin-top:18px;">
             <a class="btn btn-primary" href="./index.html#contact">Request pilot on main site</a>
