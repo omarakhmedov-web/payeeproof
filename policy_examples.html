@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PayeeProof — verification policy examples</title>
-  <meta name="description" content="Buyer-safe policy examples showing how PayeeProof classifies payout risk, destination types, and operator actions during pilot reviews." />
+  <meta name="description" content="Policy examples showing how PayeeProof classifies payout risk, destination types, and next actions during pilot reviews." />
   <meta property="og:title" content="PayeeProof — verification policy examples" />
   <meta property="og:description" content="Clear verdict policy, destination classes, and structured example records for pilot reviews." />
   <meta property="og:type" content="website" />
@@ -181,7 +181,7 @@
           <div class="mini-shell">
             <div class="mini-shell-bar"><span></span><span></span><span></span></div>
             <div class="shell-line"><strong>Primary job</strong><span>Reduce bad approvals before funds move</span></div>
-            <div class="shell-line"><strong>Decision style</strong><span>Readable verdict + reason code + operator action</span></div>
+            <div class="shell-line"><strong>Decision style</strong><span>Readable verdict + reference + next action</span></div>
             <div class="shell-line"><strong>Destination classes</strong><span>Personal wallet, contract, exchange-like deposit, bridge-router, unknown</span></div>
             <div class="shell-line"><strong>Workflow fit</strong><span>Ops review, payout approval, support escalation, audit trail</span></div>
             <div class="shell-line"><strong>Human role</strong><span>Escalate only when the case is not clearly safe</span></div>
@@ -193,7 +193,7 @@
     <section class="section" id="verdicts">
       <div class="container">
         <div class="eyebrow">Decision policy</div>
-        <h2>Verdicts are designed for operator action, not for technical theater.</h2>
+        <h2>Verdicts are designed for action, not for technical theater.</h2>
         <p class="lead">Each verdict is paired with a practical bias: approve, block, verify again, or require a small live test before releasing a larger payout.</p>
         <div class="matrix-grid">
           <div class="policy-card">
@@ -225,7 +225,7 @@
           </div>
           <div class="policy-card">
             <div class="policy-top"><span class="muted">Caution with live funds</span><span class="badge testfirst">TEST FIRST</span></div>
-            <h3>Require a small live test when the destination may be valid but operationally sensitive.</h3>
+            <h3>Require a small live test when the destination may be valid but still sensitive.</h3>
             <div class="bullets">
               <div class="bullet"><strong>Typical trigger</strong>Exchange-like deposit address, bridge-router path, high-value first-time payout.</div>
               <div class="bullet"><strong>Operator action</strong>Send a minimal test amount first, then confirm receipt before full release.</div>
@@ -310,7 +310,7 @@
           <div class="example-card">
             <div class="example-top"><span class="muted">Example 04</span><span class="badge testfirst">TEST FIRST</span></div>
             <h3>Exchange-like deposit destination for a first-time payout</h3>
-            <p class="muted">The endpoint may be legitimate, but operationally the safest move is to confirm with a small live send first.</p>
+            <p class="muted">The endpoint may be legitimate, but the safest move is to confirm with a small live send first.</p>
             <div class="example-meta">
               <div class="meta-row"><strong>Reason code</strong><span>TEST_AMOUNT_RECOMMENDED</span></div>
               <div class="meta-row"><strong>Confidence</strong><span>Medium</span></div>
