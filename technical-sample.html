@@ -6,7 +6,7 @@
   <title>PayeeProof — technical overview</title>
   <meta name="description" content="Compact technical overview for teams evaluating PayeeProof during a pilot review." />
   <meta property="og:title" content="PayeeProof — technical overview" />
-  <meta property="og:description" content="Compact technical overview for structured verdicts, verification records, and pilot review flows." />
+  <meta property="og:description" content="Compact technical overview for structured decisions, verification records, and pilot review flows." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -325,20 +325,20 @@
     <section class="hero" id="overview">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <div class="pill">Buyer-safe technical page · pilot review only</div>
+          <div class="pill">Technical sample · compact API review</div>
           <h1>Technical overview for teams evaluating PayeeProof in a real payout workflow.</h1>
-          <p class="lead">This page is intentionally compact. It shows how PayeeProof expresses verification results, what a structured record contains, and how a pilot can plug into an existing payout or support flow without turning the main site into a developer console.</p>
+          <p class="lead">This page stays compact on purpose. It shows the current live endpoints, the structure of a verification record, and the fields a team would review before approving a pilot or broader rollout.</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="#records">See verification record</a>
             <a class="btn btn-secondary" href="./sample-verification-record.html">Open public verification record</a>
             <a class="btn btn-ghost" href="./pilot-flow.html">Open pilot flow</a>
             <a class="btn btn-ghost" href="./pricing.html">Open pricing &amp; packages</a>
-            <a class="btn btn-ghost" href="./policy_examples.html">Open policy examples</a>
+            <a class="btn btn-ghost" href="./openapi.yaml">Open API reference</a>
           </div>
           <div class="tag-row">
-            <div class="tag">Non-custodial</div>
-            <div class="tag">Structured verdicts</div>
-            <div class="tag">Pilot-ready</div>
+            <div class="tag">Pre-send first</div>
+            <div class="tag">History + activity</div>
+            <div class="tag">API reference available</div>
             <div class="tag">6 supported networks</div>
           </div>
         </div>
@@ -349,9 +349,9 @@
             </div>
             <div class="shell-line"><strong>Primary use case</strong><span>Pre-send transfer verification</span></div>
             <div class="shell-line"><strong>Secondary module</strong><span>Post-error recovery guidance</span></div>
-            <div class="shell-line"><strong>Core outputs</strong><span>SAFE · BLOCK · REVERIFY · TEST FIRST</span></div>
-            <div class="shell-line"><strong>Proof layer</strong><span>Structured verification record for workflow logs</span></div>
-            <div class="shell-line"><strong>Typical buyer</strong><span>Ops, payout, treasury, support, risk</span></div>
+            <div class="shell-line"><strong>Current live endpoints</strong><span>Pre-send, verification history, account, activity, and event delivery</span></div>
+            <div class="shell-line"><strong>Core outputs</strong><span>SAFE · BLOCK · REVERIFY · TEST FIRST · UNAVAILABLE</span></div>
+            <div class="shell-line"><strong>Typical team</strong><span>Ops, payout, treasury, support, risk</span></div>
             <div class="shell-line"><strong>Review mode</strong><span>Pilot evaluation with live checks</span></div>
           </div>
         </div>
@@ -361,7 +361,7 @@
     <section class="section-sm" id="verdicts">
       <div class="container">
         <div class="eyebrow">Operational language</div>
-        <h2>One verdict system across pre-send and recovery flows.</h2>
+        <h2>One operational language across the current live surface.</h2>
         <div class="scenario-grid" style="margin-top:28px;">
           <article class="scenario-card card">
             <div class="scenario-top"><div class="scenario-type">Verdict</div><div class="scenario-badge safe">SAFE</div></div>
@@ -462,19 +462,24 @@
           <div class="card" style="padding:28px;">
             <h3 style="margin-top:0;">Endpoints currently exposed</h3>
             <div class="points">
-              <div class="point"><strong>GET /health</strong><span>Simple service health and configured-network visibility.</span></div>
-              <div class="point"><strong>POST /api/preflight-check</strong><span>Pre-send verification for network, asset, and destination.</span></div>
-              <div class="point"><strong>POST /api/recovery-copilot</strong><span>Post-error transaction guidance anchored to a real tx hash.</span></div>
+              <div class="point"><strong>GET /health</strong><span>Service health and configured-network visibility.</span></div>
+              <div class="point"><strong>POST /api/preflight-check</strong><span>Primary pre-send verification endpoint.</span></div>
+              <div class="point"><strong>POST /api/recovery-copilot</strong><span>Secondary post-error transaction guidance.</span></div>
+              <div class="point"><strong>GET /api/account</strong><span>Workspace details and plan context.</span></div>
+              <div class="point"><strong>GET /api/usage-summary</strong><span>Activity visibility by period.</span></div>
+              <div class="point"><strong>GET /api/verification-records</strong><span>Verification history for the current workspace.</span></div>
+              <div class="point"><strong>GET /api/verification-records/{id}</strong><span>Single record lookup for workflow review.</span></div>
               <div class="point"><strong>POST /pilot-request</strong><span>Commercial intake for pilot evaluation and use-case review.</span></div>
             </div>
             <div class="btn-row" style="margin-top:18px;">
               <a class="btn btn-secondary" href="./sample-verification-record.json">Open record JSON</a>
+              <a class="btn btn-ghost" href="./reason-codes.md">Open decision labels</a>
             </div>
           </div>
           <div class="card" style="padding:28px;">
-            <h3 style="margin-top:0;">Compact request example</h3>
+            <h3 style="margin-top:0;">Compact request and response examples</h3>
             <details class="code-shell" open>
-              <summary>Open request examples</summary>
+              <summary>Open examples</summary>
 <pre>POST /api/preflight-check
 {
   "expected": {
@@ -487,6 +492,15 @@
     "asset": "USDC",
     "address": "0x1111111111111111111111111111111111111111"
   }
+}
+
+200 OK
+{
+  "ok": true,
+  "verdict": "SAFE",
+  "reason_code": "OK",
+  "next_action": "SAFE_TO_PROCEED",
+  "destination_type": "personal_wallet"
 }
 
 POST /api/recovery-copilot
@@ -505,9 +519,9 @@ POST /api/recovery-copilot
     <section id="contact" class="section-sm">
       <div class="container">
         <div class="card" style="padding:32px;">
-          <div class="eyebrow">Pilot evaluation</div>
-          <h2 style="margin-top:8px;">Use this page for technical review. Use the main site for the commercial story.</h2>
-          <p class="lead" style="margin-top:14px; max-width:900px;">If a team wants to evaluate PayeeProof seriously, the clean path is simple: review the main site, inspect the verification record, and use this page only for a compact technical pass before a pilot decision.</p>
+          <div class="eyebrow">Technical review</div>
+          <h2 style="margin-top:8px;">Use this page for field review. Keep the main site commercial.</h2>
+          <p class="lead" style="margin-top:14px; max-width:900px;">The clean evaluation path is simple: review the main site, inspect the verification record, review the compact API view here, then decide whether to start with a narrow pre-send pilot.</p>
           <div class="btn-row" style="margin-top:18px;">
             <a class="btn btn-primary" href="./index.html#contact">Request pilot on main site</a>
             <a class="btn btn-secondary" href="./index.html#contact">Open pilot form on main site</a>
