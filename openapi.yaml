@@ -4,9 +4,11 @@ info:
   version: v1
   summary: Pre-send verification for stablecoin payouts.
   description: >
-    Buyer-facing draft contract for the current PayeeProof pilot API.
+    Public contract for the current PayeeProof API surface.
     This contract documents the pre-send verification surface used to stop
     wrong-network and wrong-destination mistakes before funds move.
+    Recovery guidance can exist as a separate module, but public API positioning
+    stays pre-send first.
 servers:
   - url: https://payeeproof-api.onrender.com
     description: Current production base URL
@@ -127,6 +129,7 @@ paths:
               clean_match:
                 summary: Clean match
                 value:
+                  policy_profile: payout_strict
                   expected:
                     network: ethereum
                     asset: USDC
@@ -164,6 +167,7 @@ paths:
                     scope:
                       network: ethereum
                       asset: USDC
+                    policy_profile: payout_strict
                     checks:
                       network_match: true
                       asset_match: true
@@ -236,7 +240,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Temporary internal failure
+          description: Temporary service failure
           content:
             application/json:
               schema:
@@ -430,11 +434,16 @@ components:
             - string
             - 'null'
           examples: [payout_approval, treasury_review, otc_release]
+    PolicyProfile:
+      type: string
+      enum: [standard, payout_strict, deposit_review, treasury_review]
     PreflightRequest:
       type: object
       additionalProperties: false
       required: [expected, provided]
       properties:
+        policy_profile:
+          $ref: '#/components/schemas/PolicyProfile'
         expected:
           $ref: '#/components/schemas/Party'
         provided:
@@ -543,6 +552,8 @@ components:
           $ref: '#/components/schemas/DestinationType'
         next_action:
           $ref: '#/components/schemas/NextAction'
+        policy_profile:
+          $ref: '#/components/schemas/PolicyProfile'
         why_this_verdict:
           type:
             - string
