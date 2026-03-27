@@ -27,8 +27,8 @@ paths:
       operationId: getAccountSummary
       summary: Get client account summary
       description: >
-        Returns client metadata for the current API key together with the
-        current-month usage snapshot, plan, environment, and webhook state.
+        Returns basic account information for the current API key together with
+        the current-month usage snapshot, plan, environment, and webhook state.
       security:
         - ApiKeyAuth: []
       responses:
@@ -71,7 +71,7 @@ paths:
       summary: Get usage summary
       description: >
         Returns usage totals and breakdowns for the authenticated client.
-        Useful for tenant-level reporting and future usage-based billing.
+        Useful for account reporting and future usage-based billing.
       security:
         - ApiKeyAuth: []
       parameters:
@@ -114,7 +114,7 @@ paths:
       summary: Run a pre-send verification check
       description: >
         Compares expected and provided payout details, validates the destination,
-        and returns one operational verdict plus a machine-readable reason code.
+        and returns one decision outcome plus a stable reason code.
       security:
         - ApiKeyAuth: []
       requestBody:
@@ -249,7 +249,7 @@ paths:
       summary: List verification records
       description: >
         Returns searchable verification history for the authenticated client.
-        Records are scoped to the API key owner.
+        Only records available to the current API key are returned.
       security:
         - ApiKeyAuth: []
       parameters:
@@ -313,7 +313,7 @@ paths:
           schema: { type: string }
       responses:
         '200':
-          description: Verification record detail with webhook delivery history
+          description: Verification record detail with delivery history
           content:
             application/json:
               schema:
