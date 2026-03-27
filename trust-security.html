@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PayeeProof — security & operating model</title>
-  <meta name="description" content="Security and operating model for PayeeProof: non-custodial verification, live chain checks, API authentication, verification records, and signed webhooks." />
+  <meta name="description" content="Security and operating model for PayeeProof: non-custodial verification, live chain checks, protected access, verification records, and event delivery." />
   <meta property="og:title" content="PayeeProof — security & operating model" />
   <meta property="og:description" content="How PayeeProof reduces payout mistakes without taking custody or moving funds." />
   <meta property="og:type" content="website" />
@@ -404,8 +404,8 @@
             <div class="tag">No custody</div>
             <div class="tag">No fund movement</div>
             <div class="tag">Live chain checks</div>
-            <div class="tag">API-key access</div>
-            <div class="tag">Signed webhooks</div>
+            <div class="tag">Protected access</div>
+            <div class="tag">Event delivery</div>
             <div class="tag">Verification records</div>
           </div>
         </div>
@@ -422,7 +422,7 @@
             <div class="list-item"><strong>No custody.</strong> PayeeProof does not hold customer funds and does not ask for private keys or seed phrases.</div>
             <div class="list-item"><strong>No execution.</strong> The service verifies or analyzes; the payout owner still decides whether funds move.</div>
             <div class="list-item"><strong>Live lookups.</strong> Results rely on live blockchain reads and structured rules, not on surface-level form validation alone.</div>
-            <div class="list-item"><strong>Explainable results.</strong> Outputs are built as operational records with verdict, reason code, confidence, destination class, and next action.</div>
+            <div class="list-item"><strong>Explainable results.</strong> Outputs are built as clear records with verdict, reference, confidence, destination class, and next action.</div>
             <div class="list-item"><strong>Scoped product.</strong> PayeeProof is focused on transfer safety. It is not a custody provider, wallet, exchange, sanctions engine, or full fraud suite.</div>
           </div>
           <div class="panel-actions">
@@ -452,7 +452,7 @@
           <article class="card">
             <div class="eyebrow">Principle 3</div>
             <h3>Explain the answer</h3>
-            <p class="muted">A useful control should return one operational language: verdict, reason code, confidence, destination class, and the next recommended step.</p>
+            <p class="muted">A useful control should return one clear language: verdict, reference, confidence, destination class, and the next recommended step.</p>
           </article>
         </div>
       </div>
@@ -472,7 +472,7 @@
               <div class="panel-badge">AUTH</div>
             </div>
             <div class="list">
-              <div class="list-item"><strong>API-key access</strong> is used for protected integration endpoints.</div>
+              <div class="list-item"><strong>Protected access</strong> is used for protected integration endpoints.</div>
               <div class="list-item"><strong>Rate limits and anti-abuse controls</strong> reduce misuse, spam, and noisy automation against public and pilot flows.</div>
               <div class="list-item"><strong>Origin and policy checks</strong> can be used where browser-based access needs to stay restricted to approved surfaces.</div>
             </div>
@@ -550,7 +550,7 @@
             </div>
           </article>
         </div>
-        <div class="note" style="margin-top:16px;">For public-facing legal terms, see <a href="./legal/privacy.html"><strong>Privacy</strong></a>, <a href="./legal/terms.html"><strong>Terms</strong></a>, <a href="./legal/acceptable-use.html"><strong>Acceptable Use</strong></a>, and <a href="./legal/dpa.html"><strong>DPA</strong></a>.</div>
+        <div class="note" style="margin-top:16px;">For legal terms, see <a href="./legal/privacy.html"><strong>Privacy</strong></a>, <a href="./legal/terms.html"><strong>Terms</strong></a>, <a href="./legal/acceptable-use.html"><strong>Acceptable Use</strong></a>, and <a href="./legal/dpa.html"><strong>DPA</strong></a>.</div>
       </div>
     </section>
 
@@ -596,7 +596,7 @@
     <section class="section anchor-offset" id="faq">
       <div class="container">
         <div class="eyebrow">FAQ</div>
-        <h2 class="section-title">Short answers to the security questions buyers usually ask first.</h2>
+        <h2 class="section-title">Short answers to the security questions teams usually ask first.</h2>
         <div class="grid two-col">
           <article class="card">
             <h3>Does PayeeProof move funds?</h3>
