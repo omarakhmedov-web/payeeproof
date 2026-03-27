@@ -1,51 +1,51 @@
-[payeeproof_README.md](https://github.com/user-attachments/files/26310325/payeeproof_README.md)
 # PayeeProof Website
 
 Public website repository for **payeeproof.com**.
 
-## What this repo contains
-- Main marketing site and public product pages
-- Pricing, pilot pack, policy examples, trust, and legal pages
-- Public OpenAPI contract for the current API surface
-- Public sample verification record assets
+## Purpose
+This repository contains the static public-facing site for PayeeProof:
+- the main marketing page,
+- pricing and pilot pages,
+- trust and security pages,
+- use-case and policy pages,
+- legal pages,
+- the public OpenAPI contract,
+- sample verification record assets.
 
-## Product focus
-PayeeProof is a **pre-send verification layer** for stablecoin payouts.
+## Product positioning
+**PayeeProof is a pre-send verification layer for stablecoin payouts.**
 
-The primary job is simple:
+The core promise is simple:
 - check the route before funds move,
 - return a clear verdict,
 - leave behind a readable verification record.
 
-Recovery guidance can exist as a separate product path, but the website and public API positioning stay **pre-send first**.
+Public positioning stays **pre-send first**.
+Recovery guidance may exist as a separate product path, but it is secondary to the main website story.
 
-## Live scope shown on the site
-- Ethereum
-- Arbitrum
-- Base
-- Polygon
-- BNB Chain
-- Solana
+## Current live scope shown on the site
+- Networks: **Ethereum, Arbitrum, Base, Polygon, BNB Chain, Solana**
+- Public checker assets: **USDC** and **USDT**
+- Core public product language: **SAFE / BLOCK / REVERIFY**
 
-Public website checker scope is intentionally narrow and should stay easy to understand.
-
-## Main public pages
-- `index.html` — main site
+## Main pages
+- `index.html` — main website
 - `pricing.html` — pricing and rollout paths
 - `pilot-pack.html` — pilot scope and boundaries
-- `policy_examples.html` — verdicts, destination classes, and policy presets
+- `pilot-flow.html` — pilot process
+- `policy_examples.html` — decision examples and policy presets
 - `technical-sample.html` — technical overview
 - `trust-security.html` — trust and security framing
-- `use-cases.html` — workflow fit and use cases
-- `legal/` — legal pages
+- `use-cases.html` — workflow fit and examples
+- `sample-verification-record.html` — example record page
+- `sample-verification-record.json` — example record payload
+- `openapi.yaml` — public contract for the current API surface
+- `legal/` — public legal pages
 
-## Public API contract
-`openapi.yaml` describes the current public contract.
+## Deployment
+This repository is intended for **static hosting**.
+Current production deployment is the GitHub Pages site at **payeeproof.com**.
 
-Current public API positioning is:
-- **pre-send first**
-- verification records and account endpoints for authenticated clients
-- recovery guidance treated as a separate module/path when referenced in public materials
-
-## Deploy
-This repo is intended for static hosting on GitHub Pages.
+## Notes
+This repo is for the public website and public contract surface.
+Backend logic, API processing, records, billing limits, policy enforcement, and webhook delivery live in the separate **payeeproof-api** repository.
