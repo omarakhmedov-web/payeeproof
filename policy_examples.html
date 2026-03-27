@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PayeeProof — verification policy examples</title>
-  <meta name="description" content="Policy examples showing how PayeeProof classifies payout risk, destination types, and next actions during pilot reviews." />
+  <meta name="description" content="Policy examples showing how PayeeProof classifies payout routes, destination types, and next actions." />
   <meta property="og:title" content="PayeeProof — verification policy examples" />
-  <meta property="og:description" content="Clear verdict policy, destination classes, and structured example records for pilot reviews." />
+  <meta property="og:description" content="Clear verdict policy, destination classes, and structured example records." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -161,7 +161,7 @@
     <section class="hero" id="overview">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <div class="pill">Buyer-safe policy layer · pilot review ready</div>
+          <div class="pill">Decision examples for payout operations</div>
           <h1>How PayeeProof turns ambiguous payout checks into clear operator decisions.</h1>
           <p class="lead">This page is not a raw API dump. It shows the practical decision layer: what each verdict means, how destination types are classified, and how an ops team can read a structured verification record without translating blockchain jargon first.</p>
           <div class="btn-row">
@@ -174,7 +174,7 @@
             <div class="tag">SAFE · BLOCK · REVERIFY · TEST FIRST</div>
             <div class="tag">Personal wallet / contract / exchange-like / bridge-router / unknown</div>
             <div class="tag">Readable for ops and treasury</div>
-            <div class="tag">Pilot-ready review layer</div>
+            <div class="tag">Preset policy profiles</div>
           </div>
         </div>
         <div class="hero-card card">
@@ -269,6 +269,27 @@
       </div>
     </section>
 
+    <section class="section-sm" id="profiles">
+      <div class="container">
+        <div class="eyebrow">Policy presets</div>
+        <h2>Three practical starting profiles for real workflows.</h2>
+        <div class="grid three-col" style="margin-top:28px;">
+          <article class="card" style="padding:26px;">
+            <h3>Payout Strict</h3>
+            <p>Best for teams that only want to approve clear personal-wallet style routes. Ambiguous destinations should stop and go back for re-verification.</p>
+          </article>
+          <article class="card" style="padding:26px;">
+            <h3>Deposit Review</h3>
+            <p>Best for exchange-like deposit flows where venue, memo, or route context often matters more than a simple wallet/not-wallet split.</p>
+          </article>
+          <article class="card" style="padding:26px;">
+            <h3>Treasury Review</h3>
+            <p>Best for finance and treasury teams that want a cautious operational review before release without pretending every route is equally safe.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <section class="section" id="examples">
       <div class="container">
         <div class="eyebrow">Structured examples</div>
@@ -347,7 +368,7 @@
     <section class="section soft-section" id="notes">
       <div class="container">
         <div class="eyebrow">Review notes</div>
-        <h2>What these examples are meant to communicate during a pilot review.</h2>
+        <h2>What these examples are meant to communicate during a real rollout.</h2>
         <div class="notes-grid">
           <div class="notes-card">
             <h3>Readable outside engineering</h3>
