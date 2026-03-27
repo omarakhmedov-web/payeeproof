@@ -354,7 +354,6 @@
 
       <nav>
         <a href="#preflight">Pre-Send</a>
-        <a href="#recovery">Recovery</a>
         <a href="#security">Security</a>
         <a href="#use-cases">Use cases</a>
         <a href="#pricing">Pricing</a>
@@ -362,7 +361,7 @@
         <a href="./trust-security.html">Trust</a>
       </nav>
       <div class="btn-row">
-        <a class="btn btn-secondary" href="#record">See verification record</a>
+        <a class="btn btn-secondary" href="./pricing.html">See pricing</a>
         <a class="btn btn-primary" href="#contact">Request pilot</a>
       </div>
     </div>
@@ -372,14 +371,13 @@
     <section class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <div class="pill">Live pre-send verification · no custody</div>
+          <div class="pill">Live pre-send verification · no custody · pilot from $399/mo</div>
           <h1>Prevent stablecoin payout mistakes before funds move.</h1>
-          <p class="lead">PayeeProof gives payout teams one clear answer before approval: <strong>SAFE</strong>, <strong>BLOCK</strong>, or <strong>REVERIFY</strong>. Recovery guidance remains available as a secondary module after a bad send.</p>
+          <p class="lead">PayeeProof gives payout teams one clear answer before approval: <strong>SAFE</strong>, <strong>BLOCK</strong>, or <strong>REVERIFY</strong>. The public product story stays <strong>pre-send first</strong>. Recovery guidance remains available as a secondary module after a bad send.</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="#preflight">Run pre-send check →</a>
-            <a class="btn btn-secondary" href="./pilot-pack.html">Open pilot pack</a>
-            <a class="btn btn-ghost" href="#record">View verification record</a>
-            <a class="btn btn-ghost" href="#contact">Request pilot</a>
+            <a class="btn btn-secondary" href="#contact">Request pilot</a>
+            <a class="btn btn-ghost" href="./pilot-pack.html">Open pilot pack</a>
           </div>
           <div class="tag-row">
             <div class="tag">Unified verdict language</div>
@@ -399,9 +397,9 @@
             <div class="list-item"><strong>Coverage</strong><span>Ethereum, Arbitrum, Base, Polygon, BNB Chain, and Solana.</span></div>
             <div class="list-item"><strong>Public checker assets</strong><span>USDC and USDT in the live public interface.</span></div>
             <div class="list-item"><strong>Output standard</strong><span>SAFE / BLOCK / REVERIFY — one clear public product language.</span></div>
-            <div class="list-item"><strong>Secondary module</strong><span>Recovery guidance for completed transfers that already went wrong.</span></div>
+            <div class="list-item"><strong>Pilot entry</strong><span>Pilot from $399/mo. Optional implementation is quoted only when custom rollout work is needed.</span></div>
           </div>
-          <p class="note" style="margin-top:14px;">Designed for treasury ops, payout teams, exchanges, marketplaces, and OTC desks.</p>
+          <p class="note" style="margin-top:14px;">Designed first for payout teams, exchange-like deposit flows, marketplaces, and treasury operations.</p>
         </div>
       </div>
     </section>
@@ -430,7 +428,7 @@
       <div class="container">
         <div class="eyebrow">Use cases</div>
         <h2>Where PayeeProof fits in real teams and workflows.</h2>
-        <p class="lead" style="max-width:900px; margin-top:14px;">The product becomes more compelling when it is framed as an operations control: payout approval, exchange-like deposit review, support triage, treasury release checks, and pilot evaluation.</p>
+        <p class="lead" style="max-width:900px; margin-top:14px;">The strongest starting point is narrow: payout approval and exchange-like deposit review first. Treasury controls and post-send recovery can stay secondary until the main workflow proves useful.</p>
         <div class="ops-grid" style="margin-top:28px;">
           <div class="ops-card">
             <h3>Payout ops</h3>
@@ -441,12 +439,12 @@
             <p>Use REVERIFY when a destination looks custodial, route-sensitive, or still needs extra confirmation.</p>
           </div>
           <div class="ops-card">
-            <h3>Support and recovery</h3>
-            <p>Anchor post-send mistakes to a real transaction and give support a clearer first response instead of generic warnings.</p>
-          </div>
-          <div class="ops-card">
             <h3>Treasury controls</h3>
             <p>Add one narrow verification layer before release while keeping final approval and execution with the operator.</p>
+          </div>
+          <div class="ops-card">
+            <h3>Recovery guidance</h3>
+            <p>Keep post-send guidance as a secondary module for cases where something already went wrong and support needs a faster starting point.</p>
           </div>
         </div>
         <div class="btn-row" style="margin-top:20px;">
@@ -583,7 +581,7 @@
             <button class="btn btn-primary" id="pfRunBtn" type="button">Run live check</button>
           </div>
           <details class="code-shell" style="margin-top:16px;">
-            <summary>Open pilot review scenarios (optional)</summary>
+            <summary>Open example scenarios (optional)</summary>
             <div style="padding: 0 18px 18px 18px;">
               <div class="note" style="margin:0 0 14px 0;">These review scenarios stay available for inspection, but remain outside the main product path.</div>
               <div class="panel-actions" style="margin-top:0;">
@@ -813,8 +811,8 @@
             <h3 style="font-size:24px; margin-bottom:14px;">Live today</h3>
             <div class="list" style="margin-top:0;">
               <div class="list-item"><strong>Pre-Send verification</strong><span>Live validation for network, asset, address, memo or tag, and destination classification.</span></div>
-              <div class="list-item"><strong>Recovery guidance</strong><span>Live transaction lookup with recoverability guidance and next actions.</span></div>
-              <div class="list-item"><strong>Pilot intake</strong><span>Teams can submit their flow and get a practical pilot fit review through the request form.</span></div>
+              <div class="list-item"><strong>Policy presets</strong><span>Payout Strict, Deposit Review, and Treasury Review for clearer rollout fit.</span></div>
+              <div class="list-item"><strong>Pilot intake</strong><span>Teams can submit one workflow and get a practical pilot fit review through the request form.</span></div>
             </div>
             <p class="note" style="margin-top:16px;">Exchange-side verification still depends on direct partner integrations. Public chain checks and guided recovery are already live.</p>
             <div class="artifact-links">
@@ -824,32 +822,13 @@
             </div>
           </div>
           <div class="card panel" style="background: rgba(0,0,0,.22);">
-            <h3 style="font-size:24px; margin-bottom:14px;">Technical review (optional)</h3>
-            <p class="muted">The main page stays commercial. The technical overview is for teams that want a quick field-level review during pilot evaluation. A separate pilot pack page is also available for teams that want a clear summary of coverage, result labels, and current limits.</p>
-            <details class="code-shell">
-              <summary>Open technical overview</summary>
-<pre>POST /api/preflight-check
-{
-  "expected": {
-    "network": "ethereum",
-    "asset": "USDC",
-    "address": "0x1111111111111111111111111111111111111111"
-  },
-  "provided": {
-    "network": "ethereum",
-    "asset": "USDC",
-    "address": "0x1111111111111111111111111111111111111111"
-  }
-}
-
-POST /api/recovery-copilot
-{
-  "chain": "polygon",
-  "tx_hash": "0x...",
-  "issue_type": "auto",
-  "intended_chain": "ethereum"
-}</pre>
-            </details>
+            <h3 style="font-size:24px; margin-bottom:14px;">Technical overview (optional)</h3>
+            <p class="muted">Public API positioning stays pre-send first. The technical page is there for teams that want request and response shape, record fields, and rollout boundaries without turning the main page into a developer manual.</p>
+            <div class="list" style="margin-top:0;">
+              <div class="list-item"><strong>Public API v1</strong><span>Pre-send first, with verification records and account endpoints for authenticated clients.</span></div>
+              <div class="list-item"><strong>Recovery path</strong><span>Documented separately as a secondary module so the main offer stays focused.</span></div>
+              <div class="list-item"><strong>Policy presets</strong><span>Payout Strict, Deposit Review, and Treasury Review help align the decision layer to a real workflow.</span></div>
+            </div>
             <div class="artifact-links" style="margin-top:18px;">
               <a class="btn btn-secondary" href="./technical-sample.html">Open technical overview</a>
               <a class="btn btn-ghost" href="./pilot-pack.html">Open pilot pack</a>
@@ -979,7 +958,7 @@ POST /api/recovery-copilot
         <div>
           <div class="eyebrow">Pilot</div>
           <h2>Request a pilot</h2>
-          <p class="lead" style="max-width:760px; margin-top:14px;">Use the form to describe the payout or recovery flow you want to protect. Share enough detail for a serious fit review and a clear next-step recommendation.</p>
+          <p class="lead" style="max-width:760px; margin-top:14px;">Use the form to describe the payout flow you want to protect. Share enough detail for a serious fit review and a clear next-step recommendation.</p>
           <div class="list" style="margin-top:24px;">
             <div class="list-item"><strong>Best fit</strong><span>Treasury teams, payroll flows, payout ops, exchanges, marketplaces, OTC desks.</span></div>
             <div class="list-item"><strong>What to include</strong><span>Networks, assets, destination types, where mistakes happen today, and what decision your team needs before approval.</span></div>
@@ -1020,7 +999,6 @@ POST /api/recovery-copilot
 
       <div class="footer-links">
         <a href="#preflight">Pre-Send</a>
-        <a href="#recovery">Recovery</a>
         <a href="#security">Security</a>
         <a href="#use-cases">Use cases</a>
         <a href="#pricing">Pricing</a>
