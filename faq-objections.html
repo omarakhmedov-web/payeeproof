@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PayeeProof — FAQ & objections</title>
+  <meta name="description" content="Common PayeeProof questions and objections: why it matters, what it checks, how pilots work, and how to frame the offer." />
+  <meta property="og:title" content="PayeeProof — FAQ & objections" />
+  <meta property="og:description" content="Common PayeeProof questions and objections: why it matters, what it checks, how pilots work, and how to frame the offer." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="./payeeproof-logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="./payeeproof-logo.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./payeeproof-favicon-192.png" />
+  <style>
+    :root {
+      --bg: #09090b;
+      --bg-soft: #111114;
+      --panel: rgba(255,255,255,0.04);
+      --panel-strong: rgba(255,255,255,0.07);
+      --text: #f4f4f5;
+      --muted: #b4b4bc;
+      --line: rgba(255,255,255,0.10);
+      --gold: #d4af37;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --shadow: 0 26px 70px rgba(0,0,0,0.35);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1200px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(212,175,55,0.16), transparent 26%),
+        linear-gradient(180deg, #09090b 0%, #0d0d11 46%, #09090b 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(calc(100% - 40px), var(--max)); margin: 0 auto; }
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: blur(16px);
+      background: rgba(9,9,11,0.74);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .topbar-inner {
+      min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; font-weight: 600; letter-spacing: 0.01em; }
+    .logo {
+      width: 42px; height: 42px; border-radius: 14px;
+      background: linear-gradient(145deg, rgba(212,175,55,0.24), rgba(255,255,255,0.06));
+      border: 1px solid rgba(212,175,55,0.32);
+      display: grid; place-items: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 18px 42px rgba(0,0,0,0.24);
+      overflow: hidden;
+    }
+    .logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    nav { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+    nav a, .footer a { color: var(--muted); font-size: 14px; transition: color .2s ease, opacity .2s ease; }
+    nav a:hover, .footer a:hover { color: var(--text); }
+    .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; min-height: 48px; padding: 0 18px; border-radius: 999px;
+      border: 1px solid var(--line); font-weight: 600; font-size: 15px;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(212,175,55,0.22), rgba(212,175,55,0.08));
+      border-color: rgba(212,175,55,0.40);
+    }
+    .btn-secondary { background: rgba(255,255,255,0.03); }
+    .hero { padding: 88px 0 44px; }
+    .hero-grid { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: 28px; align-items: stretch; }
+    .hero-copy h1 { margin: 14px 0 18px; font-size: clamp(40px, 5vw, 68px); line-height: 1.03; letter-spacing: -0.03em; }
+    .lead { color: var(--muted); font-size: 19px; max-width: 860px; }
+    .pill {
+      display: inline-flex; gap: 10px; align-items: center;
+      min-height: 36px; padding: 0 14px; border-radius: 999px;
+      border: 1px solid rgba(212,175,55,0.24);
+      background: rgba(212,175,55,0.10);
+      color: #f5deb0; font-size: 14px;
+    }
+    .hero-card, .card {
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      box-shadow: var(--shadow);
+    }
+    .hero-card { padding: 24px; }
+    .metric-list, .faq-list, .checklist-grid { display: grid; gap: 14px; }
+    .metric {
+      padding: 16px 18px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+    .metric h3, .card h3 { margin: 0 0 8px; font-size: 18px; }
+    .metric p, .card p, li { margin: 0; color: var(--muted); }
+    .section { padding: 76px 0; }
+    .section.soft { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-top: 1px solid rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .eyebrow { color: #f5deb0; text-transform: uppercase; letter-spacing: .18em; font-size: 12px; font-weight: 700; }
+    h2 { font-size: clamp(30px, 4vw, 48px); line-height: 1.08; letter-spacing: -0.03em; margin: 12px 0 0; }
+    .grid { display: grid; gap: 22px; }
+    .three-col { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .two-col { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .card { padding: 24px; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .tag {
+      display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px;
+      border-radius: 999px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03);
+      color: #d4d4d8; font-size: 13px;
+    }
+    .boundary-list, .clean-list { padding-left: 18px; }
+    .boundary-list li, .clean-list li { margin-bottom: 10px; }
+    .check { color: var(--green); font-weight: 700; }
+    .cross { color: var(--amber); font-weight: 700; }
+    .cta {
+      padding: 28px; border-radius: var(--radius-xl);
+      border: 1px solid rgba(212,175,55,0.22);
+      background: linear-gradient(145deg, rgba(212,175,55,0.10), rgba(255,255,255,0.03));
+      box-shadow: var(--shadow);
+    }
+    .footer { padding: 28px 0 42px; color: #71717a; font-size: 14px; }
+    .footer-inner { display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap; }
+    .footer-links { display:flex; gap:18px; flex-wrap:wrap; }
+    .kpi {
+      display:flex; align-items:flex-start; gap:12px; padding:16px 18px; border-radius:18px;
+      border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.03);
+    }
+    .kpi strong { display:block; font-size:18px; }
+    .callout {
+      margin-top:18px; padding:16px 18px; border-radius:18px;
+      border:1px solid rgba(212,175,55,0.22); background:rgba(212,175,55,0.08); color:#efe6c1;
+    }
+    @media (max-width: 1020px) {
+      nav { display:none; }
+      .hero-grid, .three-col, .two-col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .section { padding: 68px 0; }
+      .btn-row { flex-direction: column; align-items: stretch; }
+      .btn { width: 100%; }
+    }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
+        <span>PayeeProof</span>
+      </div>
+      <nav><a href="#overview">Overview</a><a href="#faq">FAQ</a><a href="#objection-handling">Commercial framing</a><a href="./pricing.html">Pricing</a><a href="./index.html">Main site</a></nav>
+      <div class="btn-row">
+        <a class="btn btn-secondary" href="./index.html">Back to main site</a>
+        <a class="btn btn-primary" href="./index.html#contact">Request pilot</a>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="hero" id="overview">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="pill">FAQ · objections · commercial clarity</div>
+          <h1>The repeated answers page.</h1>
+          <p class="lead">Use this page to reduce repetitive explanation, handle common objections cleanly, and keep the offer positioned as a pre-send decision layer.</p>
+          <div class="btn-row" style="margin-top:22px;">
+            <a class="btn btn-primary" href="./index.html#contact">Request pilot</a>
+            <a class="btn btn-secondary" href="./pricing.html">View pricing</a>
+            <a class="btn btn-secondary" href="./pilot-pack.html">Open pilot pack</a>
+          </div>
+          <div class="tag-row"><span class="tag">Buyer-facing</span><span class="tag">Email-first</span><span class="tag">Pre-send focused</span><span class="tag">Pilot from $399/mo</span></div>
+        </div>
+        <aside class="hero-card">
+          <div class="metric-list"><div class="metric"><h3>Why it exists</h3><p>To answer the same commercial and product questions without rewriting them every time.</p></div><div class="metric"><h3>What it protects</h3><p>The clarity of the offer: pre-send first, narrow pilot first, custom work quoted separately.</p></div><div class="metric"><h3>How to use it</h3><p>Share with leads, keep near the pilot form, and reuse language in email threads.</p></div></div>
+        </aside>
+      </div>
+    </section>
+    <section class="section soft" id="faq">
+  <div class="container">
+    <div class="eyebrow">FAQ</div>
+    <h2>Common buyer questions and objections.</h2>
+    <div class="faq-list" style="margin-top:34px;">
+      <article class="card"><h3>Why do we need this?</h3><p>Because preventable payout mistakes still create loss events, support overhead, and operational delays. PayeeProof adds one final verification layer before approval.</p></article>
+      <article class="card"><h3>Is this another wallet or custody tool?</h3><p>No. PayeeProof does not hold funds and does not execute transfers. It is a verification and decision layer.</p></article>
+      <article class="card"><h3>What exactly do you check?</h3><p>Expected vs provided network, asset, address, memo or tag when relevant, and destination classification.</p></article>
+      <article class="card"><h3>What does the result look like?</h3><p>A proof-style record with a verdict, reason code, confidence, next action, and timestamp.</p></article>
+      <article class="card"><h3>What if our flow is custom?</h3><p>That is fine. Start narrow first. If broader rollout work is needed, it is quoted separately instead of being hidden inside the pilot.</p></article>
+      <article class="card"><h3>Is implementation required?</h3><p>No. The standard pilot does not require a separate implementation fee.</p></article>
+      <article class="card"><h3>How quickly can we start?</h3><p>Fastest case: after one email thread with the workflow, networks, assets, and desired decision action.</p></article>
+      <article class="card"><h3>Do we need a call first?</h3><p>Not necessarily. A pilot fit review can start by email.</p></article>
+      <article class="card"><h3>What happens if the result is not clearly SAFE?</h3><p>That is the point. Ambiguous cases should land in BLOCK, REVERIFY, TEST FIRST, or manual review instead of fake green lights.</p></article>
+      <article class="card"><h3>Do you support every asset and every chain?</h3><p>No. Coverage is intentionally controlled. Unsupported combinations should be handled explicitly, not guessed through.</p></article>
+      <article class="card"><h3>What does the client get at the end of the pilot?</h3><p>A clear answer on whether the verification layer is useful in the chosen workflow, plus usage signal, observed risk cases, and rollout recommendation.</p></article>
+      <article class="card"><h3>What is the price?</h3><p><strong>Pilot:</strong> $399 / month<br /><strong>Optional implementation:</strong> from $2,500 only when custom rollout work is requested.</p></article>
+      <article class="card"><h3>Why not just use our own manual checks?</h3><p>Because manual checks do not scale well, do not create a clean decision record, and break down on ambiguous destinations or repeated operational pressure.</p></article>
+      <article class="card"><h3>What is the business value?</h3><p>Fewer preventable mistakes, cleaner operator decisioning, less support overhead, and more consistent proof of what was checked.</p></article>
+    </div>
+  </div>
+</section><section class="section" id="objection-handling">
+  <div class="container">
+    <div class="eyebrow">Commercial framing</div>
+    <h2>How to keep the offer simple.</h2>
+    <div class="grid three-col" style="margin-top:34px;">
+      <article class="card"><h3>Start narrow</h3><p>One workflow closes faster and gives cleaner signal than a vague “test everything” motion.</p></article>
+      <article class="card"><h3>Separate custom work</h3><p>Do not bury rollout or integration effort inside the base pilot if the scope is broader than the standard package.</p></article>
+      <article class="card"><h3>Stay pre-send first</h3><p>Lead with transfer safety before funds move. Recovery stays secondary so the offer remains crisp.</p></article>
+    </div>
+  </div>
+</section>
+  </main>
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="brand">
+        <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
+        <div>© 2026 PayeeProof</div>
+      </div>
+      <div class="footer-links"><a href="#faq">FAQ</a><a href="#objection-handling">Commercial framing</a><a href="./pilot-outline.html">Pilot outline</a><a href="./pricing.html">Pricing</a><a href="./index.html">Main site</a></div>
+    </div>
+  </footer>
+</body>
+</html>

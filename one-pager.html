@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PayeeProof — one-pager</title>
+  <meta name="description" content="A short buyer-facing one-pager for PayeeProof: problem, fit, workflow, client value, and pricing." />
+  <meta property="og:title" content="PayeeProof — one-pager" />
+  <meta property="og:description" content="A short buyer-facing one-pager for PayeeProof: problem, fit, workflow, client value, and pricing." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="./payeeproof-logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="./payeeproof-logo.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./payeeproof-favicon-192.png" />
+  <style>
+    :root {
+      --bg: #09090b;
+      --bg-soft: #111114;
+      --panel: rgba(255,255,255,0.04);
+      --panel-strong: rgba(255,255,255,0.07);
+      --text: #f4f4f5;
+      --muted: #b4b4bc;
+      --line: rgba(255,255,255,0.10);
+      --gold: #d4af37;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --shadow: 0 26px 70px rgba(0,0,0,0.35);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1200px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(212,175,55,0.16), transparent 26%),
+        linear-gradient(180deg, #09090b 0%, #0d0d11 46%, #09090b 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(calc(100% - 40px), var(--max)); margin: 0 auto; }
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: blur(16px);
+      background: rgba(9,9,11,0.74);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .topbar-inner {
+      min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; font-weight: 600; letter-spacing: 0.01em; }
+    .logo {
+      width: 42px; height: 42px; border-radius: 14px;
+      background: linear-gradient(145deg, rgba(212,175,55,0.24), rgba(255,255,255,0.06));
+      border: 1px solid rgba(212,175,55,0.32);
+      display: grid; place-items: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 18px 42px rgba(0,0,0,0.24);
+      overflow: hidden;
+    }
+    .logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    nav { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+    nav a, .footer a { color: var(--muted); font-size: 14px; transition: color .2s ease, opacity .2s ease; }
+    nav a:hover, .footer a:hover { color: var(--text); }
+    .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; min-height: 48px; padding: 0 18px; border-radius: 999px;
+      border: 1px solid var(--line); font-weight: 600; font-size: 15px;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(212,175,55,0.22), rgba(212,175,55,0.08));
+      border-color: rgba(212,175,55,0.40);
+    }
+    .btn-secondary { background: rgba(255,255,255,0.03); }
+    .hero { padding: 88px 0 44px; }
+    .hero-grid { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: 28px; align-items: stretch; }
+    .hero-copy h1 { margin: 14px 0 18px; font-size: clamp(40px, 5vw, 68px); line-height: 1.03; letter-spacing: -0.03em; }
+    .lead { color: var(--muted); font-size: 19px; max-width: 860px; }
+    .pill {
+      display: inline-flex; gap: 10px; align-items: center;
+      min-height: 36px; padding: 0 14px; border-radius: 999px;
+      border: 1px solid rgba(212,175,55,0.24);
+      background: rgba(212,175,55,0.10);
+      color: #f5deb0; font-size: 14px;
+    }
+    .hero-card, .card {
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      box-shadow: var(--shadow);
+    }
+    .hero-card { padding: 24px; }
+    .metric-list, .faq-list, .checklist-grid { display: grid; gap: 14px; }
+    .metric {
+      padding: 16px 18px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+    .metric h3, .card h3 { margin: 0 0 8px; font-size: 18px; }
+    .metric p, .card p, li { margin: 0; color: var(--muted); }
+    .section { padding: 76px 0; }
+    .section.soft { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-top: 1px solid rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .eyebrow { color: #f5deb0; text-transform: uppercase; letter-spacing: .18em; font-size: 12px; font-weight: 700; }
+    h2 { font-size: clamp(30px, 4vw, 48px); line-height: 1.08; letter-spacing: -0.03em; margin: 12px 0 0; }
+    .grid { display: grid; gap: 22px; }
+    .three-col { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .two-col { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .card { padding: 24px; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .tag {
+      display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px;
+      border-radius: 999px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03);
+      color: #d4d4d8; font-size: 13px;
+    }
+    .boundary-list, .clean-list { padding-left: 18px; }
+    .boundary-list li, .clean-list li { margin-bottom: 10px; }
+    .check { color: var(--green); font-weight: 700; }
+    .cross { color: var(--amber); font-weight: 700; }
+    .cta {
+      padding: 28px; border-radius: var(--radius-xl);
+      border: 1px solid rgba(212,175,55,0.22);
+      background: linear-gradient(145deg, rgba(212,175,55,0.10), rgba(255,255,255,0.03));
+      box-shadow: var(--shadow);
+    }
+    .footer { padding: 28px 0 42px; color: #71717a; font-size: 14px; }
+    .footer-inner { display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap; }
+    .footer-links { display:flex; gap:18px; flex-wrap:wrap; }
+    .kpi {
+      display:flex; align-items:flex-start; gap:12px; padding:16px 18px; border-radius:18px;
+      border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.03);
+    }
+    .kpi strong { display:block; font-size:18px; }
+    .callout {
+      margin-top:18px; padding:16px 18px; border-radius:18px;
+      border:1px solid rgba(212,175,55,0.22); background:rgba(212,175,55,0.08); color:#efe6c1;
+    }
+    @media (max-width: 1020px) {
+      nav { display:none; }
+      .hero-grid, .three-col, .two-col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .section { padding: 68px 0; }
+      .btn-row { flex-direction: column; align-items: stretch; }
+      .btn { width: 100%; }
+    }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
+        <span>PayeeProof</span>
+      </div>
+      <nav><a href="#overview">Overview</a><a href="#problem">Problem</a><a href="#how-it-works">How it works</a><a href="#who-it-is-for">Fit</a><a href="#start-pricing">Pricing</a><a href="./index.html">Main site</a></nav>
+      <div class="btn-row">
+        <a class="btn btn-secondary" href="./index.html">Back to main site</a>
+        <a class="btn btn-primary" href="./index.html#contact">Request pilot</a>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="hero" id="overview">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="pill">One-pager · buyer-facing · pre-send first</div>
+          <h1>A short, clean product page for fast buyer review.</h1>
+          <p class="lead">PayeeProof helps stablecoin payout teams prevent avoidable mistakes before funds move. It gives operators one clear answer before approval and leaves behind a readable verification record instead of vague reassurance.</p>
+          <div class="btn-row" style="margin-top:22px;">
+            <a class="btn btn-primary" href="./index.html#contact">Request pilot</a>
+            <a class="btn btn-secondary" href="./pricing.html">View pricing</a>
+            <a class="btn btn-secondary" href="./pilot-pack.html">Open pilot pack</a>
+          </div>
+          <div class="tag-row"><span class="tag">Pre-send first</span><span class="tag">SAFE / BLOCK / REVERIFY</span><span class="tag">Six networks live</span><span class="tag">Pilot from $399/mo</span></div>
+        </div>
+        <aside class="hero-card">
+          <div class="metric-list"><div class="metric"><h3>What it solves</h3><p>Wrong-network, wrong-destination, and ambiguous-route mistakes before approval.</p></div><div class="metric"><h3>What it returns</h3><p>A proof-style verdict with reason code, confidence, and next step.</p></div><div class="metric"><h3>How teams start</h3><p>One workflow, one pain point, one success criterion.</p></div></div>
+        </aside>
+      </div>
+    </section>
+    <section class="section soft" id="problem">
+  <div class="container">
+    <div class="eyebrow">Problem</div>
+    <h2>Stablecoin payout mistakes are still expensive.</h2>
+    <div class="grid three-col" style="margin-top:34px;">
+      <article class="card"><h3>Wrong network</h3><p>One route mismatch can turn a routine payout into manual recovery, support overhead, or an irreversible mistake.</p></article>
+      <article class="card"><h3>Wrong destination</h3><p>Exchange-like or platform-style routes create ambiguity that manual checks often handle inconsistently.</p></article>
+      <article class="card"><h3>No clean decision record</h3><p>Teams need a proof-style answer they can keep in workflow logs instead of vague operator reassurance.</p></article>
+    </div>
+  </div>
+</section><section class="section" id="how-it-works">
+  <div class="container">
+    <div class="eyebrow">How it works</div>
+    <h2>One final control step before approval.</h2>
+    <div class="grid three-col" style="margin-top:34px;">
+      <article class="card"><h3>1. Compare details</h3><p>PayeeProof compares expected vs provided network, asset, address, and memo or tag when relevant.</p></article>
+      <article class="card"><h3>2. Run a live lookup</h3><p>The service classifies the destination and returns a consistent verdict with practical next action.</p></article>
+      <article class="card"><h3>3. Keep the record</h3><p>Each result can become a readable verification record for searchable history and review.</p></article>
+    </div>
+    <div class="callout">Public product language stays simple: <strong>SAFE</strong>, <strong>BLOCK</strong>, or <strong>REVERIFY</strong>.</div>
+  </div>
+</section><section class="section soft" id="who-it-is-for">
+  <div class="container">
+    <div class="eyebrow">Who it is for</div>
+    <h2>Best fit teams.</h2>
+    <div class="grid two-col" style="margin-top:34px;">
+      <article class="card"><h3>Payout operations</h3><p>Use PayeeProof at the last pause before funds move, where one wrong detail becomes a preventable incident.</p></article>
+      <article class="card"><h3>Exchange-like deposit review</h3><p>Use REVERIFY when the route looks custodial, memo-sensitive, or still needs extra confirmation.</p></article>
+      <article class="card"><h3>Treasury operations</h3><p>Add one narrow verification layer before release while keeping final approval with the operator.</p></article>
+      <article class="card"><h3>Support teams</h3><p>Use verification records and reason codes to explain what was checked and why the result was returned.</p></article>
+    </div>
+  </div>
+</section><section class="section" id="what-the-client-gets">
+  <div class="container">
+    <div class="eyebrow">What the client gets</div>
+    <h2>Practical outputs, not abstract promises.</h2>
+    <div class="grid three-col" style="margin-top:34px;">
+      <article class="card"><h3>Operational language</h3><p>One clear verdict standard: SAFE, BLOCK, or REVERIFY.</p></article>
+      <article class="card"><h3>Verification records</h3><p>Searchable history with time checked, confidence, reason code, and next action.</p></article>
+      <article class="card"><h3>Workflow-ready delivery</h3><p>Authenticated account and usage reporting, plus webhook support for downstream systems.</p></article>
+    </div>
+  </div>
+</section><section class="section soft" id="start-pricing">
+  <div class="container">
+    <div class="eyebrow">Start & pricing</div>
+    <h2>Fastest start: one workflow, one pain point, one success criterion.</h2>
+    <div class="grid two-col" style="margin-top:34px;">
+      <article class="card"><h3>Standard start path</h3><ul class="boundary-list"><li>Client shares the current workflow by email</li><li>PayeeProof reviews scope and fit</li><li>The pilot is activated</li><li>First live checks begin in a controlled flow</li></ul></article>
+      <article class="card"><h3>Commercial entry</h3><p><strong>Pilot:</strong> from <strong>$399 / month</strong><br /><strong>Optional implementation:</strong> from <strong>$2,500</strong> only when custom rollout work is needed.</p><div class="btn-row" style="margin-top:18px;"><a class="btn btn-primary" href="./index.html#contact">Request pilot</a><a class="btn btn-secondary" href="./pricing.html">See pricing</a></div></article>
+    </div>
+  </div>
+</section>
+  </main>
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="brand">
+        <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
+        <div>© 2026 PayeeProof</div>
+      </div>
+      <div class="footer-links"><a href="#overview">Overview</a><a href="#problem">Problem</a><a href="#how-it-works">How it works</a><a href="./pricing.html">Pricing</a><a href="./pilot-pack.html">Pilot pack</a><a href="./trust-security.html">Trust & security</a><a href="./index.html">Main site</a></div>
+    </div>
+  </footer>
+</body>
+</html>
