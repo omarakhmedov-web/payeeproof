@@ -1,5 +1,5 @@
 window.PAYEEPROOF_POSTHOG_CONFIG = window.PAYEEPROOF_POSTHOG_CONFIG || {
-  token: 'REPLACE_WITH_POSTHOG_PROJECT_API_KEY',
+  token: 'phc_mfpyjHhfB7zpTsR7sTa4QaZVDMUEx4qVTkmp3waK8pA6',
   api_host: 'https://us.i.posthog.com',
   defaults: '2026-01-30',
   autocapture: true,
