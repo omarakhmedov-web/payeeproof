@@ -452,7 +452,12 @@
           setStatus('Checkout cancelled.', '');
           return;
         }
-        const checkoutTab = window.open('', '_blank', 'noopener');
+        const checkoutTab = window.open('about:blank', '_blank');
+        if (!checkoutTab) {
+          setStatus('Popup blocked. Please allow popups for this site and try again.', 'error');
+          return;
+        }
+        try { checkoutTab.opener = null; } catch (e) {}
         if (checkoutTab && checkoutTab.document) {
           checkoutTab.document.title = 'Opening secure checkout…';
           checkoutTab.document.body.innerHTML = '<div style="margin:40px;font-family:Inter,Arial,sans-serif;color:#111">Opening secure checkout…</div>';
@@ -481,12 +486,8 @@
             }));
           } catch (e) {}
           setStatus('Invoice ready. Opening checkout in a new tab…', 'success');
-          if (checkoutTab) {
-            checkoutTab.location.href = data.checkout_url;
-            try { checkoutTab.focus(); } catch (e) {}
-          } else {
-            window.open(data.checkout_url, '_blank', 'noopener');
-          }
+          checkoutTab.location.replace(data.checkout_url);
+          try { checkoutTab.focus(); } catch (e) {}
           buttons.forEach((btn) => { btn.disabled = false; });
         } catch (err) {
           if (checkoutTab && !checkoutTab.closed) {
