@@ -138,6 +138,20 @@
       .btn-row { flex-direction: column; align-items: stretch; }
       .btn { width: 100%; }
     }
+
+    .btn-ghost { background: rgba(255,255,255,0.02); }
+    .pay-note {
+      margin-top: 14px; padding: 14px 16px; border-radius: 16px;
+      border: 1px solid rgba(212,175,55,0.18); background: rgba(212,175,55,0.06);
+      color: #ddd6b8; font-size: 14px;
+    }
+    .checkout-status {
+      margin-top: 12px; min-height: 24px; color: var(--muted); font-size: 14px;
+    }
+    .checkout-status.error { color: #fecaca; }
+    .checkout-status.success { color: #bbf7d0; }
+    .btn[disabled] { opacity: .66; cursor: wait; transform: none; }
+
   </style>
 </head>
 <body>
@@ -173,9 +187,10 @@
           <p class="note" style="margin-top:14px;">Pilot from <strong>$399/month</strong>. Optional implementation starts from <strong>$2,500</strong> only when custom rollout work is actually needed.</p>
           <div class="btn-row" style="margin-top:22px;">
             <a class="btn btn-primary" href="./index.html#contact">Request pilot</a>
-            <a class="btn btn-secondary" href="./use-cases.html">Open use cases</a>
+            <button class="btn btn-secondary js-nowpayments-checkout" type="button" data-sku="pilot_399">Pay pilot with crypto</button>
             <a class="btn btn-ghost" href="./pilot-flow.html">See pilot flow</a>
           </div>
+          <div class="checkout-status" id="checkoutStatusHero" aria-live="polite"></div>
           <div class="tag-row">
             <span class="tag">Pilot evaluation</span>
             <span class="tag">Custom integration</span>
@@ -232,7 +247,12 @@
               <li>Standard support</li>
             </ul>
             <p><strong>Designed for a controlled live pilot with limited scope.</strong></p>
-            <div class="btn-row" style="margin-top:18px;"><a class="btn btn-primary" href="./index.html#contact">Request pilot</a></div>
+            <div class="pay-note">Secure hosted crypto checkout via NOWPayments. Fixed starter SKU: <strong>$399 / month</strong>.</div>
+            <div class="btn-row" style="margin-top:18px;">
+              <a class="btn btn-secondary" href="./index.html#contact">Request pilot</a>
+              <button class="btn btn-primary js-nowpayments-checkout" type="button" data-sku="pilot_399">Pay with crypto</button>
+            </div>
+            <div class="checkout-status" id="checkoutStatusPackages" aria-live="polite"></div>
           </article>
           <article class="card">
             <h3>Growth — $1,990 / month</h3>
@@ -389,5 +409,59 @@
       </div>
     </div>
   </footer>
+
+  <script>
+    (function () {
+      const API_BASE = window.PAYEEPROOF_API_BASE || 'https://payeeproof-api.onrender.com';
+      const INVOICE_URL = `${API_BASE}/api/payments/nowpayments/invoice`;
+      const STORAGE_KEY = 'payeeproof_last_nowpayments_order';
+      const buttons = Array.from(document.querySelectorAll('.js-nowpayments-checkout'));
+      const statusEls = [document.getElementById('checkoutStatusHero'), document.getElementById('checkoutStatusPackages')].filter(Boolean);
+
+      function setStatus(message, type) {
+        statusEls.forEach((el) => {
+          el.textContent = message || '';
+          el.className = 'checkout-status' + (type ? ` ${type}` : '');
+        });
+      }
+
+      async function startCheckout(button) {
+        const sku = button.getAttribute('data-sku') || 'pilot_399';
+        buttons.forEach((btn) => { btn.disabled = true; });
+        setStatus('Creating secure crypto invoice…', '');
+        try {
+          const res = await fetch(INVOICE_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sku })
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok || !data.ok || !data.checkout_url) {
+            throw new Error(data.error || data.message || 'Invoice creation failed.');
+          }
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+              order_id: data.order_id || '',
+              checkout_url: data.checkout_url || '',
+              product: data.product || null,
+              created_at: new Date().toISOString()
+            }));
+          } catch (e) {}
+          setStatus('Invoice ready. Redirecting…', 'success');
+          window.location.href = data.checkout_url;
+        } catch (err) {
+          setStatus(err && err.message ? err.message : 'Could not start checkout.', 'error');
+          buttons.forEach((btn) => { btn.disabled = false; });
+        }
+      }
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', function () {
+          startCheckout(button);
+        });
+      });
+    })();
+  </script>
+
 </body>
 </html>
