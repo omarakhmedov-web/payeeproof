@@ -50,7 +50,7 @@
     <section class="hero">
       <div class="pill">Crypto checkout · live status</div>
       <h1>We are checking your payment status.</h1>
-      <p>This page verifies the latest PayeeProof crypto order created in this browser. If the provider already marked it paid, the status below will refresh automatically.</p>
+      <p>This page checks the latest PayeeProof crypto order created in this browser. Once the provider marks it paid, the confirmation flow below refreshes automatically.</p>
       <div class="grid">
         <div class="panel">
           <div class="label">Current status</div>
@@ -75,8 +75,16 @@
             <div id="fulfillmentStatus">—</div>
           </div>
           <div class="item">
-            <div class="label">Email confirmation</div>
+            <div class="label">Client email</div>
             <div id="emailStatus">—</div>
+          </div>
+          <div class="item">
+            <div class="label">Team alert</div>
+            <div id="teamAlertStatus">—</div>
+          </div>
+          <div class="item">
+            <div class="label">CRM / order log</div>
+            <div id="crmStatus">—</div>
           </div>
           <div class="item">
             <div class="label">Support</div>
@@ -97,6 +105,8 @@
       const paymentStatusEl = document.getElementById('paymentStatus');
       const fulfillmentStatusEl = document.getElementById('fulfillmentStatus');
       const emailStatusEl = document.getElementById('emailStatus');
+      const teamAlertStatusEl = document.getElementById('teamAlertStatus');
+      const crmStatusEl = document.getElementById('crmStatus');
       const supportEmailEl = document.getElementById('supportEmail');
       let saved = null;
       try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (e) { saved = null; }
@@ -105,6 +115,8 @@
         statusText.textContent = 'No recent order found.';
         statusHint.textContent = 'Return to pricing and start checkout again if needed.';
         emailStatusEl.textContent = '—';
+        teamAlertStatusEl.textContent = '—';
+        crmStatusEl.textContent = '—';
         supportEmailEl.textContent = 'hello@payeeproof.com';
         return;
       }
@@ -118,7 +130,7 @@
 
       function setConfirmed(order) {
         const nextStep = order && order.message ? order.message : 'Payment confirmed. We will follow up with next-step details.';
-        statusText.textContent = 'Payment confirmed.';
+        statusText.textContent = order && order.postpay_complete ? 'Payment confirmed. Flow complete.' : 'Payment confirmed.';
         statusText.className = 'big ok';
         statusHint.textContent = nextStep;
       }
@@ -134,6 +146,8 @@
           supportEmailEl.textContent = order.support_email || 'hello@payeeproof.com';
           const customerEmailStatus = order.customer_receipt_status || (order.customer_email_present ? 'pending' : 'not_provided');
           emailStatusEl.textContent = customerEmailStatus;
+          teamAlertStatusEl.textContent = order.internal_alert_status || order.payment_notice_status || 'pending';
+          crmStatusEl.textContent = order.crm_status || order.journal_status || 'pending';
           try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify({
               order_id: order.order_id || orderId,
