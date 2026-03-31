@@ -415,6 +415,7 @@
       const API_BASE = window.PAYEEPROOF_API_BASE || 'https://payeeproof-api.onrender.com';
       const INVOICE_URL = `${API_BASE}/api/payments/nowpayments/invoice`;
       const STORAGE_KEY = 'payeeproof_last_nowpayments_order';
+      const EMAIL_KEY = 'payeeproof_checkout_email';
       const buttons = Array.from(document.querySelectorAll('.js-nowpayments-checkout'));
       const statusEls = [document.getElementById('checkoutStatusHero'), document.getElementById('checkoutStatusPackages')].filter(Boolean);
 
@@ -425,15 +426,39 @@
         });
       }
 
+      function askCheckoutEmail() {
+        let saved = '';
+        try { saved = String(localStorage.getItem(EMAIL_KEY) || '').trim(); } catch (e) { saved = ''; }
+        const raw = window.prompt('Optional: enter your work email for payment confirmation and next-step follow-up. Leave blank to continue without email.', saved);
+        if (raw === null) return { cancelled: true, email: '' };
+        const email = String(raw || '').trim().toLowerCase();
+        if (!email) {
+          try { localStorage.removeItem(EMAIL_KEY); } catch (e) {}
+          return { cancelled: false, email: '' };
+        }
+        const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        if (!ok) {
+          window.alert('Please enter a valid email or leave it blank.');
+          return askCheckoutEmail();
+        }
+        try { localStorage.setItem(EMAIL_KEY, email); } catch (e) {}
+        return { cancelled: false, email };
+      }
+
       async function startCheckout(button) {
         const sku = button.getAttribute('data-sku') || 'pilot_399';
+        const emailChoice = askCheckoutEmail();
+        if (emailChoice.cancelled) {
+          setStatus('Checkout cancelled.', '');
+          return;
+        }
         buttons.forEach((btn) => { btn.disabled = true; });
         setStatus('Creating secure crypto invoice…', '');
         try {
           const res = await fetch(INVOICE_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sku })
+            body: JSON.stringify({ sku, customer_email: emailChoice.email || '' })
           });
           const data = await res.json().catch(() => ({}));
           if (!res.ok || !data.ok || !data.checkout_url) {
@@ -444,6 +469,9 @@
               order_id: data.order_id || '',
               checkout_url: data.checkout_url || '',
               product: data.product || null,
+              customer_email: emailChoice.email || '',
+              success_url: data.success_url || '',
+              cancel_url: data.cancel_url || '',
               created_at: new Date().toISOString()
             }));
           } catch (e) {}
