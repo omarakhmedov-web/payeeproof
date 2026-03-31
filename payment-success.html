@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PayeeProof — payment status</title>
+  <meta name="description" content="PayeeProof payment status page." />
+  <link rel="icon" type="image/png" sizes="192x192" href="./payeeproof-favicon-192.png" />
+  <style>
+    :root {
+      --bg: #09090b; --text: #f4f4f5; --muted: #b4b4bc; --line: rgba(255,255,255,0.10); --gold: #d4af37;
+      --panel: rgba(255,255,255,0.04); --ok: #22c55e; --warn: #f59e0b; --max: 920px; --radius: 24px;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: var(--text); background: radial-gradient(circle at top, rgba(212,175,55,0.14), transparent 24%), linear-gradient(180deg, #09090b, #0d0d11 45%, #09090b); }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(calc(100% - 32px), var(--max)); margin: 0 auto; padding: 28px 0 72px; }
+    .top { display:flex; justify-content:space-between; align-items:center; gap:16px; padding: 8px 0 22px; }
+    .brand { display:flex; align-items:center; gap:12px; font-weight:600; }
+    .logo { width:42px; height:42px; border-radius:14px; display:grid; place-items:center; overflow:hidden; border:1px solid rgba(212,175,55,0.32); background: linear-gradient(145deg, rgba(212,175,55,0.24), rgba(255,255,255,0.06)); }
+    .logo img { width:100%; height:100%; object-fit:contain; display:block; }
+    .hero, .panel { border:1px solid rgba(255,255,255,0.08); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)); border-radius: var(--radius); }
+    .hero { padding: 28px; }
+    h1 { margin: 12px 0 10px; font-size: clamp(34px, 5vw, 56px); line-height: 1.04; letter-spacing: -0.03em; }
+    p { color: var(--muted); }
+    .pill { display:inline-flex; align-items:center; gap:8px; min-height:36px; padding:0 14px; border-radius:999px; border:1px solid rgba(212,175,55,0.24); background: rgba(212,175,55,0.10); color:#f5deb0; font-size:14px; }
+    .grid { display:grid; gap:18px; grid-template-columns: 1.2fr .8fr; margin-top:22px; }
+    .panel { padding: 22px; }
+    .label { color:#f5deb0; font-size:12px; text-transform:uppercase; letter-spacing:.18em; font-weight:700; }
+    .big { font-size: 30px; font-weight: 700; margin-top: 6px; }
+    .muted { color: var(--muted); }
+    .ok { color: #bbf7d0; }
+    .warn { color: #fde68a; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; word-break: break-all; }
+    .btn-row { display:flex; gap:12px; flex-wrap:wrap; margin-top: 20px; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:0 18px; border-radius:999px; border:1px solid var(--line); font-weight:600; }
+    .btn-primary { background: linear-gradient(135deg, rgba(212,175,55,0.22), rgba(212,175,55,0.08)); border-color: rgba(212,175,55,0.40); }
+    .btn-secondary { background: rgba(255,255,255,0.03); }
+    .list { display:grid; gap:14px; }
+    .item { padding:14px 16px; border-radius:18px; border:1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); }
+    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand"><div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div><span>PayeeProof</span></div>
+      <a class="btn btn-secondary" href="./pricing.html">Back to pricing</a>
+    </div>
+    <section class="hero">
+      <div class="pill">Crypto checkout · live status</div>
+      <h1>We are checking your payment status.</h1>
+      <p>This page verifies the latest PayeeProof crypto order created in this browser. If the provider already marked it paid, the status below will refresh automatically.</p>
+      <div class="grid">
+        <div class="panel">
+          <div class="label">Current status</div>
+          <div class="big" id="statusText">Looking up order…</div>
+          <p id="statusHint">Please wait a few seconds.</p>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="./pricing.html">Open pricing</a>
+            <a class="btn btn-secondary" href="./index.html#contact">Need manual help</a>
+          </div>
+        </div>
+        <div class="panel list">
+          <div class="item">
+            <div class="label">Order ID</div>
+            <div class="mono" id="orderId">—</div>
+          </div>
+          <div class="item">
+            <div class="label">Payment status</div>
+            <div id="paymentStatus">—</div>
+          </div>
+          <div class="item">
+            <div class="label">Fulfillment</div>
+            <div id="fulfillmentStatus">—</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+    (function () {
+      const API_BASE = window.PAYEEPROOF_API_BASE || 'https://payeeproof-api.onrender.com';
+      const STORAGE_KEY = 'payeeproof_last_nowpayments_order';
+      const statusText = document.getElementById('statusText');
+      const statusHint = document.getElementById('statusHint');
+      const orderIdEl = document.getElementById('orderId');
+      const paymentStatusEl = document.getElementById('paymentStatus');
+      const fulfillmentStatusEl = document.getElementById('fulfillmentStatus');
+      let saved = null;
+      try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (e) { saved = null; }
+      const orderId = saved && saved.order_id ? saved.order_id : '';
+      if (!orderId) {
+        statusText.textContent = 'No recent order found in this browser.';
+        statusHint.textContent = 'Return to pricing and start checkout again if needed.';
+        return;
+      }
+      orderIdEl.textContent = orderId;
+      async function refreshStatus() {
+        try {
+          const res = await fetch(`${API_BASE}/api/payments/nowpayments/order/${encodeURIComponent(orderId)}`);
+          const data = await res.json().catch(() => ({}));
+          const order = data && data.order ? data.order : null;
+          if (!res.ok || !order) throw new Error(data.error || 'Order lookup failed.');
+          const paymentStatus = order.payment_status || order.status || 'waiting';
+          const fulfillmentStatus = order.fulfillment_status || 'pending_payment';
+          paymentStatusEl.textContent = paymentStatus;
+          fulfillmentStatusEl.textContent = fulfillmentStatus;
+          if (order.paid) {
+            statusText.textContent = 'Payment confirmed.';
+            statusText.className = 'big ok';
+            statusHint.textContent = 'The order is marked paid. Next step: manual pilot onboarding / access follow-up.';
+          } else {
+            statusText.textContent = 'Payment not confirmed yet.';
+            statusText.className = 'big warn';
+            statusHint.textContent = 'If you already paid, wait a few seconds and refresh. Provider status can lag briefly.';
+          }
+        } catch (err) {
+          statusText.textContent = 'Could not verify payment yet.';
+          statusText.className = 'big warn';
+          statusHint.textContent = err && err.message ? err.message : 'Temporary lookup error.';
+        }
+      }
+      refreshStatus();
+      setInterval(refreshStatus, 5000);
+    })();
+  </script>
+</body>
+</html>

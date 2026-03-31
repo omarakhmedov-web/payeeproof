@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PayeeProof — payment cancelled</title>
+  <meta name="description" content="PayeeProof payment cancelled page." />
+  <link rel="icon" type="image/png" sizes="192x192" href="./payeeproof-favicon-192.png" />
+  <style>
+    :root { --bg:#09090b; --text:#f4f4f5; --muted:#b4b4bc; --line:rgba(255,255,255,0.10); --gold:#d4af37; --max:880px; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter, ui-sans-serif, system-ui, sans-serif; color:var(--text); background: radial-gradient(circle at top, rgba(212,175,55,0.12), transparent 24%), linear-gradient(180deg, #09090b, #0d0d11 45%, #09090b); }
+    a { color: inherit; text-decoration:none; }
+    .wrap { width:min(calc(100% - 32px), var(--max)); margin:0 auto; padding:28px 0 72px; }
+    .brand { display:flex; align-items:center; gap:12px; font-weight:600; }
+    .logo { width:42px; height:42px; border-radius:14px; display:grid; place-items:center; overflow:hidden; border:1px solid rgba(212,175,55,0.32); background: linear-gradient(145deg, rgba(212,175,55,0.24), rgba(255,255,255,0.06)); }
+    .logo img { width:100%; height:100%; object-fit:contain; display:block; }
+    .card { margin-top:22px; padding:28px; border-radius:24px; border:1px solid rgba(255,255,255,0.08); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)); }
+    .pill { display:inline-flex; align-items:center; min-height:36px; padding:0 14px; border-radius:999px; border:1px solid rgba(212,175,55,0.24); background: rgba(212,175,55,0.10); color:#f5deb0; font-size:14px; }
+    h1 { margin:12px 0 10px; font-size: clamp(34px, 5vw, 56px); line-height: 1.04; letter-spacing: -0.03em; }
+    p { color:var(--muted); }
+    .btn-row { display:flex; gap:12px; flex-wrap:wrap; margin-top:20px; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:0 18px; border-radius:999px; border:1px solid var(--line); font-weight:600; }
+    .btn-primary { background: linear-gradient(135deg, rgba(212,175,55,0.22), rgba(212,175,55,0.08)); border-color: rgba(212,175,55,0.40); }
+    .btn-secondary { background: rgba(255,255,255,0.03); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand"><div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div><span>PayeeProof</span></div>
+    <section class="card">
+      <div class="pill">Crypto checkout</div>
+      <h1>Payment was not completed.</h1>
+      <p>No problem. The pilot was not activated on this page. You can return to pricing and start a fresh crypto checkout whenever you are ready.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="./pricing.html">Back to pricing</a>
+        <a class="btn btn-secondary" href="./index.html#contact">Request pilot by email</a>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
