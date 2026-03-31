@@ -263,7 +263,7 @@
 
   </style>
 </head>
-<body>
+<body data-analytics-view="pricing_view" data-analytics-page="pricing">
   <header class="topbar">
     <div class="container topbar-inner">
       <div class="brand">
@@ -753,6 +753,9 @@
     </div>
   </footer>
 
+  <script src="./posthog-config.js"></script>
+  <script src="./analytics.js"></script>
+
   <script>
     (function () {
       const API_BASE = window.PAYEEPROOF_API_BASE || 'https://payeeproof-api.onrender.com';
@@ -790,6 +793,14 @@
 
       async function startCheckout(button) {
         const sku = button.getAttribute('data-sku') || 'pilot_399';
+        const triggerLabel = (button.textContent || '').trim() || sku;
+        if (window.PayeeProofAnalytics) {
+          window.PayeeProofAnalytics.capture('pay_crypto_clicked', {
+            sku,
+            trigger_label: triggerLabel,
+            page_name: 'pricing'
+          });
+        }
         const emailChoice = askCheckoutEmail();
         if (emailChoice.cancelled) {
           setStatus('Checkout cancelled.', '');
@@ -829,6 +840,14 @@
             }));
           } catch (e) {}
           setStatus('Invoice ready. Opening checkout in a new tab…', 'success');
+          if (window.PayeeProofAnalytics) {
+            window.PayeeProofAnalytics.capture('checkout_opened', {
+              sku,
+              order_id: data.order_id || '',
+              has_customer_email: Boolean(emailChoice.email),
+              product_name: data.product && data.product.name ? data.product.name : ''
+            });
+          }
           checkoutTab.location.replace(data.checkout_url);
           try { checkoutTab.focus(); } catch (e) {}
           buttons.forEach((btn) => { btn.disabled = false; });
@@ -839,7 +858,9 @@
           setStatus(err && err.message ? err.message : 'Could not start checkout.', 'error');
           buttons.forEach((btn) => { btn.disabled = false; });
         }
-      }      const openers = Array.from(document.querySelectorAll('[data-open-modal]'));
+      }
+
+      const openers = Array.from(document.querySelectorAll('[data-open-modal]'));
       const closers = Array.from(document.querySelectorAll('[data-close-modal]'));
       let activeModal = null;
       let lastTrigger = null;
