@@ -452,6 +452,11 @@
           setStatus('Checkout cancelled.', '');
           return;
         }
+        const checkoutTab = window.open('', '_blank', 'noopener');
+        if (checkoutTab && checkoutTab.document) {
+          checkoutTab.document.title = 'Opening secure checkout…';
+          checkoutTab.document.body.innerHTML = '<div style="margin:40px;font-family:Inter,Arial,sans-serif;color:#111">Opening secure checkout…</div>';
+        }
         buttons.forEach((btn) => { btn.disabled = true; });
         setStatus('Creating secure crypto invoice…', '');
         try {
@@ -475,9 +480,18 @@
               created_at: new Date().toISOString()
             }));
           } catch (e) {}
-          setStatus('Invoice ready. Redirecting…', 'success');
-          window.location.href = data.checkout_url;
+          setStatus('Invoice ready. Opening checkout in a new tab…', 'success');
+          if (checkoutTab) {
+            checkoutTab.location.href = data.checkout_url;
+            try { checkoutTab.focus(); } catch (e) {}
+          } else {
+            window.open(data.checkout_url, '_blank', 'noopener');
+          }
+          buttons.forEach((btn) => { btn.disabled = false; });
         } catch (err) {
+          if (checkoutTab && !checkoutTab.closed) {
+            try { checkoutTab.close(); } catch (e) {}
+          }
           setStatus(err && err.message ? err.message : 'Could not start checkout.', 'error');
           buttons.forEach((btn) => { btn.disabled = false; });
         }
