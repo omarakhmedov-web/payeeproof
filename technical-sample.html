@@ -3,16 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PayeeProof — technical overview</title>
-  <meta name="description" content="Clear technical overview for teams evaluating PayeeProof in a real payment workflow." />
-  <meta property="og:title" content="PayeeProof — technical overview" />
-  <meta property="og:description" content="Clear technical overview for decision outcomes, example records, and public API scope." />
+  <title>PayeeProof — integration quickstart</title>
+  <meta name="description" content="Minimal PayeeProof integration docs: one request, two working examples, and three sample responses." />
+  <meta property="og:title" content="PayeeProof — integration quickstart" />
+  <meta property="og:description" content="Minimal PayeeProof integration docs for teams that want to get to a first successful call fast." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://payeeproof.com/payeeproof-logo.png" />
   <meta name="theme-color" content="#06080d" />
-  <meta name="websitelaunches-verification" content="f5230d27a4535ac7ce5dc40ff1c1d3e7" />
   <link rel="icon" type="image/png" sizes="32x32" href="./payeeproof-favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="./payeeproof-favicon-192.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="./payeeproof-favicon-180.png" />
@@ -47,21 +46,12 @@
       background: var(--bg);
       color: var(--text);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.5;
+      line-height: 1.55;
     }
     a { color: inherit; text-decoration: none; }
-    .container { width: min(1200px, calc(100% - 32px)); margin: 0 auto; }
-    .section { padding: 84px 0; }
-    .section-sm { padding: 62px 0; }
-    .grid { display: grid; gap: 24px; }
-    .two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .three-col { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-    }
+    .container { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+    .section { padding: 78px 0; }
+    .section-sm { padding: 56px 0; }
     .topbar {
       position: sticky;
       top: 0;
@@ -86,7 +76,7 @@
     .logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .brand-title { font-weight: 700; letter-spacing: -.02em; }
     .brand-sub { font-size: 12px; color: #71717a; }
-    nav { display: flex; gap: 22px; }
+    nav { display: flex; gap: 22px; flex-wrap: wrap; }
     nav a { color: var(--muted); font-size: 14px; }
     nav a:hover { color: var(--white); }
     .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -97,8 +87,6 @@
       text-align: center;
     }
     .btn:hover { transform: translateY(-1px); }
-    .btn:disabled { opacity: .62; cursor: not-allowed; transform: none; }
-    .btn:disabled:hover { transform: none; }
     .btn-primary { background: var(--white); color: #000; border-color: transparent; }
     .btn-secondary { background: transparent; color: var(--text); }
     .btn-ghost { background: rgba(255,255,255,.03); color: #d4d4d8; }
@@ -110,194 +98,102 @@
     }
     .eyebrow { color: #a1a1aa; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .22em; margin-bottom: 12px; }
     h1,h2,h3,p { margin: 0; }
-    h1 { font-size: clamp(40px, 7vw, 72px); line-height: .98; letter-spacing: -.04em; max-width: 980px; }
-    h2 { font-size: clamp(30px, 4vw, 46px); line-height: 1.04; letter-spacing: -.03em; }
-    h3 { font-size: 26px; line-height: 1.1; letter-spacing: -.02em; }
-    .lead {
-      font-size: clamp(18px, 2.15vw, 22px); color: var(--muted); max-width: 860px; line-height: 1.7;
-    }
+    h1 { font-size: clamp(38px, 6vw, 68px); line-height: .98; letter-spacing: -.04em; max-width: 980px; }
+    h2 { font-size: clamp(28px, 4vw, 42px); line-height: 1.06; letter-spacing: -.03em; }
+    h3 { font-size: 22px; line-height: 1.12; letter-spacing: -.02em; }
+    .lead { font-size: clamp(18px, 2vw, 21px); color: var(--muted); max-width: 860px; line-height: 1.7; }
     .hero {
-      position: relative; overflow: hidden; border-bottom: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
       background:
         radial-gradient(circle at 10% 0%, rgba(255,255,255,.08), transparent 26%),
         radial-gradient(circle at 86% 8%, rgba(59,130,246,.14), transparent 16%),
         var(--bg);
     }
     .hero-grid {
-      display: grid; grid-template-columns: 1.05fr .95fr; gap: 32px; align-items: start;
-      min-height: 84vh; padding: 54px 0;
+      display: grid; grid-template-columns: 1.05fr .95fr; gap: 30px; align-items: start;
+      min-height: 78vh; padding: 48px 0;
     }
-    .hero-copy { display: grid; gap: 22px; align-content: center; }
-    .muted { color: var(--muted); }
-    .tag-row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .tag {
-      border: 1px solid var(--line); background: rgba(255,255,255,.03); color: #d4d4d8;
-      padding: 10px 14px; border-radius: 999px; font-size: 13px;
+    .hero-copy { display: grid; gap: 20px; align-content: center; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
     }
-    .status-strip {
-      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;
+    .hero-card { padding: 22px; }
+    .shell {
+      border-radius: 18px; border: 1px solid var(--line); overflow: hidden;
+      background: rgba(0,0,0,.22);
     }
-    .status-strip.hidden { display: none; }
-    .status-chip {
-      padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line);
-      background: rgba(255,255,255,.03); color: #d4d4d8; font-size: 13px;
+    .shell-bar {
+      display: flex; align-items: center; gap: 8px; padding: 14px 16px;
+      border-bottom: 1px solid var(--line); background: rgba(255,255,255,.03);
     }
-    .live-indicator { color: var(--ok); font-weight: 700; }
-    .offline-indicator { color: var(--bad); font-weight: 700; }
-
+    .dot { width: 10px; height: 10px; border-radius: 999px; background: rgba(255,255,255,.24); }
+    .shell pre {
+      margin: 0; padding: 18px; white-space: pre-wrap; overflow-wrap: anywhere;
+      color: #d4d4d8; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px; line-height: 1.7;
+    }
+    .grid { display: grid; gap: 24px; }
+    .two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .three-col { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .panel { padding: 24px; }
-    .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
-    .panel-badge {
-      color: #cbd5e1; border: 1px solid var(--line); background: rgba(255,255,255,.04);
-      border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 700;
+    .mini { font-size: 13px; color: var(--muted); }
+    .kv-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .kv {
+      border: 1px solid var(--line); background: rgba(0,0,0,.18); border-radius: 18px; padding: 16px;
     }
-    .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-    .field { display: grid; gap: 8px; }
-    .field.wide { grid-column: 1 / -1; }
-    .group {
-      padding: 16px; border: 1px solid var(--line); background: rgba(0,0,0,.18); border-radius: 18px;
-    }
-    .group h4 { margin: 0 0 14px 0; font-size: 14px; letter-spacing: .04em; color: #e4e4e7; }
-    label { font-size: 13px; color: var(--muted); }
-    input, textarea, select {
-      width: 100%; border: 1px solid var(--line); background: rgba(0,0,0,.22); color: var(--white);
-      border-radius: 14px; padding: 13px 14px; font: inherit; outline: none;
-    }
-    textarea { min-height: 124px; resize: vertical; }
-    input:focus, textarea:focus, select:focus {
-      border-color: rgba(255,255,255,.28); box-shadow: 0 0 0 4px rgba(255,255,255,.04);
-    }
-    .panel-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
-    .note { font-size: 12px; color: #a1a1aa; }
-    .result {
-      margin-top: 16px; border-radius: 18px; padding: 18px;
-      border: 1px solid var(--warn-line); background: var(--warn-bg);
-    }
-    .result.ok { border-color: var(--ok-line); background: var(--ok-bg); }
-    .result.bad { border-color: var(--bad-line); background: var(--bad-bg); }
-    .result-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-    .result-status { font-size: 14px; font-weight: 700; color: #d4d4d8; }
-    .result-title { margin-top: 6px; font-size: 20px; font-weight: 700; }
-    .result-text { margin-top: 10px; font-size: 14px; color: #d4d4d8; }
-    .result-kv-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
-    .result-kv {
-      border: 1px solid var(--line); background: rgba(0,0,0,.20); border-radius: 14px; padding: 12px;
-    }
-    .result-kv.wide { grid-column: 1 / -1; }
-    .result-k { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #a1a1aa; margin-bottom: 8px; }
-    .result-v { font-size: 13px; color: #f4f4f5; word-break: break-word; }
-    .check-list { display: grid; gap: 8px; }
-    .check-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .check-row span:first-child { color: #d4d4d8; }
-    .check-row .status-yes { color: var(--ok); font-weight: 700; }
-    .check-row .status-no { color: var(--bad); font-weight: 700; }
-    .result.compact { padding: 14px 18px; }
-    .result.compact .result-kv-grid { display: none; }
-    .list {
-      display: grid; gap: 10px; margin-top: 14px;
-    }
+    .kv .k { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #a1a1aa; margin-bottom: 8px; }
+    .kv .v { font-size: 14px; color: #f4f4f5; word-break: break-word; }
+    .list { display: grid; gap: 12px; }
     .list-item {
-      display: flex; gap: 12px; padding: 14px; border: 1px solid var(--line);
-      background: rgba(0,0,0,.20); border-radius: 16px; color: #d4d4d8;
+      display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px;
+      border: 1px solid var(--line); background: rgba(0,0,0,.18); border-radius: 16px; color: #d4d4d8;
     }
     .list-item strong { color: var(--white); }
-    .demo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
-    .demo-btn { width: 100%; }
-    .flow-grid { display: grid; gap: 16px; margin-top: 26px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .flow-step { padding: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.03); border-radius: 20px; }
-    .flow-step-num { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #a1a1aa; margin-bottom: 8px; }
-    .flow-step h3 { font-size: 20px; margin-bottom: 8px; }
-    .flow-step p { color: #d4d4d8; font-size: 14px; }
-    .code-shell { margin-top: 18px; border: 1px solid var(--line); border-radius: 18px; background: rgba(0,0,0,.22); overflow: hidden; }
-    .code-shell summary { cursor: pointer; list-style: none; padding: 16px 18px; font-size: 14px; font-weight: 700; color: #e4e4e7; }
-    .code-shell summary::-webkit-details-marker { display: none; }
-    .code-shell pre { margin: 0; padding: 0 18px 18px 18px; white-space: pre-wrap; color:#d4d4d8; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; line-height:1.7; }
-    .proof-grid { display: grid; gap: 24px; grid-template-columns: 1.05fr .95fr; margin-top: 32px; }
-    .proof-record { border: 1px solid var(--line); border-radius: 22px; background: rgba(0,0,0,.22); padding: 22px; }
-    .proof-row { display: flex; justify-content: space-between; gap: 18px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.08); }
-    .proof-row:last-child { border-bottom: 0; }
-    .proof-label { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #a1a1aa; }
-    .proof-value { font-size: 14px; color: #f4f4f5; text-align: right; }
-    .artifact-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
-    .mini-note { font-size: 12px; color: #8b8b95; margin-top: 12px; }
-    .ops-grid { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 28px; }
-    .ops-card { padding: 20px; border: 1px solid var(--line); border-radius: 20px; background: rgba(255,255,255,.03); }
-    .ops-card h3 { font-size: 20px; margin-bottom: 8px; }
-    .ops-card p { color: #d4d4d8; font-size: 14px; }
-
-    .scenario-grid { display: grid; gap: 16px; margin-top: 32px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .scenario-card {
-      padding: 20px; border: 1px solid var(--line); border-radius: 20px;
-      background: rgba(255,255,255,.03);
+    .badge {
+      display: inline-flex; align-items: center; justify-content: center; min-width: 88px;
+      padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line);
+      font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
     }
-    .scenario-top { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 12px; }
-    .scenario-type {
-      font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #a1a1aa;
+    .badge.ok { color: var(--ok); border-color: var(--ok-line); background: var(--ok-bg); }
+    .badge.bad { color: var(--bad); border-color: var(--bad-line); background: var(--bad-bg); }
+    .badge.warn { color: var(--warn); border-color: var(--warn-line); background: var(--warn-bg); }
+    .outcome-grid { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .outcome { padding: 22px; }
+    .outcome p { color: #d4d4d8; margin-top: 12px; }
+    .code-block { margin-top: 18px; }
+    details.code-box {
+      border: 1px solid var(--line); border-radius: 18px; background: rgba(0,0,0,.22); overflow: hidden;
     }
-    .scenario-badge {
-      display:inline-flex; align-items:center; justify-content:center;
-      min-width: 96px; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
-      border: 1px solid var(--line); background: rgba(255,255,255,.04); color: #e4e4e7;
+    details.code-box > summary {
+      cursor: pointer; list-style: none; padding: 16px 18px; font-size: 14px; font-weight: 700; color: #e4e4e7;
+      background: rgba(255,255,255,.03); border-bottom: 1px solid var(--line);
     }
-    .scenario-badge.safe { color: var(--ok); border-color: var(--ok-line); background: var(--ok-bg); }
-    .scenario-badge.block { color: var(--bad); border-color: var(--bad-line); background: var(--bad-bg); }
-    .scenario-badge.reverify,
-    .scenario-badge.testfirst,
-    .scenario-badge.review { color: var(--warn); border-color: var(--warn-line); background: var(--warn-bg); }
-    .scenario-card h3 { font-size: 20px; margin-bottom: 10px; }
-    .scenario-card p { color: #d4d4d8; font-size: 14px; margin-bottom: 14px; }
-    .scenario-meta { display: grid; gap: 10px; }
-    .scenario-meta-row {
-      display:flex; gap:12px; padding: 12px; border: 1px solid var(--line);
-      background: rgba(0,0,0,.18); border-radius: 14px; color: #d4d4d8;
+    details.code-box > summary::-webkit-details-marker { display: none; }
+    details.code-box pre {
+      margin: 0; padding: 18px; white-space: pre-wrap; overflow-wrap: anywhere;
+      color:#d4d4d8; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; line-height:1.7;
     }
-    .scenario-meta-row strong { min-width: 88px; color: var(--white); }
-    .soft-section {
-      border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--panel-2);
+    .note {
+      margin-top: 14px; padding: 14px 16px; border-radius: 16px; border: 1px solid var(--line);
+      background: rgba(255,255,255,.03); color: #d4d4d8; font-size: 14px;
     }
-    .footer { border-top: 1px solid var(--line); padding: 26px 0; color: #71717a; font-size: 14px; }
-    .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; }
-    .footer-links { display: flex; gap: 18px; flex-wrap: wrap; }
-    .footer-links a:hover { color: #d4d4d8; }
-
-    @media (max-width: 1020px) {
+    .footer {
+      border-top: 1px solid var(--line);
+      padding: 24px 0 40px;
+    }
+    .footer-inner {
+      display: flex; justify-content: space-between; gap: 16px; align-items: center; flex-wrap: wrap;
+    }
+    .footer-links { display: flex; gap: 18px; flex-wrap: wrap; color: var(--muted); font-size: 14px; }
+    @media (max-width: 980px) {
       nav { display: none; }
-      .hero-grid, .two-col, .three-col, .flow-grid, .demo-grid, .proof-grid, .ops-grid { grid-template-columns: 1fr; }
-      .hero-grid { min-height: auto; }
+      .hero-grid, .two-col, .three-col, .outcome-grid, .kv-grid { grid-template-columns: 1fr; }
     }
-    @media (max-width: 720px) {
-      .field-grid, .result-kv-grid { grid-template-columns: 1fr; }
-      .section { padding: 68px 0; }
-      .panel-actions, .btn-row { flex-direction: column; align-items: stretch; }
-      .btn { width: 100%; }
-      .result-top { flex-direction: column; }
-      .shell-line { grid-template-columns: 1fr; gap: 6px; }
-    }
-  
-    .proof-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
-    .proof-item { display:grid; gap:6px; }
-    .proof-item span { color: var(--muted); }
-    .proof-item strong { font-size:15px; }
-    .notes-box { border:1px solid var(--line); background: var(--panel-2); border-radius: 18px; padding: 16px 18px; }
-    .points { display:grid; gap:14px; }
-    .point { display:grid; gap:6px; padding:14px 0; border-bottom:1px solid var(--line); }
-    .point:last-child { border-bottom:none; padding-bottom:0; }
-    .point strong { font-size:15px; }
-    .point span { color: var(--muted); }
-    .mini-pill { display:inline-flex; align-items:center; justify-content:center; min-width:36px; height:36px; padding:0 12px; border-radius:999px; border:1px solid var(--line); background: var(--panel-2); font-weight:700; }
-
-    .hero-card { padding: 28px; align-self: center; }
-    .mini-shell { display:grid; gap: 0; border:1px solid var(--line); background: rgba(255,255,255,.03); border-radius: 22px; overflow: hidden; }
-    .mini-shell-bar { display:flex; gap:8px; padding: 14px 16px; border-bottom:1px solid var(--line); background: rgba(255,255,255,.02); }
-    .mini-shell-bar span { width:10px; height:10px; border-radius:999px; background: rgba(255,255,255,.18); display:block; }
-    .shell-line { display:grid; grid-template-columns: minmax(170px, 210px) minmax(0, 1fr); gap: 16px; align-items:start; padding: 14px 16px; border-bottom:1px solid rgba(255,255,255,.08); }
-    .shell-line:last-child { border-bottom: 0; }
-    .shell-line strong { color: var(--white); font-size: 15px; line-height: 1.45; }
-    .shell-line span { color: #d4d4d8; line-height: 1.55; }
-
   </style>
 </head>
-
 <body>
   <header class="topbar">
     <div class="container topbar-inner">
@@ -305,268 +201,376 @@
         <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
         <div>
           <div class="brand-title">PayeeProof</div>
-          <div class="brand-sub">Technical overview</div>
+          <div class="brand-sub">Integration quickstart</div>
         </div>
       </div>
-
       <nav>
-        <a href="#overview">Overview</a>
-        <a href="#verdicts">Verdicts</a>
-        <a href="#flows">Flows</a>
-        <a href="#codes">Decision labels</a>
-        <a href="#api">Endpoints</a>
-        <a href="./pricing.html">Pricing</a>
-        <a href="./index.html">Main site</a>
+        <a href="#start">Start</a>
+        <a href="#curl">cURL</a>
+        <a href="#examples">Examples</a>
+        <a href="#responses">Responses</a>
+        <a href="#errors">Errors</a>
+        <a href="#openapi">OpenAPI</a>
       </nav>
       <div class="btn-row">
-        <a class="btn btn-secondary" href="./index.html">Back to main site</a>
-        <a class="btn btn-primary" href="#contact">Request pilot</a>
+        <a class="btn btn-secondary" href="./index.html">Main site</a>
+        <a class="btn btn-primary" href="#examples">Code examples</a>
       </div>
     </div>
   </header>
 
   <main>
-    <section class="hero" id="overview">
+    <section class="hero" id="start">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <div class="pill">Technical overview · pre-send first</div>
-          <h1>Technical overview for teams evaluating PayeeProof in a real payout workflow.</h1>
-          <p class="lead">This page keeps the technical layer simple. It shows the decision outcomes, the example record, and the request and response shape a team can review before starting a pilot. Public API positioning stays <strong>pre-send first</strong>. Recovery guidance is treated as a separate module/path.</p>
+          <div class="pill">Minimal docs · pre-send first</div>
+          <h1>Integrate PayeeProof in 5–10 minutes.</h1>
+          <p class="lead">One endpoint. One API key. One clear answer before funds move. This page is intentionally small: one quickstart request, two working code examples, and three sample responses.</p>
           <div class="btn-row">
-            <a class="btn btn-primary" href="#records">See example record</a>
-            <a class="btn btn-secondary" href="./sample-verification-record.html">Open public verification record</a>
-            <a class="btn btn-ghost" href="./pilot-flow.html">Open pilot flow</a>
-            <a class="btn btn-ghost" href="./pricing.html">Open pricing &amp; packages</a>
-            <a class="btn btn-ghost" href="./policy_examples.html">Open policy examples</a>
+            <a class="btn btn-primary" href="#curl">Start with cURL</a>
+            <a class="btn btn-secondary" href="./examples/node-preflight.js">Download Node.js example</a>
+            <a class="btn btn-ghost" href="./examples/python-preflight.py">Download Python example</a>
           </div>
-          <div class="tag-row">
-            <div class="tag">Non-custodial</div>
-            <div class="tag">Clear outcomes</div>
-            <div class="tag">Policy presets</div>
-            <div class="tag">6 supported networks</div>
+          <div class="kv-grid">
+            <div class="kv">
+              <div class="k">Base URL</div>
+              <div class="v">https://payeeproof-api.onrender.com</div>
+            </div>
+            <div class="kv">
+              <div class="k">Auth</div>
+              <div class="v">X-API-Key: YOUR_API_KEY</div>
+            </div>
+            <div class="kv">
+              <div class="k">Main endpoint</div>
+              <div class="v">POST /api/preflight-check</div>
+            </div>
+            <div class="kv">
+              <div class="k">What you get back</div>
+              <div class="v">verdict, reason_code, next_action, confidence, proof</div>
+            </div>
           </div>
         </div>
         <div class="hero-card card">
-          <div class="mini-shell">
-            <div class="mini-shell-bar">
-              <span></span><span></span><span></span>
-            </div>
-            <div class="shell-line"><strong>Primary use case</strong><span>Pre-send transfer verification</span></div>
-            <div class="shell-line"><strong>Secondary module</strong><span>Post-error recovery guidance</span></div>
-            <div class="shell-line"><strong>Core outcomes</strong><span>SAFE · BLOCK · REVERIFY · TEST FIRST</span></div>
-            <div class="shell-line"><strong>Example record</strong><span>Clear result record for ops review and system storage</span></div>
-            <div class="shell-line"><strong>Typical teams</strong><span>Payments, treasury, support, and risk</span></div>
-            <div class="shell-line"><strong>API focus</strong><span>Public API v1 = pre-send first</span></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section-sm" id="verdicts">
-      <div class="container">
-        <div class="eyebrow">Decision outcomes</div>
-        <h2>One answer system anchored around pre-send checks.</h2>
-        <div class="scenario-grid" style="margin-top:28px;">
-          <article class="scenario-card card">
-            <div class="scenario-top"><div class="scenario-type">Verdict</div><div class="scenario-badge safe">SAFE</div></div>
-            <h3>Approve payout</h3>
-            <p>Expected details match the provided route and the destination does not trigger a material warning.</p>
-          </article>
-          <article class="scenario-card card">
-            <div class="scenario-top"><div class="scenario-type">Verdict</div><div class="scenario-badge block">BLOCK</div></div>
-            <h3>Stop before funds move</h3>
-            <p>Used for clear mismatches, invalid address formats, or an obviously wrong transfer route.</p>
-          </article>
-          <article class="scenario-card card">
-            <div class="scenario-top"><div class="scenario-type">Verdict</div><div class="scenario-badge reverify">REVERIFY</div></div>
-            <h3>Pause and confirm</h3>
-            <p>Used when a destination or context needs human confirmation before approval.</p>
-          </article>
-          <article class="scenario-card card">
-            <div class="scenario-top"><div class="scenario-type">Verdict</div><div class="scenario-badge testfirst">TEST FIRST</div></div>
-            <h3>Use a low-risk trial</h3>
-            <p>Used where the destination is operationally sensitive and a cautious workflow should not treat it like a normal wallet route.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section-sm" id="codes">
-      <div class="container">
-        <div class="eyebrow">Decision labels</div>
-        <h2>Short labels behind the answer.</h2>
-        <div class="grid two-col" style="margin-top:28px; align-items:start;">
-          <div class="card" style="padding:28px;">
-            <div class="points">
-              <div class="point"><strong>OK</strong><span>Core details matched and the route looks safe enough to approve.</span></div>
-              <div class="point"><strong>NETWORK_MISMATCH</strong><span>The selected network does not match the approved route.</span></div>
-              <div class="point"><strong>ASSET_MISMATCH</strong><span>The selected asset does not match the approved route.</span></div>
-              <div class="point"><strong>INVALID_ADDRESS</strong><span>The destination format is not valid for the selected network.</span></div>
-              <div class="point"><strong>DESTINATION_REQUIRES_MEMO_OR_VENUE_CHECK</strong><span>The route may depend on a venue, memo, or destination tag and needs confirmation.</span></div>
-              <div class="point"><strong>DESTINATION_IS_CONTRACT_OR_APP</strong><span>The destination is not a plain personal wallet and should not be treated like one.</span></div>
-            </div>
-          </div>
-          <div class="card" style="padding:28px;">
-            <div class="points">
-              <div class="point"><strong>DESTINATION_IS_BRIDGE_ROUTER</strong><span>The route looks like bridge or router infrastructure, so a small test is safer.</span></div>
-              <div class="point"><strong>DESTINATION_NOT_CLASSIFIED</strong><span>Core details matched, but the live destination check stayed inconclusive.</span></div>
-              <div class="point"><strong>DESTINATION_LOOKUP_UNAVAILABLE</strong><span>The live destination check did not finish, so the result should not be treated as final approval.</span></div>
-              <div class="point"><strong>UNSUPPORTED_NETWORK</strong><span>The selected network is outside the current live scope.</span></div>
-              <div class="point"><strong>UNSUPPORTED_ASSET_OR_NETWORK</strong><span>The asset and network combination is outside the current live scope.</span></div>
-              <div class="point"><strong>Why these labels matter</strong><span>They keep answers consistent across dashboards, rules, support reviews, and pilot reporting.</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="records">
-      <div class="container">
-        <div class="eyebrow">Example record</div>
-        <h2>What a verification record should show.</h2>
-        <div class="grid two-col" style="align-items:start; margin-top:28px;">
-          <div class="card" style="padding:28px;">
-            <div class="proof-head">
-              <div>
-                <div class="eyebrow" style="margin-bottom:8px;">Verification record</div>
-                <h3 style="margin:0; font-size:28px;">Reference output</h3>
-              </div>
-              <div class="scenario-badge safe">SAFE</div>
-            </div>
-            <div class="proof-grid" style="margin-top:22px;">
-              <div class="proof-item"><span>checked_at</span><strong>2026-03-26T10:12:08Z</strong></div>
-              <div class="proof-item"><span>decision label</span><strong>OK</strong></div>
-              <div class="proof-item"><span>confidence</span><strong>0.96</strong></div>
-              <div class="proof-item"><span>destination type</span><strong>Personal wallet</strong></div>
-              <div class="proof-item"><span>network</span><strong>Ethereum</strong></div>
-              <div class="proof-item"><span>asset</span><strong>USDC</strong></div>
-              <div class="proof-item"><span>recommended action</span><strong>Approve payout</strong></div>
-              <div class="proof-item"><span>format</span><strong>Readable + system-ready</strong></div>
-            </div>
-            <div class="notes-box" style="margin-top:18px;">
-              <strong>Why this verdict</strong>
-              <p style="margin:8px 0 0; color:var(--muted);">The expected transfer route and the provided destination align, and the destination does not trigger a higher-risk path.</p>
-            </div>
-          </div>
-          <div class="card" style="padding:28px;">
-            <h3 style="margin-top:0;">Recommended fields on the record</h3>
-            <div class="points">
-              <div class="point"><strong>checked_at</strong><span>So a team knows exactly when the result was produced.</span></div>
-              <div class="point"><strong>verdict</strong><span>The main answer the team should act on.</span></div>
-              <div class="point"><strong>reason_code</strong><span>Short label that explains why the answer was given.</span></div>
-              <div class="point"><strong>confidence</strong><span>A simple signal for how cautious the team should be.</span></div>
-              <div class="point"><strong>destination type</strong><span>Personal wallet, contract, exchange-like deposit, bridge-router, or unknown.</span></div>
-              <div class="point"><strong>why this verdict</strong><span>A short explanation people can read without opening a ticket or thread.</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section-sm" id="flows">
-      <div class="container">
-        <div class="eyebrow">Pilot flow</div>
-        <h2>How PayeeProof fits into a real workflow.</h2>
-        <div class="grid three-col" style="margin-top:28px;">
-          <div class="card" style="padding:26px;">
-            <div class="mini-pill">1</div>
-            <h3>Pre-send request</h3>
-            <p class="muted">A payout system sends expected and provided transfer details before approval.</p>
-          </div>
-          <div class="card" style="padding:26px;">
-            <div class="mini-pill">2</div>
-            <h3>Decision + record</h3>
-            <p class="muted">PayeeProof returns one clear answer together with a readable record.</p>
-          </div>
-          <div class="card" style="padding:26px;">
-            <div class="mini-pill">3</div>
-            <h3>Escalation only when needed</h3>
-            <p class="muted">Human review is only needed when the answer is BLOCK, REVERIFY, TEST FIRST, or a recovery case.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="api">
-      <div class="container">
-        <div class="eyebrow">Simple integration view</div>
-        <h2>Enough detail for implementation review, without turning this page into a long developer manual.</h2>
-        <div class="grid two-col" style="margin-top:28px; align-items:start;">
-          <div class="card" style="padding:28px;">
-            <h3 style="margin-top:0;">Endpoints currently exposed</h3>
-            <div class="points">
-              <div class="point"><strong>GET /health</strong><span>Simple service status and current network availability.</span></div>
-              <div class="point"><strong>POST /api/preflight-check</strong><span>Pre-send verification for network, asset, and destination.</span></div>
-              <div class="point"><strong>POST /api/recovery-copilot</strong><span>Secondary recovery path for post-error guidance based on a real transaction hash.</span></div>
-              <div class="point"><strong>POST /pilot-request</strong><span>Simple intake step for pilot requests and use-case review.</span></div>
-            </div>
-            <div class="btn-row" style="margin-top:18px;">
-              <a class="btn btn-secondary" href="./sample-verification-record.json">Open record JSON</a>
-            </div>
-          </div>
-          <div class="card" style="padding:28px;">
-            <h3 style="margin-top:0;">Request + response examples</h3>
-            <details class="code-shell" open>
-              <summary>Open request and response examples</summary>
+          <div class="shell">
+            <div class="shell-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
 <pre>POST /api/preflight-check
-{
-  "policy_profile": "payout_strict",
-  "expected": {
-    "network": "ethereum",
-    "asset": "USDC",
-    "address": "0x59d779BED4dB1E734D3fDa3172d45bc3063eCD69",
-    "memo": null
-  },
-  "provided": {
-    "network": "ethereum",
-    "asset": "USDC",
-    "address": "0x59d779BED4dB1E734D3fDa3172d45bc3063eCD69",
-    "memo": null
-  }
-}
 
-200 OK
-{
+Request:
+- expected.network
+- expected.asset
+- expected.address
+- provided.network
+- provided.asset
+- provided.address
+
+Response:
+- SAFE
+- BLOCK
+- TEST FIRST
+- REVERIFY
+- UNAVAILABLE</pre>
+          </div>
+          <div class="note">Direct API access requires an API key. The public website demo is separate from direct integration.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-sm">
+      <div class="container">
+        <div class="eyebrow">What to send</div>
+        <h2>Use the approved route as <code>expected</code> and the submitted route as <code>provided</code>.</h2>
+        <div class="grid two-col" style="margin-top:28px; align-items:start;">
+          <div class="card panel">
+            <h3 style="margin-bottom:14px;">Required fields</h3>
+            <div class="list">
+              <div class="list-item"><strong>expected.network / provided.network</strong><span>Lower friction if you normalize chain names before the request.</span></div>
+              <div class="list-item"><strong>expected.asset / provided.asset</strong><span>Use a stable symbol such as USDC or USDT.</span></div>
+              <div class="list-item"><strong>expected.address / provided.address</strong><span>These are the most important fields for a first integration.</span></div>
+              <div class="list-item"><strong>memo</strong><span>Optional. Include it for memo or tag based destinations.</span></div>
+              <div class="list-item"><strong>context</strong><span>Optional but useful for your own reference_id and policy_profile.</span></div>
+            </div>
+          </div>
+          <div class="card panel">
+            <h3 style="margin-bottom:14px;">Fast mental model</h3>
+            <div class="list">
+              <div class="list-item"><strong>SAFE</strong><span>The route matches and looks operationally normal.</span></div>
+              <div class="list-item"><strong>BLOCK</strong><span>Stop. Something is clearly wrong.</span></div>
+              <div class="list-item"><strong>TEST FIRST</strong><span>The route may be valid, but it behaves like infrastructure or an app.</span></div>
+              <div class="list-item"><strong>REVERIFY</strong><span>Pause and confirm memo, venue, or destination details.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="curl">
+      <div class="container">
+        <div class="eyebrow">1. First successful call</div>
+        <h2>Start with cURL.</h2>
+        <div class="code-block">
+          <div class="shell">
+            <div class="shell-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+<pre>curl -X POST "https://payeeproof-api.onrender.com/api/preflight-check" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "expected": {
+      "network": "ethereum",
+      "asset": "USDC",
+      "address": "0x59d779BED4dB1E734D3fDa3172d45bc3063eCD69",
+      "memo": null
+    },
+    "provided": {
+      "network": "ethereum",
+      "asset": "USDC",
+      "address": "0x59d779BED4dB1E734D3fDa3172d45bc3063eCD69",
+      "memo": null
+    },
+    "context": {
+      "reference_id": "payout_102948",
+      "flow_type": "payout_approval",
+      "policy_profile": "payout_strict"
+    }
+  }'</pre>
+          </div>
+          <div class="note">If you only need a first proof-of-life integration, this request is enough. Dynamic fields such as <code>trace_id</code>, <code>record_id</code>, and <code>checked_at</code> change on every call.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-sm" id="examples">
+      <div class="container">
+        <div class="eyebrow">2. Working examples</div>
+        <h2>Use a ready file, not guesswork.</h2>
+        <div class="grid two-col" style="margin-top:28px; align-items:start;">
+          <div class="card panel">
+            <div class="badge ok">Node.js</div>
+            <h3 style="margin-top:14px;">No dependency version for Node 18+</h3>
+            <p class="mini" style="margin-top:10px;">Uses built-in <code>fetch</code>, reads <code>PAYEEPROOF_API_KEY</code> from env, prints verdict + reason + next step.</p>
+            <div class="btn-row" style="margin-top:16px;">
+              <a class="btn btn-primary" href="./examples/node-preflight.js">Open file</a>
+            </div>
+          </div>
+          <div class="card panel">
+            <div class="badge warn">Python</div>
+            <h3 style="margin-top:14px;">Simple <code>requests</code> example</h3>
+            <p class="mini" style="margin-top:10px;">Reads <code>PAYEEPROOF_API_KEY</code> from env, sends one request, prints a compact summary, and exits with error details if the call fails.</p>
+            <div class="btn-row" style="margin-top:16px;">
+              <a class="btn btn-primary" href="./examples/python-preflight.py">Open file</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-sm" id="responses">
+      <div class="container">
+        <div class="eyebrow">3. Sample responses</div>
+        <h2>These three shapes are enough for a practical first integration.</h2>
+        <div class="outcome-grid" style="margin-top:28px;">
+          <div class="card outcome">
+            <div class="badge ok">SAFE</div>
+            <p>Matching network, asset, and address. Destination looks like a normal wallet flow.</p>
+            <div class="btn-row" style="margin-top:16px;"><a class="btn btn-secondary" href="./examples/response-safe.json">Open JSON</a></div>
+          </div>
+          <div class="card outcome">
+            <div class="badge bad">BLOCK</div>
+            <p>Mismatch or invalid route. Do not send until the instruction is corrected.</p>
+            <div class="btn-row" style="margin-top:16px;"><a class="btn btn-secondary" href="./examples/response-block.json">Open JSON</a></div>
+          </div>
+          <div class="card outcome">
+            <div class="badge warn">TEST FIRST</div>
+            <p>Route may be valid, but it behaves like infrastructure or an app rather than a plain wallet.</p>
+            <div class="btn-row" style="margin-top:16px;"><a class="btn btn-secondary" href="./examples/response-test-first.json">Open JSON</a></div>
+          </div>
+        </div>
+
+        <div class="grid three-col" style="margin-top:20px; align-items:start;">
+          <details class="code-box" open>
+            <summary>SAFE response</summary>
+<pre>{
   "ok": true,
+  "service": "preflight-check",
+  "version": "2.x",
+  "trace_id": "req_example_safe_01",
+  "checked_at": "2026-03-31T10:12:08Z",
+  "chain": "ethereum",
+  "policy_profile": "payout_strict",
+  "status": "verified",
   "verdict": "SAFE",
   "reason_code": "OK",
-  "confidence": "High",
-  "destination_type": "personal_wallet",
   "next_action": "SAFE_TO_PROCEED",
-  "why_this_verdict": "Network, asset, address, and memo checks matched. The destination classified as a personal wallet.",
-  "policy_profile": "payout_strict"
-}
-
-POST /api/recovery-copilot
-{
-  "chain": "polygon",
-  "tx_hash": "0x974293b260e7be5358a820b664c0f9246a1b307c55e3cbc9e195cd18ada6bd2a"
-}
-
-200 OK
-{
-  "ok": true,
-  "status": "found",
-  "reason_code": "GENERAL_ONCHAIN_GUIDANCE",
+  "next_action_label": "Proceed with the payment",
   "confidence": "High",
-  "recoverability": "depends",
-  "destination_type": "contract_or_app"
+  "summary": "Core details match and the destination looks like a personal wallet.",
+  "why_this_verdict": "Network, asset, address, and memo or tag checks matched cleanly, and the destination looks like a normal wallet rather than infrastructure.",
+  "risk_flags": [],
+  "checks": {
+    "network_match": true,
+    "asset_match": true,
+    "address_match": true,
+    "memo_match": true,
+    "expected_address_valid": true,
+    "provided_address_valid": true,
+    "expected_network_supported": true,
+    "provided_network_supported": true,
+    "expected_asset_supported": true,
+    "provided_asset_supported": true
+  },
+  "proof": {
+    "checked_at": "2026-03-31T10:12:08Z",
+    "chain": "ethereum",
+    "trace_id": "req_example_safe_01",
+    "verdict": "SAFE",
+    "confidence": "High",
+    "reason_code": "OK",
+    "next_action": "SAFE_TO_PROCEED",
+    "next_action_label": "Proceed with the payment",
+    "policy_profile": "payout_strict"
+  },
+  "record_id": "ppf_demo_safe_01",
+  "history_url": "/api/verification-records/ppf_demo_safe_01"
 }</pre>
-            </details>
-          </div>
+          </details>
+          <details class="code-box">
+            <summary>BLOCK response</summary>
+<pre>{
+  "ok": true,
+  "service": "preflight-check",
+  "version": "2.x",
+  "trace_id": "req_example_block_01",
+  "checked_at": "2026-03-31T10:14:08Z",
+  "chain": "polygon",
+  "policy_profile": "payout_strict",
+  "status": "blocked",
+  "verdict": "BLOCK",
+  "reason_code": "NETWORK_MISMATCH",
+  "next_action": "BLOCK_AND_REVERIFY",
+  "next_action_label": "Block and re-verify the destination",
+  "confidence": "High",
+  "summary": "The submitted payout details do not match the approved instructions.",
+  "why_this_verdict": "The submitted destination is on a different chain than the approved request. This is the classic wrong-network mistake.",
+  "risk_flags": ["NETWORK_MISMATCH"],
+  "checks": {
+    "network_match": false,
+    "asset_match": true,
+    "address_match": true,
+    "memo_match": true,
+    "expected_address_valid": true,
+    "provided_address_valid": true,
+    "expected_network_supported": true,
+    "provided_network_supported": true,
+    "expected_asset_supported": true,
+    "provided_asset_supported": true
+  },
+  "proof": {
+    "checked_at": "2026-03-31T10:14:08Z",
+    "chain": "polygon",
+    "trace_id": "req_example_block_01",
+    "verdict": "BLOCK",
+    "confidence": "High",
+    "reason_code": "NETWORK_MISMATCH",
+    "next_action": "BLOCK_AND_REVERIFY",
+    "next_action_label": "Block and re-verify the destination",
+    "policy_profile": "payout_strict"
+  },
+  "record_id": "ppf_demo_block_01",
+  "history_url": "/api/verification-records/ppf_demo_block_01"
+}</pre>
+          </details>
+          <details class="code-box">
+            <summary>TEST FIRST response</summary>
+<pre>{
+  "ok": true,
+  "service": "preflight-check",
+  "version": "2.x",
+  "trace_id": "req_example_test_01",
+  "checked_at": "2026-03-31T10:16:08Z",
+  "chain": "ethereum",
+  "policy_profile": "payout_strict",
+  "status": "review_required",
+  "verdict": "TEST FIRST",
+  "reason_code": "DESTINATION_IS_CONTRACT_OR_APP",
+  "next_action": "TEST_FIRST",
+  "next_action_label": "Send a small test first",
+  "confidence": "Medium",
+  "summary": "The details match, but the destination looks like a contract or app.",
+  "why_this_verdict": "Contract destinations can accept funds differently from a personal wallet. A small test first reduces irreversible mistakes.",
+  "risk_flags": ["DESTINATION_IS_CONTRACT_OR_APP"],
+  "checks": {
+    "network_match": true,
+    "asset_match": true,
+    "address_match": true,
+    "memo_match": true,
+    "expected_address_valid": true,
+    "provided_address_valid": true,
+    "expected_network_supported": true,
+    "provided_network_supported": true,
+    "expected_asset_supported": true,
+    "provided_asset_supported": true
+  },
+  "proof": {
+    "checked_at": "2026-03-31T10:16:08Z",
+    "chain": "ethereum",
+    "trace_id": "req_example_test_01",
+    "verdict": "TEST FIRST",
+    "confidence": "Medium",
+    "reason_code": "DESTINATION_IS_CONTRACT_OR_APP",
+    "next_action": "TEST_FIRST",
+    "next_action_label": "Send a small test first",
+    "policy_profile": "payout_strict"
+  },
+  "record_id": "ppf_demo_test_01",
+  "history_url": "/api/verification-records/ppf_demo_test_01"
+}</pre>
+          </details>
         </div>
       </div>
     </section>
 
-    <section id="contact" class="section-sm">
+    <section class="section-sm" id="errors">
       <div class="container">
-        <div class="card" style="padding:32px;">
-          <div class="eyebrow">Pilot evaluation</div>
-          <h2 style="margin-top:8px;">Use this page for technical review. Use the main site for the commercial story.</h2>
-          <p class="lead" style="margin-top:14px; max-width:900px;">A clean review path is simple: understand the product on the main site, inspect the example record, and use this page for the technical check before a pilot decision.</p>
-          <div class="btn-row" style="margin-top:18px;">
-            <a class="btn btn-primary" href="./index.html#contact">Request pilot on main site</a>
-            <a class="btn btn-secondary" href="./index.html#contact">Open pilot form on main site</a>
+        <div class="eyebrow">Common errors</div>
+        <h2>Handle the three that matter first.</h2>
+        <div class="grid three-col" style="margin-top:28px; align-items:start;">
+          <details class="code-box" open>
+            <summary>401 — missing or invalid API key</summary>
+<pre>{
+  "ok": false,
+  "error": "API key required for direct API access."
+}</pre>
+          </details>
+          <details class="code-box">
+            <summary>400 — missing required fields</summary>
+<pre>{
+  "ok": false,
+  "error": "Both expected.network and provided.network are required."
+}</pre>
+          </details>
+          <details class="code-box">
+            <summary>429 — rate limited</summary>
+<pre>{
+  "ok": false,
+  "error": "RATE_LIMITED",
+  "message": "Too many requests. Retry later."
+}</pre>
+          </details>
+        </div>
+        <div class="note">Minimal rule: treat non-200 as a hard failure, log the response body, and do not auto-approve a payout on an error path.</div>
+      </div>
+    </section>
+
+    <section class="section" id="openapi">
+      <div class="container">
+        <div class="card panel">
+          <div class="eyebrow">Contract and next step</div>
+          <h2>Keep the docs light. Get to the first real call fast.</h2>
+          <p class="lead" style="margin-top:14px; max-width:900px;">This page is intentionally enough, not endless. Review the public OpenAPI contract if you need the schema, then move straight to a real call or a pilot conversation.</p>
+          <div class="btn-row" style="margin-top:20px;">
+            <a class="btn btn-primary" href="./openapi.yaml">Open OpenAPI</a>
+            <a class="btn btn-secondary" href="./examples/node-preflight.js">Node.js example</a>
+            <a class="btn btn-secondary" href="./examples/python-preflight.py">Python example</a>
+            <a class="btn btn-ghost" href="./index.html#contact">Request pilot</a>
           </div>
         </div>
       </div>
@@ -579,21 +583,15 @@ POST /api/recovery-copilot
         <div class="logo"><img src="./payeeproof-favicon-192.png" alt="PayeeProof logo" /></div>
         <div>© 2026 PayeeProof</div>
       </div>
-
       <div class="footer-links">
-        <a href="#overview">Overview</a>
-        <a href="#verdicts">Verdicts</a>
-        <a href="#records">Record fields</a>
-        <a href="#flows">Flows</a>
-        <a href="#codes">Decision labels</a>
-        <a href="#api">Endpoints</a>
-        <a href="./use-cases.html">Use cases</a>
+        <a href="#start">Start</a>
+        <a href="#curl">cURL</a>
+        <a href="#examples">Examples</a>
+        <a href="#responses">Responses</a>
+        <a href="#errors">Errors</a>
         <a href="./pricing.html">Pricing</a>
         <a href="./trust-security.html">Trust &amp; security</a>
         <a href="./pilot-flow.html">Pilot flow</a>
-        <a href="./policy_examples.html">Policy examples</a>
-        <a href="./one-pager.html">One-pager</a>
-        <a href="./pilot-outline.html">Pilot outline</a>
         <a href="./index.html">Main site</a>
       </div>
     </div>
