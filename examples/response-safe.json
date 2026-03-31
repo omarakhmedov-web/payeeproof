@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "service": "preflight-check",
+  "version": "2.x",
+  "trace_id": "req_example_safe_01",
+  "checked_at": "2026-03-31T10:12:08Z",
+  "chain": "ethereum",
+  "policy_profile": "payout_strict",
+  "status": "verified",
+  "verdict": "SAFE",
+  "reason_code": "OK",
+  "next_action": "SAFE_TO_PROCEED",
+  "next_action_label": "Proceed with the payment",
+  "confidence": "High",
+  "summary": "Core details match and the destination looks like a personal wallet.",
+  "why_this_verdict": "Network, asset, address, and memo or tag checks matched cleanly, and the destination looks like a normal wallet rather than infrastructure.",
+  "risk_flags": [],
+  "checks": {
+    "network_match": true,
+    "asset_match": true,
+    "address_match": true,
+    "memo_match": true,
+    "expected_address_valid": true,
+    "provided_address_valid": true,
+    "expected_network_supported": true,
+    "provided_network_supported": true,
+    "expected_asset_supported": true,
+    "provided_asset_supported": true
+  },
+  "proof": {
+    "checked_at": "2026-03-31T10:12:08Z",
+    "chain": "ethereum",
+    "trace_id": "req_example_safe_01",
+    "verdict": "SAFE",
+    "confidence": "High",
+    "reason_code": "OK",
+    "next_action": "SAFE_TO_PROCEED",
+    "next_action_label": "Proceed with the payment",
+    "policy_profile": "payout_strict"
+  },
+  "record_id": "ppf_demo_safe_01",
+  "history_url": "/api/verification-records/ppf_demo_safe_01"
+}
