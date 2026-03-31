@@ -94,6 +94,9 @@
       </div>
     </section>
   </div>
+  <script src="./posthog-config.js"></script>
+  <script src="./analytics.js"></script>
+
   <script>
     (function () {
       const API_BASE = window.PAYEEPROOF_API_BASE || 'https://payeeproof-api.onrender.com';
@@ -128,6 +131,8 @@
         statusHint.textContent = message || 'If you already paid, wait a few seconds and refresh.';
       }
 
+      const failedStatuses = new Set(['failed', 'expired', 'cancelled', 'canceled', 'refunded', 'reversed']);
+
       function setConfirmed(order) {
         const nextStep = order && order.message ? order.message : 'Payment confirmed. We will follow up with next-step details.';
         statusText.textContent = order && order.postpay_complete ? 'Payment confirmed. Flow complete.' : 'Payment confirmed.';
@@ -156,9 +161,25 @@
               created_at: (saved && saved.created_at) || new Date().toISOString()
             }));
           } catch (e) {}
+          const normalizedStatus = String(order.payment_status || order.status || '').trim().toLowerCase();
+          const analyticsOrderId = order.order_id || orderId;
           if (order.paid) {
+            if (window.PayeeProofAnalytics) {
+              window.PayeeProofAnalytics.captureOnce(`pp_payment_success_${analyticsOrderId}`, 'payment_success', {
+                order_id: analyticsOrderId,
+                status: normalizedStatus || 'paid',
+                product_name: order.product || ''
+              }, { scope: 'local' });
+            }
             setConfirmed(order);
           } else {
+            if (failedStatuses.has(normalizedStatus) && window.PayeeProofAnalytics) {
+              window.PayeeProofAnalytics.captureOnce(`pp_payment_failed_${analyticsOrderId}`, 'payment_failed', {
+                order_id: analyticsOrderId,
+                status: normalizedStatus,
+                product_name: order.product || ''
+              }, { scope: 'local' });
+            }
             setPending(order.message || 'The provider has not marked the order paid yet.');
           }
         } catch (err) {
