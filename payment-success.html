@@ -74,6 +74,14 @@
             <div class="label">Fulfillment</div>
             <div id="fulfillmentStatus">—</div>
           </div>
+          <div class="item">
+            <div class="label">Email confirmation</div>
+            <div id="emailStatus">—</div>
+          </div>
+          <div class="item">
+            <div class="label">Support</div>
+            <div id="supportEmail">—</div>
+          </div>
         </div>
       </div>
     </section>
@@ -82,38 +90,62 @@
     (function () {
       const API_BASE = window.PAYEEPROOF_API_BASE || 'https://payeeproof-api.onrender.com';
       const STORAGE_KEY = 'payeeproof_last_nowpayments_order';
+      const params = new URLSearchParams(window.location.search);
       const statusText = document.getElementById('statusText');
       const statusHint = document.getElementById('statusHint');
       const orderIdEl = document.getElementById('orderId');
       const paymentStatusEl = document.getElementById('paymentStatus');
       const fulfillmentStatusEl = document.getElementById('fulfillmentStatus');
+      const emailStatusEl = document.getElementById('emailStatus');
+      const supportEmailEl = document.getElementById('supportEmail');
       let saved = null;
       try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (e) { saved = null; }
-      const orderId = saved && saved.order_id ? saved.order_id : '';
+      const orderId = String(params.get('order_id') || (saved && saved.order_id) || '').trim();
       if (!orderId) {
-        statusText.textContent = 'No recent order found in this browser.';
+        statusText.textContent = 'No recent order found.';
         statusHint.textContent = 'Return to pricing and start checkout again if needed.';
+        emailStatusEl.textContent = '—';
+        supportEmailEl.textContent = 'hello@payeeproof.com';
         return;
       }
       orderIdEl.textContent = orderId;
+
+      function setPending(message) {
+        statusText.textContent = 'Payment not confirmed yet.';
+        statusText.className = 'big warn';
+        statusHint.textContent = message || 'If you already paid, wait a few seconds and refresh.';
+      }
+
+      function setConfirmed(order) {
+        const nextStep = order && order.message ? order.message : 'Payment confirmed. We will follow up with next-step details.';
+        statusText.textContent = 'Payment confirmed.';
+        statusText.className = 'big ok';
+        statusHint.textContent = nextStep;
+      }
+
       async function refreshStatus() {
         try {
           const res = await fetch(`${API_BASE}/api/payments/nowpayments/order/${encodeURIComponent(orderId)}`);
           const data = await res.json().catch(() => ({}));
           const order = data && data.order ? data.order : null;
           if (!res.ok || !order) throw new Error(data.error || 'Order lookup failed.');
-          const paymentStatus = order.payment_status || order.status || 'waiting';
-          const fulfillmentStatus = order.fulfillment_status || 'pending_payment';
-          paymentStatusEl.textContent = paymentStatus;
-          fulfillmentStatusEl.textContent = fulfillmentStatus;
+          paymentStatusEl.textContent = order.payment_status || order.status || 'waiting';
+          fulfillmentStatusEl.textContent = order.fulfillment_status || 'pending_payment';
+          supportEmailEl.textContent = order.support_email || 'hello@payeeproof.com';
+          const customerEmailStatus = order.customer_receipt_status || (order.customer_email_present ? 'pending' : 'not_provided');
+          emailStatusEl.textContent = customerEmailStatus;
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+              order_id: order.order_id || orderId,
+              checkout_url: order.checkout_url || (saved && saved.checkout_url) || '',
+              product: order.product || (saved && saved.product) || null,
+              created_at: (saved && saved.created_at) || new Date().toISOString()
+            }));
+          } catch (e) {}
           if (order.paid) {
-            statusText.textContent = 'Payment confirmed.';
-            statusText.className = 'big ok';
-            statusHint.textContent = 'The order is marked paid. Next step: manual pilot onboarding / access follow-up.';
+            setConfirmed(order);
           } else {
-            statusText.textContent = 'Payment not confirmed yet.';
-            statusText.className = 'big warn';
-            statusHint.textContent = 'If you already paid, wait a few seconds and refresh. Provider status can lag briefly.';
+            setPending(order.message || 'The provider has not marked the order paid yet.');
           }
         } catch (err) {
           statusText.textContent = 'Could not verify payment yet.';
