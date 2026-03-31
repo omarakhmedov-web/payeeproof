@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "service": "preflight-check",
+  "version": "2.x",
+  "trace_id": "req_example_test_01",
+  "checked_at": "2026-03-31T10:16:08Z",
+  "chain": "ethereum",
+  "policy_profile": "payout_strict",
+  "status": "review_required",
+  "verdict": "TEST FIRST",
+  "reason_code": "DESTINATION_IS_CONTRACT_OR_APP",
+  "next_action": "TEST_FIRST",
+  "next_action_label": "Send a small test first",
+  "confidence": "Medium",
+  "summary": "The details match, but the destination looks like a contract or app.",
+  "why_this_verdict": "Contract destinations can accept funds differently from a personal wallet. A small test first reduces irreversible mistakes.",
+  "risk_flags": [
+    "DESTINATION_IS_CONTRACT_OR_APP"
+  ],
+  "checks": {
+    "network_match": true,
+    "asset_match": true,
+    "address_match": true,
+    "memo_match": true,
+    "expected_address_valid": true,
+    "provided_address_valid": true,
+    "expected_network_supported": true,
+    "provided_network_supported": true,
+    "expected_asset_supported": true,
+    "provided_asset_supported": true
+  },
+  "proof": {
+    "checked_at": "2026-03-31T10:16:08Z",
+    "chain": "ethereum",
+    "trace_id": "req_example_test_01",
+    "verdict": "TEST FIRST",
+    "confidence": "Medium",
+    "reason_code": "DESTINATION_IS_CONTRACT_OR_APP",
+    "next_action": "TEST_FIRST",
+    "next_action_label": "Send a small test first",
+    "policy_profile": "payout_strict"
+  },
+  "record_id": "ppf_demo_test_01",
+  "history_url": "/api/verification-records/ppf_demo_test_01"
+}
