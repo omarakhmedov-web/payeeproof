@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "service": "preflight-check",
+  "version": "2.x",
+  "trace_id": "req_example_block_01",
+  "checked_at": "2026-03-31T10:14:08Z",
+  "chain": "polygon",
+  "policy_profile": "payout_strict",
+  "status": "blocked",
+  "verdict": "BLOCK",
+  "reason_code": "NETWORK_MISMATCH",
+  "next_action": "BLOCK_AND_REVERIFY",
+  "next_action_label": "Block and re-verify the destination",
+  "confidence": "High",
+  "summary": "The submitted payout details do not match the approved instructions.",
+  "why_this_verdict": "The submitted destination is on a different chain than the approved request. This is the classic wrong-network mistake.",
+  "risk_flags": [
+    "NETWORK_MISMATCH"
+  ],
+  "checks": {
+    "network_match": false,
+    "asset_match": true,
+    "address_match": true,
+    "memo_match": true,
+    "expected_address_valid": true,
+    "provided_address_valid": true,
+    "expected_network_supported": true,
+    "provided_network_supported": true,
+    "expected_asset_supported": true,
+    "provided_asset_supported": true
+  },
+  "proof": {
+    "checked_at": "2026-03-31T10:14:08Z",
+    "chain": "polygon",
+    "trace_id": "req_example_block_01",
+    "verdict": "BLOCK",
+    "confidence": "High",
+    "reason_code": "NETWORK_MISMATCH",
+    "next_action": "BLOCK_AND_REVERIFY",
+    "next_action_label": "Block and re-verify the destination",
+    "policy_profile": "payout_strict"
+  },
+  "record_id": "ppf_demo_block_01",
+  "history_url": "/api/verification-records/ppf_demo_block_01"
+}
