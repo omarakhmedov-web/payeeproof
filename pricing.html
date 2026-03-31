@@ -152,6 +152,15 @@
     .checkout-status.success { color: #bbf7d0; }
     .btn[disabled] { opacity: .66; cursor: wait; transform: none; }
 
+    .pilot-details { display: grid; gap: 14px; margin-top: 16px; }
+    .pilot-details h4 {
+      margin: 4px 0 0;
+      font-size: 14px;
+      letter-spacing: .02em;
+      color: var(--text);
+    }
+    .pilot-details p { color: var(--muted); }
+
   </style>
 </head>
 <body>
@@ -235,19 +244,48 @@
           </article>
           <article class="card">
             <h3>Pilot — $399 / month</h3>
-            <p>For teams that want to validate PayeeProof in one live payment workflow before broader rollout.</p>
-            <ul class="boundary-list">
-              <li>1 workflow</li>
-              <li>1–2 networks</li>
-              <li>Up to 1,000 pre-send checks / month</li>
-              <li>Up to 2,000 verification record reads / month</li>
-              <li>Verification records</li>
-              <li>Basic webhook delivery</li>
-              <li>Email-based onboarding</li>
-              <li>Standard support</li>
-            </ul>
-            <p><strong>Designed for a controlled live pilot with limited scope.</strong></p>
-            <div class="pay-note">Secure hosted crypto checkout via NOWPayments. Fixed starter SKU: <strong>$399 / month</strong>.</div>
+            <p>A 30-day pilot for teams that want to evaluate PayeeProof in a real workflow before a broader rollout.</p>
+
+            <div class="pilot-details">
+              <h4>What is included</h4>
+              <ul class="boundary-list">
+                <li>One pilot environment for internal evaluation</li>
+                <li>Pre-Send Check API access for the agreed use case</li>
+                <li>Support for the agreed networks and assets within pilot scope</li>
+                <li>Standard verdicts and reason codes</li>
+                <li>Verification records and basic webhook delivery</li>
+                <li>Email-based onboarding and standard pilot support</li>
+                <li>Usage visibility during the pilot</li>
+              </ul>
+
+              <h4>What is not included</h4>
+              <ul class="boundary-list">
+                <li>Full production rollout across multiple teams or products</li>
+                <li>Custom policy logic or custom rule engineering</li>
+                <li>Dedicated SLA or enterprise support terms</li>
+                <li>On-premise deployment or private infrastructure</li>
+                <li>Deep workflow redesign or custom UX implementation</li>
+                <li>Unlimited usage or production-scale multi-tenant deployment</li>
+              </ul>
+
+              <h4>Pilot term</h4>
+              <p>30 days.</p>
+
+              <h4>Expected setup time</h4>
+              <p>Typically 2–5 business days after kickoff and receipt of the required integration details.</p>
+
+              <h4>What the client gets</h4>
+              <ul class="boundary-list">
+                <li>Pilot API access</li>
+                <li>Pilot credentials</li>
+                <li>Integration guidance for the agreed use case</li>
+                <li>Sample requests and expected responses</li>
+                <li>A clear verdict structure for internal testing</li>
+                <li>An end-of-pilot review with a production recommendation</li>
+              </ul>
+            </div>
+
+            <div class="pay-note">Optional implementation work can be quoted separately when a custom workflow or broader rollout is required.</div>
             <div class="btn-row" style="margin-top:18px;">
               <a class="btn btn-secondary" href="./index.html#contact">Request pilot</a>
               <button class="btn btn-primary js-nowpayments-checkout" type="button" data-sku="pilot_399">Pay with crypto</button>
