@@ -355,7 +355,7 @@
               <li>Email-based onboarding and standard support</li>
               <li>Typical setup: 2–5 business days</li>
             </ul>
-            <button class="pilot-scope-trigger" type="button" data-open-pilot-modal>
+            <button class="pilot-scope-trigger" type="button" data-open-modal="pilotScopeModal">
               See full pilot scope
             </button>
             <div class="pay-note">Secure hosted crypto checkout via NOWPayments. Fixed starter SKU: <strong>$399 / month</strong>.</div>
@@ -374,6 +374,9 @@
               <li>Operational use beyond a narrow pilot</li>
               <li>Priority commercial review</li>
             </ul>
+            <button class="pilot-scope-trigger" type="button" data-open-modal="growthScopeModal">
+              See full growth scope
+            </button>
             <div class="btn-row" style="margin-top:18px;"><a class="btn btn-secondary" href="./index.html#contact">Discuss growth plan</a></div>
           </article>
         </div>
@@ -404,14 +407,14 @@
 
 
       <div class="pilot-modal" id="pilotScopeModal" aria-hidden="true">
-        <div class="pilot-modal-backdrop" data-close-pilot-modal></div>
+        <div class="pilot-modal-backdrop" data-close-modal></div>
         <div class="pilot-modal-panel" role="dialog" aria-modal="true" aria-labelledby="pilotScopeTitle">
           <div class="pilot-modal-header">
             <div class="pilot-modal-title-wrap">
               <h3 id="pilotScopeTitle">Pilot — $399 / month</h3>
               <p>A 30-day pilot for teams that want to evaluate PayeeProof in a real workflow before a broader rollout.</p>
             </div>
-            <button class="pilot-modal-close" type="button" aria-label="Close" data-close-pilot-modal>&times;</button>
+            <button class="pilot-modal-close" type="button" aria-label="Close" data-close-modal>&times;</button>
           </div>
 
           <div class="pilot-modal-grid">
@@ -553,6 +556,59 @@
     </section>
   </main>
 
+
+      <div class="pilot-modal" id="growthScopeModal" aria-hidden="true">
+        <div class="pilot-modal-backdrop" data-close-modal></div>
+        <div class="pilot-modal-panel" role="dialog" aria-modal="true" aria-labelledby="growthScopeTitle">
+          <div class="pilot-modal-header">
+            <div class="pilot-modal-title-wrap">
+              <h3 id="growthScopeTitle">Growth — $1,990 / month</h3>
+              <p>For teams moving from one pilot workflow to regular operational use with broader scope and higher usage.</p>
+            </div>
+            <button class="pilot-modal-close" type="button" aria-label="Close" data-close-modal>&times;</button>
+          </div>
+
+          <div class="pilot-modal-grid">
+            <div class="pilot-modal-card">
+              <h4>What is included</h4>
+              <ul class="boundary-list">
+                <li>Broader workflow coverage than the Pilot plan</li>
+                <li>Higher monthly volume for regular operational use</li>
+                <li>Expanded network and asset coverage within the agreed scope</li>
+                <li>Verification records and webhook-based operational flow</li>
+                <li>Priority commercial review and rollout guidance</li>
+                <li>Email-first support for the active Growth scope</li>
+              </ul>
+            </div>
+            <div class="pilot-modal-card">
+              <h4>What is not included</h4>
+              <ul class="boundary-list">
+                <li>Unlimited production usage across any volume or workflow count</li>
+                <li>Custom enterprise security review or bespoke contractual terms</li>
+                <li>On-premise deployment or private dedicated infrastructure</li>
+                <li>Custom rule engineering outside the agreed commercial scope</li>
+                <li>Large-scale multi-team rollout without separate scope review</li>
+              </ul>
+            </div>
+            <div class="pilot-modal-card">
+              <h4>Commercial framing</h4>
+              <p><strong>Plan term:</strong> monthly, with scope reviewed against actual operational usage.</p>
+              <p style="margin-top:8px;"><strong>Expected start:</strong> usually faster after a successful Pilot, or quoted directly when the workflow is already well defined.</p>
+            </div>
+            <div class="pilot-modal-card">
+              <h4>What the client gets</h4>
+              <ul class="boundary-list">
+                <li>A broader live operating scope than Pilot</li>
+                <li>Commercial review matched to real workflow volume</li>
+                <li>Rollout guidance for the agreed next stage</li>
+                <li>A clearer path toward production or enterprise packaging</li>
+              </ul>
+            </div>
+          </div>
+          <div class="pilot-modal-note">If the workflow needs deeper customization, private infrastructure, or broader deployment, Enterprise and optional implementation are quoted separately.</div>
+        </div>
+      </div>
+
   <footer class="footer">
     <div class="container footer-inner">
       <div class="brand">
@@ -665,46 +721,48 @@
           setStatus(err && err.message ? err.message : 'Could not start checkout.', 'error');
           buttons.forEach((btn) => { btn.disabled = false; });
         }
-      }
+      }      const openers = Array.from(document.querySelectorAll('[data-open-modal]'));
+      const closers = Array.from(document.querySelectorAll('[data-close-modal]'));
+      let activeModal = null;
+      let lastTrigger = null;
 
-      const pilotModal = document.getElementById('pilotScopeModal');
-      const pilotOpeners = Array.from(document.querySelectorAll('[data-open-pilot-modal]'));
-      const pilotClosers = Array.from(document.querySelectorAll('[data-close-pilot-modal]'));
-      let lastPilotTrigger = null;
-
-      function openPilotModal(trigger) {
-        if (!pilotModal) return;
-        lastPilotTrigger = trigger || document.activeElement;
-        pilotModal.classList.add('is-open');
-        pilotModal.setAttribute('aria-hidden', 'false');
+      function openModal(modalId, trigger) {
+        const modal = document.getElementById(modalId);
+        if (!modal) return;
+        activeModal = modal;
+        lastTrigger = trigger || document.activeElement;
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
       }
 
-      function closePilotModal() {
-        if (!pilotModal) return;
-        pilotModal.classList.remove('is-open');
-        pilotModal.setAttribute('aria-hidden', 'true');
+      function closeModal(modal) {
+        const target = modal || activeModal;
+        if (!target) return;
+        target.classList.remove('is-open');
+        target.setAttribute('aria-hidden', 'true');
+        if (activeModal === target) activeModal = null;
         document.body.style.overflow = '';
-        if (lastPilotTrigger && typeof lastPilotTrigger.focus === 'function') {
-          try { lastPilotTrigger.focus(); } catch (e) {}
+        if (lastTrigger && typeof lastTrigger.focus === 'function') {
+          try { lastTrigger.focus(); } catch (e) {}
         }
       }
 
-      pilotOpeners.forEach((button) => {
+      openers.forEach((button) => {
         button.addEventListener('click', function () {
-          openPilotModal(button);
+          openModal(button.getAttribute('data-open-modal'), button);
         });
       });
 
-      pilotClosers.forEach((button) => {
+      closers.forEach((button) => {
         button.addEventListener('click', function () {
-          closePilotModal();
+          closeModal(button.closest('.pilot-modal'));
         });
       });
 
       document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape' && pilotModal && pilotModal.classList.contains('is-open')) {
-          closePilotModal();
+        if (event.key === 'Escape' && activeModal && activeModal.classList.contains('is-open')) {
+          closeModal(activeModal);
         }
       });
 
@@ -713,6 +771,7 @@
           startCheckout(button);
         });
       });
+
     })();
   </script>
 
