@@ -1024,6 +1024,9 @@
     </div>
   </footer>
 
+  <script src="./posthog-config.js"></script>
+  <script src="./analytics.js"></script>
+
   <script>
     const API_BASE = window.PAYEEPROOF_API_BASE || 'https://payeeproof-api.onrender.com';
     const PRECHECK_URL = `${API_BASE}/api/preflight-check`;
@@ -2343,12 +2346,34 @@
       return payload;
     }
 
+    let pilotStartCaptured = false;
+
+    function capturePilotStart(trigger) {
+      if (pilotStartCaptured) return;
+      pilotStartCaptured = true;
+      if (window.PayeeProofAnalytics) {
+        window.PayeeProofAnalytics.capture('pilot_request_started', {
+          page_name: 'index',
+          trigger: trigger || 'form_interaction'
+        });
+      }
+    }
+
     async function submitPilot(event) {
       event.preventDefault();
       try {
         const payload = buildPilotPayload();
+        capturePilotStart('submit');
         el('pilotState').textContent = 'Sending pilot request…';
         const data = await fetchJson(PILOT_URL, { method: 'POST', body: JSON.stringify(payload) });
+        if (window.PayeeProofAnalytics) {
+          window.PayeeProofAnalytics.capture('pilot_request_submitted', {
+            page_name: 'index',
+            has_volume: Boolean(payload.volume),
+            email_notification: data.email_notification || 'unknown',
+            persisted: typeof data.persisted === 'boolean' ? data.persisted : null
+          });
+        }
         el('pilotState').textContent = data.message
           ? `${data.message}${data.request_id ? ` Ref: ${data.request_id}.` : ''}${traceSuffix(data, 'Trace')}${data.email_notification ? ` Email: ${data.email_notification}.` : ''}${data.submitted_at ? ` Submitted at ${data.submitted_at}.` : ''}${typeof data.persisted === 'boolean' ? ` Stored: ${data.persisted ? 'yes' : 'no'}.` : ''}`
           : `Pilot request received.${traceSuffix(data, 'Trace')}`;
@@ -2401,7 +2426,18 @@
     el('rcClearBtn').addEventListener('click', clearRecovery);
     el('rcNotFoundDemoBtn').addEventListener('click', previewRecoveryNotFound);
     resetPilotGuards();
-    el('pilotForm').addEventListener('submit', submitPilot);
+    const pilotForm = el('pilotForm');
+    pilotForm.addEventListener('focusin', function (event) {
+      const target = event.target;
+      const trigger = target && (target.name || target.id) ? (target.name || target.id) : 'focusin';
+      capturePilotStart(trigger);
+    });
+    pilotForm.addEventListener('input', function (event) {
+      const target = event.target;
+      const trigger = target && (target.name || target.id) ? (target.name || target.id) : 'input';
+      capturePilotStart(trigger);
+    });
+    pilotForm.addEventListener('submit', submitPilot);
     el('pilotCopyBtn').addEventListener('click', copyPilot);
 
     clearRecovery();
