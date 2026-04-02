@@ -162,6 +162,14 @@
 
     .panel { }
     .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .panel-head > div:first-child { min-width: 0; flex: 1 1 auto; }
+    .panel .section-title {
+      max-width: none;
+      margin-bottom: 0;
+      font-size: clamp(24px, 3vw, 36px);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
     .panel-badge {
       color: #cbd5e1; border: 1px solid var(--line); background: rgba(255,255,255,.04);
       border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 700;
@@ -223,8 +231,23 @@
     .list-item {
       display: flex; gap: 12px; padding: 14px; border: 1px solid var(--line);
       background: rgba(0,0,0,.20); border-radius: 16px; color: #d4d4d8;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      min-width: 0;
     }
-    .list-item strong { color: var(--white); }
+    .list-item:has(strong) {
+      display: grid;
+      grid-template-columns: minmax(120px, 190px) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+    .list-item strong {
+      color: var(--white);
+      display: block;
+      min-width: 0;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
     .demo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
     .demo-btn { width: 100%; }
     .flow-grid { display: grid; gap: 16px; margin-top: 26px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -297,6 +320,8 @@
       .result-top { flex-direction: column; }
       .footer-links { gap: 10px 14px; }
       .brand-sub { display: none; }
+      .list-item:has(strong) { grid-template-columns: 1fr; gap: 8px; }
+      .panel-badge { align-self: flex-start; }
     }
 
     .detect-note {
