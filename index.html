@@ -341,7 +341,7 @@
 
   </style>
 </head>
-<body>
+<body data-analytics-view="home_view" data-analytics-page="home">
   <header class="topbar">
     <div class="container topbar-inner">
       <div class="brand">
@@ -361,8 +361,8 @@
         <a href="./trust-security.html">Trust</a>
       </nav>
       <div class="btn-row">
-        <a class="btn btn-secondary" href="./pricing.html">See pricing</a>
-        <a class="btn btn-primary" href="#contact">Request pilot</a>
+        <a class="btn btn-secondary" href="./pricing.html" data-pp-event="cta_click" data-pp-label="home_header_pricing">See pricing</a>
+        <a class="btn btn-primary" href="#contact" data-pp-event="cta_click" data-pp-label="home_header_request_pilot">Request pilot</a>
       </div>
     </div>
   </header>
@@ -375,7 +375,7 @@
           <h1>Verify stablecoin payout destinations before funds move.</h1>
           <p class="lead">PayeeProof helps payout, treasury, and operations teams catch avoidable payout mistakes before approval. Run a live pre-send check, get one clear operational outcome — <strong>SAFE</strong>, <strong>BLOCK</strong>, <strong>REVERIFY</strong>, or <strong>TEST FIRST</strong> — and keep execution control with your team.</p>
           <div class="btn-row">
-            <a class="btn btn-primary" href="#contact">Request pilot</a>
+            <a class="btn btn-primary" href="#contact" data-pp-event="cta_click" data-pp-label="home_hero_request_pilot">Request pilot</a>
             <a class="btn btn-secondary" href="#preflight">Run pre-send check →</a>
             <a class="btn btn-ghost" href="./pilot-pack.html">Open pilot pack</a>
           </div>
@@ -885,7 +885,7 @@
               <div class="list-item"><strong>Policy presets</strong><span>Payout Strict, Deposit Review, and Treasury Review help align the decision layer to a real workflow.</span></div>
             </div>
             <div class="artifact-links" style="margin-top:18px;">
-              <a class="btn btn-secondary" href="./technical-sample.html">Open technical overview</a>
+              <a class="btn btn-secondary" href="./technical-sample.html" data-pp-event="cta_click" data-pp-label="home_technical_overview_open">Open technical overview</a>
               <a class="btn btn-ghost" href="./pilot-pack.html">Open pilot pack</a>
             </div>
           </div>
@@ -1002,7 +1002,7 @@
           </article>
         </div>
         <div class="btn-row" style="margin-top:20px;">
-          <a class="btn btn-secondary" href="./pricing.html">Open pricing &amp; packages</a>
+          <a class="btn btn-secondary" href="./pricing.html" data-pp-event="cta_click" data-pp-label="home_pricing_section_open_pricing">Open pricing &amp; packages</a>
           <a class="btn btn-ghost" href="#contact">Request pilot</a>
         </div>
       </div>
@@ -1024,7 +1024,7 @@
         <div class="card panel">
           <h3 style="font-size:24px; margin-bottom:14px;">Request pilot</h3>
           <p class="muted" style="margin-bottom:18px;">Use a work email and include enough context for a serious fit review, not just a one-line intro.</p>
-          <form class="grid" id="pilotForm" novalidate>
+          <form class="grid" id="pilotForm" novalidate data-pp-form="pilot">
             <input id="pilotWebsite" type="text" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute; left:-10000px; opacity:0; pointer-events:none;" />
             <input id="pilotStartedAt" type="hidden" />
             <div class="field-grid">
