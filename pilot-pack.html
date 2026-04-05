@@ -269,7 +269,7 @@
         <div class="hero-copy">
           <div class="pill">Pilot pack · what it checks · what is in scope today</div>
           <h1>Pre-send verification for stablecoin payouts.</h1>
-          <p class="lead">Stop wrong-network and wrong-destination mistakes before funds move. This pilot pack shows what PayeeProof checks, what results it returns, what is supported today, and how a pilot fits into a payout workflow.</p>
+          <p class="lead">Stop wrong-network and wrong-destination mistakes before funds move. This pilot pack shows what PayeeProof checks, what results it returns, what is supported today, and how a pilot fits into a payout workflow. The primary operator outcomes are <strong>SAFE</strong>, <strong>BLOCK</strong>, <strong>REVERIFY</strong>, and <strong>TEST FIRST</strong>; <strong>UNAVAILABLE</strong> remains a system fallback when live lookup does not complete.</p>
           <p class="note" style="margin-top:14px;">Ideal for payout teams, exchange-like deposit review, marketplaces, and treasury operations. Not included by default: broad custom rollout, expanded policy logic across many workflows, or recovery-heavy support programs.</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="#checks">See what gets checked</a>
@@ -287,7 +287,8 @@
           <div class="mini-shell">
             <div class="mini-shell-bar"><span></span><span></span><span></span></div>
             <div class="shell-line"><strong>Main question</strong><span>Can this stop preventable payout mistakes before funds move?</span></div>
-            <div class="shell-line"><strong>Core outputs</strong><span>SAFE · BLOCK · REVERIFY · TEST FIRST · UNAVAILABLE</span></div>
+            <div class="shell-line"><strong>Primary operator outcomes</strong><span>SAFE · BLOCK · REVERIFY · TEST FIRST</span></div>
+            <div class="shell-line"><strong>System fallback</strong><span>UNAVAILABLE when live lookup does not complete</span></div>
             <div class="shell-line"><strong>Primary use case</strong><span>Pre-send verification before approval, release, or manual payout</span></div>
             <div class="shell-line"><strong>Current live scope</strong><span>Ethereum, Arbitrum, Base, Polygon, BNB Chain, Solana</span></div>
             <div class="shell-line"><strong>Integration style</strong><span>Simple API call before release, approval, or manual payout</span></div>
@@ -300,8 +301,8 @@
               <div class="kpi-value">1</div>
             </div>
             <div class="kpi-card">
-              <div class="kpi-label">Pre-send verdicts</div>
-              <div class="kpi-value">5</div>
+              <div class="kpi-label">Primary outcomes</div>
+              <div class="kpi-value">4</div>
             </div>
             <div class="kpi-card">
               <div class="kpi-label">Pilot intake</div>
@@ -312,6 +313,27 @@
               <div class="kpi-value">6</div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="fit">
+      <div class="container">
+        <div class="eyebrow">Best first fit</div>
+        <h2>The strongest pilot is narrow and operator-visible.</h2>
+        <div class="grid three-col" style="margin-top:34px;">
+          <article class="card">
+            <h3>Best first fit</h3>
+            <p>Payout approvals and exchange-like deposit review are the two strongest starting workflows because they create clear operator decisions before funds move.</p>
+          </article>
+          <article class="card">
+            <h3>Good second step</h3>
+            <p>Treasury release control can follow once the first workflow proves useful and the record format is already accepted operationally.</p>
+          </article>
+          <article class="card">
+            <h3>Not the first promise</h3>
+            <p>Do not treat the base pilot like a universal fraud suite, a broad recovery program, or a guarantee across every chain, asset, and partner flow.</p>
+          </article>
         </div>
       </div>
     </section>
