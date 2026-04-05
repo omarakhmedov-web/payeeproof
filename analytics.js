@@ -115,13 +115,80 @@
     return true;
   }
 
-  function captureBodyViewEvent() {
+  function resolvePageViewEvent() {
     const body = document.body;
-    if (!body) return;
-    const eventName = body.getAttribute('data-analytics-view');
-    if (!eventName) return;
-    const pageName = body.getAttribute('data-analytics-page') || eventName;
-    capture(eventName, { page_name: pageName });
+    if (body) {
+      const eventName = body.getAttribute('data-analytics-view');
+      if (eventName) {
+        return {
+          eventName,
+          pageName: body.getAttribute('data-analytics-page') || eventName
+        };
+      }
+    }
+
+    const path = window.location.pathname || '/';
+    const pageMap = {
+      '/': { eventName: 'home_view', pageName: 'home' },
+      '/index.html': { eventName: 'home_view', pageName: 'home' },
+      '/pilot-flow.html': { eventName: 'pilot_flow_view', pageName: 'pilot-flow' }
+    };
+
+    return pageMap[path] || null;
+  }
+
+  function captureBodyViewEvent() {
+    const pageView = resolvePageViewEvent();
+    if (!pageView) return;
+    capture(pageView.eventName, { page_name: pageView.pageName });
+  }
+
+  function setupEngagedTimer() {
+    let engagedSent = false;
+    window.setTimeout(function () {
+      if (engagedSent) return;
+      engagedSent = true;
+      capture('engaged_15s', {
+        page_name: (resolvePageViewEvent() || {}).pageName || window.location.pathname || '/'
+      });
+    }, 15000);
+  }
+
+  function setupScrollDepthTracking() {
+    const sentScrollMilestones = new Set();
+    const milestones = [25, 50, 75];
+
+    function handleScroll() {
+      const doc = document.documentElement;
+      if (!doc) return;
+      const scrollTop = window.scrollY || doc.scrollTop || 0;
+      const maxScroll = doc.scrollHeight - window.innerHeight;
+      if (maxScroll <= 0) return;
+
+      const percent = Math.round((scrollTop / maxScroll) * 100);
+      milestones.forEach(function (milestone) {
+        if (percent < milestone || sentScrollMilestones.has(milestone)) return;
+        sentScrollMilestones.add(milestone);
+        capture('scroll_depth', {
+          percent: milestone,
+          page_name: (resolvePageViewEvent() || {}).pageName || window.location.pathname || '/'
+        });
+      });
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+  }
+
+  function setupDataEventTracking() {
+    document.addEventListener('click', function (event) {
+      const el = event.target && event.target.closest ? event.target.closest('[data-pp-event]') : null;
+      if (!el) return;
+      capture(el.getAttribute('data-pp-event'), {
+        label: el.getAttribute('data-pp-label') || String(el.textContent || '').trim().slice(0, 80),
+        href: el.getAttribute('href') || null,
+        page_name: (resolvePageViewEvent() || {}).pageName || window.location.pathname || '/'
+      });
+    });
   }
 
   const analytics = window.PayeeProofAnalytics = window.PayeeProofAnalytics || {};
@@ -146,7 +213,12 @@
       debug: !!config.debug
     });
     flushQueue();
-    onReady(captureBodyViewEvent);
+    onReady(function () {
+      captureBodyViewEvent();
+      setupEngagedTimer();
+      setupScrollDepthTracking();
+      setupDataEventTracking();
+    });
   }
 
   if (window.posthog && typeof window.posthog.init === 'function') {
