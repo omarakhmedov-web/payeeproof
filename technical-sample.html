@@ -225,7 +225,7 @@
         <div class="hero-copy">
           <div class="pill">Minimal docs · pre-send first</div>
           <h1>Integrate PayeeProof in 5–10 minutes.</h1>
-          <p class="lead">One endpoint. One API key. One clear answer before funds move. This page is intentionally small: one quickstart request, two working code examples, and three sample responses.</p>
+          <p class="lead">One endpoint. One API key. One clear answer before funds move. This page is intentionally small: one quickstart request, two working code examples, and three sample responses. The primary operator outcomes are <strong>SAFE</strong>, <strong>BLOCK</strong>, <strong>REVERIFY</strong>, and <strong>TEST FIRST</strong>; <strong>UNAVAILABLE</strong> is a retry or manual-review state, not a green light.</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="#curl">Start with cURL</a>
             <a class="btn btn-secondary" href="https://raw.githubusercontent.com/omarakhmedov-web/payeeproof/main/examples/node-preflight.js" target="_blank" rel="noopener noreferrer">Download Node.js example</a>
@@ -270,7 +270,7 @@ Response:
 - REVERIFY
 - UNAVAILABLE</pre>
           </div>
-          <div class="note">Direct API access requires an API key. The public website demo is separate from direct integration.</div>
+          <div class="note">Direct API access requires an API key. The public website demo is separate from direct integration. Public verdict language stays simple: SAFE, BLOCK, REVERIFY, and TEST FIRST. UNAVAILABLE is the system fallback.</div>
         </div>
       </div>
     </section>
@@ -297,6 +297,7 @@ Response:
               <div class="list-item"><strong>BLOCK</strong><span>Stop. Something is clearly wrong.</span></div>
               <div class="list-item"><strong>TEST FIRST</strong><span>The route may be valid, but it behaves like infrastructure or an app.</span></div>
               <div class="list-item"><strong>REVERIFY</strong><span>Pause and confirm memo, venue, or destination details.</span></div>
+              <div class="list-item"><strong>UNAVAILABLE</strong><span>Retry or route to manual review because live lookup did not complete cleanly.</span></div>
             </div>
           </div>
         </div>
