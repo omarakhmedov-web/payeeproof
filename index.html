@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PayeeProof — no-custody verification for stablecoin payouts</title>
-  <meta name="description" content="PayeeProof adds a no-custody verification layer before stablecoin payouts move, giving teams one clear verdict: SAFE, BLOCK, or REVERIFY." />
+  <meta name="description" content="PayeeProof adds a no-custody verification layer before stablecoin payouts move, giving teams one clear operational outcome: SAFE, BLOCK, REVERIFY, or TEST FIRST." />
   <meta property="og:title" content="PayeeProof — no-custody verification for stablecoin payouts" />
-  <meta property="og:description" content="Verify payout destinations before funds move. Get one clear verdict — SAFE, BLOCK, or REVERIFY — without giving up execution control." />
+  <meta property="og:description" content="Verify payout destinations before funds move. Get one clear operational outcome — SAFE, BLOCK, REVERIFY, or TEST FIRST — without giving up execution control." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -373,7 +373,7 @@
         <div class="hero-copy">
           <div class="pill">No-custody verification · live pre-send checks · pilot from $399/mo</div>
           <h1>Verify stablecoin payout destinations before funds move.</h1>
-          <p class="lead">PayeeProof helps payout, treasury, and operations teams catch avoidable payout mistakes before approval. Run a live pre-send check, get one clear verdict — <strong>SAFE</strong>, <strong>BLOCK</strong>, or <strong>REVERIFY</strong> — and keep execution control with your team.</p>
+          <p class="lead">PayeeProof helps payout, treasury, and operations teams catch avoidable payout mistakes before approval. Run a live pre-send check, get one clear operational outcome — <strong>SAFE</strong>, <strong>BLOCK</strong>, <strong>REVERIFY</strong>, or <strong>TEST FIRST</strong> — and keep execution control with your team.</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="#contact">Request pilot</a>
             <a class="btn btn-secondary" href="#preflight">Run pre-send check →</a>
@@ -396,10 +396,10 @@
           <div class="list">
             <div class="list-item"><strong>Decision layer</strong><span>Check destination details before approval instead of relying on manual double-checks alone.</span></div>
             <div class="list-item"><strong>No custody</strong><span>Your team keeps approval and execution control. PayeeProof adds verification, not fund handling.</span></div>
-            <div class="list-item"><strong>Clear output</strong><span>SAFE / BLOCK / REVERIFY gives operators one standard language for action and escalation.</span></div>
+            <div class="list-item"><strong>Clear output</strong><span>SAFE / BLOCK / REVERIFY / TEST FIRST gives operators one standard language for action and escalation.</span></div>
             <div class="list-item"><strong>Live coverage</strong><span>Ethereum, Arbitrum, Base, Polygon, BNB Chain, and Solana. Public checker supports USDC and USDT.</span></div>
           </div>
-          <p class="note" style="margin-top:14px;">Built first for payout ops, marketplaces, treasury teams, OTC workflows, and exchange-like deposit review.</p>
+          <p class="note" style="margin-top:14px;">Built first for payout approvals and exchange-like deposit review. Treasury release control can follow once the first workflow proves useful.</p>
         </div>
       </div>
     </section>
@@ -419,6 +419,61 @@
             <h3>Create an auditable record</h3>
             <p>Each result is built to look like a verification record your team can reference during approval, escalation, and post-incident review.</p>
           </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="section soft-section" id="fit">
+      <div class="container">
+        <div class="eyebrow">Best first fit</div>
+        <h2>Start with two high-signal workflows, not a broad rollout.</h2>
+        <p class="lead" style="max-width:920px; margin-top:14px;">The strongest first rollout is narrow: <strong>payout approval</strong> and <strong>exchange-like deposit review</strong>. Treasury release control can come next. Broad recovery programs, every-chain coverage, or all-purpose compliance tooling are not the right first promise for the current product.</p>
+        <div class="ops-grid" style="margin-top:28px;">
+          <div class="ops-card">
+            <h3>Primary wedge: payout approvals</h3>
+            <p>Use PayeeProof at the last operator pause before release, where one wrong network or destination detail is still stoppable.</p>
+          </div>
+          <div class="ops-card">
+            <h3>Primary wedge: exchange-like deposit review</h3>
+            <p>Use REVERIFY or TEST FIRST when the destination looks custodial, memo-sensitive, routing-dependent, or operationally ambiguous.</p>
+          </div>
+          <div class="ops-card">
+            <h3>Good second wedge: treasury release control</h3>
+            <p>Add one more verification step before funds move while keeping approval and execution in-house.</p>
+          </div>
+          <div class="ops-card">
+            <h3>Not a first-fit promise</h3>
+            <p>Do not sell the first rollout as a full incident-recovery program, a universal fraud suite, or support for every network and asset combination.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="snapshots">
+      <div class="container">
+        <div class="eyebrow">Representative workflow snapshots</div>
+        <h2>What useful pilot signal should look like.</h2>
+        <p class="lead" style="max-width:920px; margin-top:14px;">These are representative workflow snapshots, not named customer testimonials. They show the kind of operator signal a narrow pilot should produce in a live approval flow.</p>
+        <div class="grid three-col" style="margin-top:34px;">
+          <article class="card panel">
+            <h3>Snapshot 1 — payout approval</h3>
+            <p><strong>Situation:</strong> submitted route points to the wrong chain for the approved payout request.</p>
+            <p><strong>Result:</strong> <span class="scenario-badge block">BLOCK</span></p>
+            <p><strong>Operational value:</strong> the transfer stops before release instead of becoming support cleanup or manual recovery work.</p>
+          </article>
+          <article class="card panel">
+            <h3>Snapshot 2 — exchange-like destination</h3>
+            <p><strong>Situation:</strong> address pattern looks custodial, memo-sensitive, or still depends on venue confirmation.</p>
+            <p><strong>Result:</strong> <span class="scenario-badge reverify">REVERIFY</span> or <span class="scenario-badge reverify">TEST FIRST</span></p>
+            <p><strong>Operational value:</strong> the operator gets a clear pause signal instead of vague uncertainty or a false SAFE state.</p>
+          </article>
+          <article class="card panel">
+            <h3>Snapshot 3 — clean personal-wallet route</h3>
+            <p><strong>Situation:</strong> network, asset, address, and context line up cleanly and the destination looks operationally normal.</p>
+            <p><strong>Result:</strong> <span class="scenario-badge safe">SAFE</span></p>
+            <p><strong>Operational value:</strong> teams keep approval moving with a readable proof record instead of ad-hoc reassurance in chat or email.</p>
+          </article>
         </div>
       </div>
     </section>
@@ -464,7 +519,7 @@
           <div class="card panel">
             <h3 style="font-size:24px; margin-bottom:14px;">What the record captures</h3>
             <div class="list" style="margin-top:0;">
-              <div class="list-item"><strong>Stable verdict</strong><span>SAFE, BLOCK, or REVERIFY — one clear status language.</span></div>
+              <div class="list-item"><strong>Stable outcome language</strong><span>SAFE, BLOCK, REVERIFY, or TEST FIRST — one clear status language for action and escalation.</span></div>
               <div class="list-item"><strong>Proof fields</strong><span>Checked at, confidence, reference, destination class, source, and next action.</span></div>
               <div class="list-item"><strong>Operational context</strong><span>Short explanation for why the decision was returned and how an ops team should react.</span></div>
               <div class="list-item"><strong>Reviewability</strong><span>A result that can be used in a workflow, ticket, or approval log without rewriting it.</span></div>
@@ -797,7 +852,7 @@
           <div class="flow-step">
             <div class="flow-step-num">Step 3</div>
             <h3>Clear verdict</h3>
-            <p>The result returns one public language standard: SAFE, BLOCK, or REVERIFY.</p>
+            <p>The result returns one public language standard: SAFE, BLOCK, REVERIFY, or TEST FIRST. UNAVAILABLE stays a system fallback, not a green-light state.</p>
           </div>
           <div class="flow-step">
             <div class="flow-step-num">Step 4</div>
@@ -960,7 +1015,7 @@
           <h2>Request a pilot</h2>
           <p class="lead" style="max-width:760px; margin-top:14px;">Use the form to describe the payout flow you want to protect. Share enough detail for a serious fit review and a clear next-step recommendation.</p>
           <div class="list" style="margin-top:24px;">
-            <div class="list-item"><strong>Best fit</strong><span>Treasury teams, payroll flows, payout ops, exchanges, marketplaces, OTC desks.</span></div>
+            <div class="list-item"><strong>Best fit</strong><span>Payout approvals, exchange-like deposit review, and treasury release control.</span></div>
             <div class="list-item"><strong>What to include</strong><span>Networks, assets, destination types, where mistakes happen today, and what decision your team needs before approval.</span></div>
             <div class="list-item"><strong>Pilot review output</strong><span>A practical fit check, an initial pilot direction, and clear next steps.</span></div>
           </div>
