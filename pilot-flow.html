@@ -285,7 +285,7 @@
   </style>
 </head>
 
-<body>
+<body data-analytics-view="pilot_flow_view" data-analytics-page="pilot-flow">
   <header class="topbar">
     <div class="container topbar-inner">
       <div class="brand">
@@ -306,7 +306,7 @@
       </nav>
       <div class="btn-row">
         <a class="btn btn-secondary" href="./index.html">Back to main site</a>
-        <a class="btn btn-primary" href="#contact">Request pilot</a>
+        <a class="btn btn-primary" href="#contact" data-pp-event="cta_click" data-pp-label="pilot_flow_header_request_pilot">Request pilot</a>
       </div>
     </div>
   </header>
@@ -322,7 +322,7 @@
             <a class="btn btn-primary" href="#flow">See pilot flow</a>
             <a class="btn btn-secondary" href="./pilot-outline.html">Open pilot outline</a>
             <a class="btn btn-ghost" href="./onboarding-checklist.html">Open onboarding checklist</a>
-            <a class="btn btn-ghost" href="./pricing.html">Open pricing &amp; packages</a>
+            <a class="btn btn-ghost" href="./pricing.html" data-pp-event="cta_click" data-pp-label="pilot_flow_hero_open_pricing">Open pricing &amp; packages</a>
             <a class="btn btn-ghost" href="./policy_examples.html">Open policy examples</a>
           </div>
           <div class="tag-row">
@@ -479,9 +479,9 @@ POST /api/recovery-copilot
           <h2 style="margin-top:8px;">Review the main site for positioning. Use this page when the team wants the workflow in plain English.</h2>
           <p class="lead" style="margin-top:14px; max-width:900px;">A clean review path is simple: main site for the commercial story, verification record for trust, technical overview for compact field logic, and this page for the actual pilot flow.</p>
           <div class="btn-row" style="margin-top:18px;">
-            <a class="btn btn-primary" href="./index.html#contact">Request pilot on main site</a>
-            <a class="btn btn-secondary" href="./index.html#contact">Open pilot form</a>
-            <a class="btn btn-ghost" href="./technical-sample.html">Open technical overview</a>
+            <a class="btn btn-primary" href="./index.html#contact" data-pp-event="cta_click" data-pp-label="pilot_flow_request_pilot_main_site">Request pilot on main site</a>
+            <a class="btn btn-secondary" href="./index.html#contact" data-pp-event="cta_click" data-pp-label="pilot_flow_open_pilot_form">Open pilot form</a>
+            <a class="btn btn-ghost" href="./technical-sample.html" data-pp-event="cta_click" data-pp-label="pilot_flow_open_technical_overview">Open technical overview</a>
           </div>
         </div>
       </div>
@@ -513,5 +513,8 @@ POST /api/recovery-copilot
       </div>
     </div>
   </footer>
+
+  <script src="./posthog-config.js"></script>
+  <script src="./analytics.js"></script>
 </body>
 </html>
