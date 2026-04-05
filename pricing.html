@@ -290,16 +290,17 @@
     <section class="hero" id="overview">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <div class="pill">Pricing &amp; pilot packages · scope-based</div>
+          <div class="pill">Pricing &amp; pilot packages · default path = request pilot</div>
           <h1>Pricing and rollout paths for live payment workflows.</h1>
-          <p class="lead">PayeeProof is a decision layer for transfer safety, so commercial fit depends on workflow scope, review depth, supported networks, and how operationally strict the team needs the decision record to be. The cleanest path is usually a narrow pilot first, then expansion only if the workflow proves useful.</p>
-          <p class="note" style="margin-top:14px;">Pilot from <strong>$399/month</strong>. Optional implementation starts from <strong>$2,500</strong> only when custom rollout work is actually needed.</p>
+          <p class="lead">PayeeProof is a decision layer for transfer safety, so commercial fit depends on workflow scope, review depth, supported networks, and how operationally strict the team needs the decision record to be. The default path is a narrow pilot first, then expansion only if the workflow proves useful.</p>
+          <p class="note" style="margin-top:14px;">Pilot from <strong>$399/month</strong>. Optional implementation starts from <strong>$2,500</strong> only when custom rollout work is actually needed. The normal starting path is <strong>Request pilot</strong>; crypto checkout is a secondary self-serve path for teams that already know the starter scope fits.</p>
           <div class="btn-row" style="margin-top:22px;">
             <a class="btn btn-primary" href="./index.html#contact">Request pilot</a>
             <button class="btn btn-secondary js-nowpayments-checkout" type="button" data-sku="pilot_399">Pay pilot with crypto</button>
             <a class="btn btn-ghost" href="./pilot-flow.html">See pilot flow</a>
           </div>
-          <div class="checkout-status" id="checkoutStatusHero" aria-live="polite"></div>
+                    <div class="checkout-status" id="checkoutStatusHero" aria-live="polite"></div>
+          <p class="note" style="margin-top:12px;">Use <strong>Request pilot</strong> if you want a fit review first. Use <strong>Pay pilot with crypto</strong> only if the fixed starter scope is already clear and you want to buy the $399 pilot without an extra email round-trip.</p>
           <div class="tag-row">
             <span class="tag">Pilot evaluation</span>
             <span class="tag">Custom integration</span>
@@ -323,6 +324,35 @@
             </div>
           </div>
         </aside>
+      </div>
+    </section>
+
+    <section class="section soft" id="path">
+      <div class="container">
+        <div class="eyebrow">Choose the path</div>
+        <h2>One path is default. One path is self-serve.</h2>
+        <div class="grid two-col" style="margin-top:34px;">
+          <article class="card">
+            <h3>Default path — Request pilot</h3>
+            <p>Best for most buyers. Use this when you want fit review, scope confirmation, and a clean decision on whether the starter pilot is the right entry point.</p>
+            <ul class="boundary-list">
+              <li>Best for payout approvals and exchange-like deposit review</li>
+              <li>Lets us confirm workflow, networks, assets, and decision logic first</li>
+              <li>Keeps the commercial path tight before money changes hands</li>
+            </ul>
+            <div class="btn-row" style="margin-top:18px;"><a class="btn btn-primary" href="./index.html#contact">Request pilot</a></div>
+          </article>
+          <article class="card">
+            <h3>Secondary path — Pay pilot with crypto</h3>
+            <p>Best for teams that already know the fixed $399 starter scope is correct and want to move straight into the pilot purchase flow.</p>
+            <ul class="boundary-list">
+              <li>Use only for the standard starter pilot SKU</li>
+              <li>Not the best path for broad rollout, custom policy work, or uncertain fit</li>
+              <li>Good when the buyer already understands the narrow first scope</li>
+            </ul>
+            <div class="btn-row" style="margin-top:18px;"><button class="btn btn-secondary js-nowpayments-checkout" type="button" data-sku="pilot_399">Pay pilot with crypto</button></div>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -363,8 +393,8 @@
             </button>
             <div class="pay-note">Secure hosted crypto checkout via NOWPayments. Fixed starter SKU: <strong>$399 / month</strong>.</div>
             <div class="btn-row" style="margin-top:18px;">
-              <a class="btn btn-secondary" href="./index.html#contact">Request pilot</a>
-              <button class="btn btn-primary js-nowpayments-checkout" type="button" data-sku="pilot_399">Pay with crypto</button>
+              <a class="btn btn-primary" href="./index.html#contact">Request pilot</a>
+              <button class="btn btn-secondary js-nowpayments-checkout" type="button" data-sku="pilot_399">Pay with crypto</button>
             </div>
             <div class="checkout-status" id="checkoutStatusPackages" aria-live="polite"></div>
           </article>
