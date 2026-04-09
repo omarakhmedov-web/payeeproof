@@ -169,7 +169,7 @@
         <div class="row">
           <div class="field">
             <label for="chain">Chain</label>
-            <input id="chain" value="ethereum" />
+            <select id="chain"></select>
           </div>
           <div class="field">
             <label for="currency">Currency</label>
@@ -289,9 +289,10 @@
     </section>
   </div>
 
+  <script src="monerium-chains.js"></script>
   <script>
     const $ = (id) => document.getElementById(id);
-    const storageKey = 'pp_monerium_sign_submit_v05';
+    const storageKey = 'pp_monerium_sign_submit_v06';
     const state = {
       walletAddress: '',
       chainIdHex: '',
@@ -311,6 +312,37 @@
       copyMessageBtn: 'Copy message',
       copySummaryBtn: 'Copy summary',
     };
+
+    const MONERIUM_CHAIN_CONFIG = window.PAYEEPROOF_MONERIUM_CHAINS || {};
+
+    function chainMeta(value) {
+      const key = String(value || '').trim().toLowerCase();
+      return MONERIUM_CHAIN_CONFIG[key] || null;
+    }
+
+    function populateChainOptions() {
+      const select = $('chain');
+      if (!select) return;
+      const current = String(select.value || 'ethereum').trim().toLowerCase() || 'ethereum';
+      const entries = Object.entries(MONERIUM_CHAIN_CONFIG);
+      select.innerHTML = entries.map(([key, meta]) => `<option value="${key}">${meta.label || key}</option>`).join('');
+      select.value = MONERIUM_CHAIN_CONFIG[current] ? current : 'ethereum';
+    }
+
+    function syncChainUi() {
+      const meta = chainMeta($('chain').value);
+      const expectedHex = String((meta && meta.walletChainIdHex) || '').toLowerCase();
+      const expectedLabel = (meta && meta.walletLabel) || 'Unknown';
+      if (state.chainIdHex) {
+        const connectedHex = String(state.chainIdHex || '').toLowerCase();
+        const matches = !!expectedHex && connectedHex === expectedHex;
+        $('networkPill').textContent = `Wallet network: ${expectedLabel} (${state.chainIdHex || 'unknown'})`;
+        $('networkPill').className = matches ? 'pill ok' : 'pill warn';
+        return;
+      }
+      $('networkPill').textContent = `Expected wallet network: ${expectedLabel}`;
+      $('networkPill').className = expectedHex ? 'pill warn' : 'pill';
+    }
 
     function setOutput(value) {
       $('output').textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
@@ -598,8 +630,7 @@
       state.chainIdHex = chainIdHex || '';
       $('walletPill').textContent = `Wallet: ${address}`;
       $('walletPill').className = 'pill ok';
-      $('networkPill').textContent = `Network: ${chainIdHex || 'unknown'}`;
-      $('networkPill').className = chainIdHex === '0xaa36a7' ? 'pill ok' : 'pill warn';
+      syncChainUi();
       $('statusLine').textContent = 'Wallet connected.';
       setStep('connect', 'done', 'connected');
       return { address, chainIdHex };
@@ -786,14 +817,20 @@
     });
 
     ['apiBase','apiKey','connectionId','profileId','chain','currency','amount','sourceAddress','recipientAddress','recipientIban','recipientName','recipientCountry','memo'].forEach((id) => {
-      $(id).addEventListener('change', saveFormState);
+      const saveEvent = id === 'chain' ? 'change' : 'input';
+      $(id).addEventListener(saveEvent, () => {
+        if (id === 'chain') syncChainUi();
+        saveFormState();
+      });
       $(id).addEventListener('blur', saveFormState);
     });
 
+    populateChainOptions();
     resetStepStates();
     $('messageBox').value = '';
     clearSummary();
     loadFormState();
+    syncChainUi();
     if (state.orderId) $('statusLine').textContent = 'Saved order id restored. You can refresh status.';
   </script>
 </body>
