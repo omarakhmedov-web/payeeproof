@@ -99,15 +99,72 @@
       cursor: pointer;
       font: inherit;
       font-weight: 600;
+      transition: transform .08s ease, box-shadow .12s ease, opacity .12s ease, background .12s ease;
+      min-width: 146px;
+      position: relative;
+    }
+    button:hover:not(:disabled) {
+      box-shadow: 0 0 0 1px rgba(140,180,255,.18), 0 8px 24px rgba(0,0,0,.22);
+    }
+    button:active:not(:disabled) {
+      transform: translateY(1px) scale(.99);
     }
     button.primary {
       background: var(--accent);
       color: #0b1220;
       border-color: transparent;
     }
+    button.busy {
+      opacity: 1;
+      cursor: wait;
+      box-shadow: 0 0 0 1px rgba(140,180,255,.22), 0 10px 28px rgba(20,32,58,.28);
+    }
+    button.busy::after {
+      content: '';
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,.35);
+      border-top-color: currentColor;
+      display: inline-block;
+      vertical-align: -2px;
+      margin-left: 9px;
+      animation: spin .85s linear infinite;
+    }
     button:disabled {
       opacity: .55;
       cursor: not-allowed;
+    }
+    .progress {
+      margin-top: 14px;
+      display: grid;
+      gap: 8px;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      font-size: 13px;
+    }
+    .step small { color: var(--muted); font-size: 12px; }
+    .step .state { font-weight: 700; letter-spacing: .01em; }
+    .state.idle { color: var(--muted); }
+    .state.working { color: var(--warn); }
+    .state.done { color: var(--good); }
+    .state.fail { color: var(--bad); }
+    .flash {
+      animation: flashGlow .55s ease;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes flashGlow {
+      0% { box-shadow: 0 0 0 0 rgba(140,180,255,.0); }
+      30% { box-shadow: 0 0 0 3px rgba(140,180,255,.14); }
+      100% { box-shadow: 0 0 0 0 rgba(140,180,255,.0); }
     }
     .pill {
       display: inline-flex;
@@ -255,6 +312,13 @@
           <button id="copyMessageBtn">Copy message</button>
         </div>
 
+        <div class="progress">
+          <div class="step" id="connectStep"><span>1. Wallet connect <small>click Connect wallet</small></span><span class="state idle" id="connectStepState">idle</span></div>
+          <div class="step" id="draftStep"><span>2. Draft check <small>must return SAFE</small></span><span class="state idle" id="draftStepState">idle</span></div>
+          <div class="step" id="signStep"><span>3. Signature <small>MetaMask popup</small></span><span class="state idle" id="signStepState">idle</span></div>
+          <div class="step" id="submitStep"><span>4. Monerium submit <small>final backend call</small></span><span class="state idle" id="submitStepState">idle</span></div>
+        </div>
+
         <div class="hint">
           Open this page from a PayeeProof site page or another allowed browser origin. The submit path first re-checks <code>order-draft</code>, then signs the Monerium off-ramp message, then posts to <code>/api/integrations/monerium/place-order</code>.
         </div>
@@ -298,6 +362,13 @@
       submitResponse: null,
     };
 
+    const buttonLabels = {
+      connectBtn: 'Connect wallet',
+      draftBtn: 'Check draft',
+      fullBtn: 'Sign & submit',
+      copyMessageBtn: 'Copy message',
+    };
+
     const setText = (id, value, className = '') => {
       const el = $(id);
       el.textContent = value;
@@ -307,6 +378,44 @@
     const setOutput = (value) => {
       $('output').textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
     };
+
+    function flash(id) {
+      const el = $(id);
+      el.classList.remove('flash');
+      void el.offsetWidth;
+      el.classList.add('flash');
+    }
+
+    function setBusy(buttonId, busy, label) {
+      const btn = $(buttonId);
+      if (!btn) return;
+      btn.disabled = !!busy;
+      btn.classList.toggle('busy', !!busy);
+      btn.textContent = busy ? (label || 'Working...') : (buttonLabels[buttonId] || btn.textContent);
+      if (busy) flash(buttonId);
+    }
+
+    function resetStepStates() {
+      ['connectStepState','draftStepState','signStepState','submitStepState'].forEach((id) => {
+        $(id).textContent = 'idle';
+        $(id).className = 'state idle';
+      });
+    }
+
+    function setStep(step, state, text) {
+      const id = `${step}StepState`;
+      const el = $(id);
+      if (!el) return;
+      el.textContent = text || state;
+      el.className = `state ${state}`;
+      flash(`${step}Step`);
+    }
+
+    function lockMainButtons(lock) {
+      ['connectBtn','draftBtn','fullBtn','copyMessageBtn'].forEach((id) => {
+        if (!$(id).classList.contains('busy')) $(id).disabled = !!lock;
+      });
+    }
 
     const apiBase = () => $('apiBase').value.trim().replace(/\/$/, '');
     const apiKey = () => $('apiKey').value.trim();
@@ -335,6 +444,8 @@
     }
 
     function buildMoneriumOfframpMessage() {
+      const hinted = (((state.draft || {}).signing || {}).message_hint || '').trim();
+      if (hinted) return hinted;
       const amount = formatAmountForMessage($('amount').value);
       const currency = displayCurrency($('currency').value);
       const receiver = normalizeIban($('recipientIban').value);
@@ -388,6 +499,7 @@
     }
 
     async function connectWallet() {
+      setStep('connect', 'working', 'waiting wallet');
       if (!window.ethereum) throw new Error('No injected wallet found. Open this page in the wallet browser or a browser with MetaMask.');
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       const address = Array.isArray(accounts) && accounts[0] ? accounts[0] : '';
@@ -400,11 +512,13 @@
       $('networkPill').textContent = `Network: ${chainIdHex || 'unknown'}`;
       $('networkPill').className = chainIdHex === '0xaa36a7' ? 'pill ok' : 'pill warn';
       $('statusLine').textContent = 'Wallet connected.';
+      setStep('connect', 'done', 'connected');
       return { address, chainIdHex };
     }
 
     async function checkDraft() {
       $('statusLine').textContent = 'Checking draft...';
+      setStep('draft', 'working', 'checking');
       const draftPayload = buildBasePayload();
       const draft = await apiPost('/api/integrations/monerium/order-draft', draftPayload);
       state.draft = draft;
@@ -420,8 +534,15 @@
       if (draft && draft.source && draft.source.profile_id && !$('profileId').value.trim()) {
         $('profileId').value = draft.source.profile_id;
       }
+      const messageHint = ((((draft || {}).signing || {}).message_hint) || '').trim();
+      if (messageHint) {
+        $('messageBox').value = messageHint;
+        state.message = messageHint;
+        $('messageStatus').textContent = 'ready from draft';
+      }
       setOutput(draft);
       $('statusLine').textContent = verdict === 'SAFE' ? 'Draft is SAFE.' : 'Draft is not SAFE.';
+      setStep('draft', verdict === 'SAFE' ? 'done' : 'fail', verdict === 'SAFE' ? 'SAFE' : verdict || 'blocked');
       return draft;
     }
 
@@ -435,9 +556,11 @@
     }
 
     async function signMessage() {
+      setStep('sign', 'working', 'open wallet');
       if (!window.ethereum) throw new Error('Wallet provider not found.');
       if (!state.walletAddress) await connectWallet();
-      const message = buildMoneriumOfframpMessage();
+      const message = ($('messageBox').value || buildMoneriumOfframpMessage()).trim();
+      if (!message) throw new Error('Message to sign is empty.');
       const signature = await window.ethereum.request({
         method: 'personal_sign',
         params: [message, state.walletAddress],
@@ -448,10 +571,12 @@
       $('messageStatus').textContent = 'generated';
       $('signatureStatus').textContent = signature ? 'ready' : 'missing';
       $('statusLine').textContent = 'Message signed.';
+      setStep('sign', signature ? 'done' : 'fail', signature ? 'signed' : 'missing');
       return { message, signature };
     }
 
     async function submitPlaceOrder() {
+      setStep('submit', 'working', 'sending');
       if (!state.signature || !state.message) throw new Error('Message/signature missing.');
       const payload = {
         ...buildBasePayload(),
@@ -464,16 +589,20 @@
       $('submitStatus').className = response && response.submitted ? 'ok' : 'warn';
       setOutput(response);
       $('statusLine').textContent = response && response.submitted ? 'Order submitted.' : 'Submit returned a non-final response.';
+      setStep('submit', response && response.submitted ? 'done' : 'fail', response && response.submitted ? 'submitted' : 'unknown');
       return response;
     }
 
     async function runFullFlow() {
       try {
         $('statusLine').textContent = 'Running full flow...';
+        resetStepStates();
         state.signature = '';
         state.message = '';
         state.submitResponse = null;
         $('submitStatus').textContent = 'not sent';
+        $('messageStatus').textContent = 'not generated';
+        $('signatureStatus').textContent = 'not generated';
         await connectWallet();
         const draft = await checkDraft();
         const verdict = ((((draft || {}).gate) || {}).verdict || '').toUpperCase();
@@ -484,33 +613,47 @@
         await signMessage();
         await submitPlaceOrder();
       } catch (err) {
-        $('statusLine').textContent = err && err.message ? err.message : 'Unexpected error.';
-        setOutput({ ok: false, error: String(err && err.message ? err.message : err) });
+        const msg = err && err.message ? err.message : 'Unexpected error.';
+        $('statusLine').textContent = msg;
+        if ($('connectStepState').textContent === 'waiting wallet') setStep('connect', 'fail', 'failed');
+        else if ($('draftStepState').textContent === 'checking') setStep('draft', 'fail', 'failed');
+        else if ($('signStepState').textContent === 'open wallet') setStep('sign', 'fail', 'failed');
+        else if ($('submitStepState').textContent === 'sending') setStep('submit', 'fail', 'failed');
+        setOutput({ ok: false, error: String(msg) });
         throw err;
       }
     }
 
     $('connectBtn').addEventListener('click', async () => {
-      try { await connectWallet(); } catch (err) { setOutput({ ok: false, error: String(err.message || err) }); $('statusLine').textContent = String(err.message || err); }
+      setBusy('connectBtn', true, 'Connecting...');
+      lockMainButtons(true);
+      try { await connectWallet(); } catch (err) { setStep('connect', 'fail', 'failed'); setOutput({ ok: false, error: String(err.message || err) }); $('statusLine').textContent = String(err.message || err); } finally { setBusy('connectBtn', false); lockMainButtons(false); }
     });
     $('draftBtn').addEventListener('click', async () => {
-      try { await checkDraft(); } catch (err) { setOutput({ ok: false, error: String(err.message || err) }); $('statusLine').textContent = String(err.message || err); }
+      setBusy('draftBtn', true, 'Checking...');
+      lockMainButtons(true);
+      try { await checkDraft(); } catch (err) { setStep('draft', 'fail', 'failed'); setOutput({ ok: false, error: String(err.message || err) }); $('statusLine').textContent = String(err.message || err); } finally { setBusy('draftBtn', false); lockMainButtons(false); }
     });
     $('fullBtn').addEventListener('click', async () => {
-      $('fullBtn').disabled = true;
-      try { await runFullFlow(); } catch (_) {} finally { $('fullBtn').disabled = false; }
+      setBusy('fullBtn', true, 'Working...');
+      lockMainButtons(true);
+      try { await runFullFlow(); } catch (_) {} finally { setBusy('fullBtn', false); lockMainButtons(false); }
     });
     $('copyMessageBtn').addEventListener('click', async () => {
+      setBusy('copyMessageBtn', true, 'Copying...');
       try {
-        const message = $('messageBox').value || buildMoneriumOfframpMessage();
+        const message = ($('messageBox').value || buildMoneriumOfframpMessage()).trim();
         $('messageBox').value = message;
         await navigator.clipboard.writeText(message);
         $('statusLine').textContent = 'Message copied.';
       } catch (err) {
         $('statusLine').textContent = String(err.message || err);
+      } finally {
+        setBusy('copyMessageBtn', false);
       }
     });
 
+    resetStepStates();
     $('messageBox').value = '';
   </script>
 </body>
