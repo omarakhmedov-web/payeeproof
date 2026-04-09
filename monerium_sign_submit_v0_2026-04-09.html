@@ -352,13 +352,28 @@
       return effectiveLabel;
     }
 
+    function chainMetaByHex(chainIdHex) {
+      const hex = String(chainIdHex || '').trim().toLowerCase();
+      if (!hex) return null;
+      const entries = Object.entries(MONERIUM_CHAIN_CONFIG);
+      for (const [, meta] of entries) {
+        if (String((meta && meta.walletChainIdHex) || '').trim().toLowerCase() === hex) {
+          return meta || null;
+        }
+      }
+      return null;
+    }
+
     function currentExpectedNetworkLabel() {
       const requestedKey = String($('chain').value || '').trim().toLowerCase();
+      const requestedMeta = chainMeta(requestedKey);
+      if (requestedMeta && requestedMeta.sandboxPartnerKey) {
+        return displayChainLabel(requestedMeta.sandboxPartnerKey, requestedKey);
+      }
       const effectiveKey = resolveEffectiveChainKey(requestedKey);
       const effectiveMeta = chainMeta(effectiveKey);
       const walletLabel = (effectiveMeta && effectiveMeta.walletLabel) || 'Unknown';
       if (requestedKey && effectiveKey && requestedKey !== effectiveKey) {
-        const requestedMeta = chainMeta(requestedKey);
         const requestedLabel = (requestedMeta && requestedMeta.label) || requestedKey;
         return `${walletLabel} (sandbox for ${requestedLabel})`;
       }
@@ -376,13 +391,19 @@
 
     function syncChainUi() {
       const selectedKey = String($('chain').value || '').trim().toLowerCase();
-      const meta = effectiveChainMeta(selectedKey);
-      const expectedHex = String((meta && meta.walletChainIdHex) || '').toLowerCase();
+      const selectedMeta = chainMeta(selectedKey);
+      const effectiveMeta = effectiveChainMeta(selectedKey);
+      const expectedMeta = (selectedMeta && selectedMeta.sandboxPartnerKey && chainMeta(selectedMeta.sandboxPartnerKey)) || effectiveMeta;
+      const expectedHex = String((expectedMeta && expectedMeta.walletChainIdHex) || '').toLowerCase();
       const expectedLabel = currentExpectedNetworkLabel();
       if (state.chainIdHex) {
         const connectedHex = String(state.chainIdHex || '').toLowerCase();
+        const connectedMeta = chainMetaByHex(connectedHex);
+        const connectedLabel = connectedMeta
+          ? displayChainLabel((connectedMeta.apiChain || connectedMeta.label || '').toLowerCase(), selectedKey)
+          : expectedLabel;
         const matches = !!expectedHex && connectedHex === expectedHex;
-        $('networkPill').textContent = `Wallet network: ${expectedLabel} (${state.chainIdHex || 'unknown'})`;
+        $('networkPill').textContent = `Wallet network: ${connectedLabel} (${state.chainIdHex || 'unknown'})`;
         $('networkPill').className = matches ? 'pill ok' : 'pill warn';
         return;
       }
