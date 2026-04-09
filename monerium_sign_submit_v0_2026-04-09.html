@@ -493,7 +493,12 @@
       try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
       if (!res.ok) {
         const message = (data && (data.error || data.message || data.code)) || `HTTP ${res.status}`;
-        throw new Error(`${message}`);
+        const err = new Error(`${message}`);
+        err.httpStatus = res.status;
+        err.path = path;
+        err.payload = data || {};
+        err.requestPayload = payload || {};
+        throw err;
       }
       return data;
     }
@@ -619,7 +624,14 @@
         else if ($('draftStepState').textContent === 'checking') setStep('draft', 'fail', 'failed');
         else if ($('signStepState').textContent === 'open wallet') setStep('sign', 'fail', 'failed');
         else if ($('submitStepState').textContent === 'sending') setStep('submit', 'fail', 'failed');
-        setOutput({ ok: false, error: String(msg) });
+        setOutput({
+          ok: false,
+          error: String(msg),
+          http_status: err && err.httpStatus ? err.httpStatus : undefined,
+          path: err && err.path ? err.path : undefined,
+          response: err && err.payload ? err.payload : undefined,
+          request: err && err.requestPayload ? err.requestPayload : undefined,
+        });
         throw err;
       }
     }
@@ -627,12 +639,12 @@
     $('connectBtn').addEventListener('click', async () => {
       setBusy('connectBtn', true, 'Connecting...');
       lockMainButtons(true);
-      try { await connectWallet(); } catch (err) { setStep('connect', 'fail', 'failed'); setOutput({ ok: false, error: String(err.message || err) }); $('statusLine').textContent = String(err.message || err); } finally { setBusy('connectBtn', false); lockMainButtons(false); }
+      try { await connectWallet(); } catch (err) { setStep('connect', 'fail', 'failed'); setOutput({ ok: false, error: String(err.message || err), http_status: err && err.httpStatus ? err.httpStatus : undefined, path: err && err.path ? err.path : undefined, response: err && err.payload ? err.payload : undefined, request: err && err.requestPayload ? err.requestPayload : undefined }); $('statusLine').textContent = String(err.message || err); } finally { setBusy('connectBtn', false); lockMainButtons(false); }
     });
     $('draftBtn').addEventListener('click', async () => {
       setBusy('draftBtn', true, 'Checking...');
       lockMainButtons(true);
-      try { await checkDraft(); } catch (err) { setStep('draft', 'fail', 'failed'); setOutput({ ok: false, error: String(err.message || err) }); $('statusLine').textContent = String(err.message || err); } finally { setBusy('draftBtn', false); lockMainButtons(false); }
+      try { await checkDraft(); } catch (err) { setStep('draft', 'fail', 'failed'); setOutput({ ok: false, error: String(err.message || err), http_status: err && err.httpStatus ? err.httpStatus : undefined, path: err && err.path ? err.path : undefined, response: err && err.payload ? err.payload : undefined, request: err && err.requestPayload ? err.requestPayload : undefined }); $('statusLine').textContent = String(err.message || err); } finally { setBusy('draftBtn', false); lockMainButtons(false); }
     });
     $('fullBtn').addEventListener('click', async () => {
       setBusy('fullBtn', true, 'Working...');
