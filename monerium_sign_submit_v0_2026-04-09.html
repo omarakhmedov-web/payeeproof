@@ -443,9 +443,23 @@
       return new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
     }
 
+    function normalizeMoneriumMessageTimestamp(message) {
+      const text = String(message || '').trim();
+      if (!text) return '';
+      const marker = ' at ';
+      const idx = text.lastIndexOf(marker);
+      if (idx === -1) return text;
+      const prefix = text.slice(0, idx + marker.length);
+      const rawTs = text.slice(idx + marker.length).trim();
+      if (!rawTs) return text;
+      const dt = new Date(rawTs);
+      if (Number.isNaN(dt.getTime())) return text;
+      return `${prefix}${dt.toISOString().replace(/\.\d{3}Z$/, 'Z')}`;
+    }
+
     function buildMoneriumOfframpMessage() {
       const hinted = (((state.draft || {}).signing || {}).message_hint || '').trim();
-      if (hinted) return hinted;
+      if (hinted) return normalizeMoneriumMessageTimestamp(hinted);
       const amount = formatAmountForMessage($('amount').value);
       const currency = displayCurrency($('currency').value);
       const receiver = normalizeIban($('recipientIban').value);
@@ -541,9 +555,10 @@
       }
       const messageHint = ((((draft || {}).signing || {}).message_hint) || '').trim();
       if (messageHint) {
-        $('messageBox').value = messageHint;
-        state.message = messageHint;
-        $('messageStatus').textContent = 'ready from draft';
+        const normalizedHint = normalizeMoneriumMessageTimestamp(messageHint);
+        $('messageBox').value = normalizedHint;
+        state.message = normalizedHint;
+        $('messageStatus').textContent = normalizedHint === messageHint ? 'ready from draft' : 'normalized to RFC3339';
       }
       setOutput(draft);
       $('statusLine').textContent = verdict === 'SAFE' ? 'Draft is SAFE.' : 'Draft is not SAFE.';
