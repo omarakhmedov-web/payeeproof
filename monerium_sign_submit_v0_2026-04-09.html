@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PayeeProof × Monerium — Sign & Submit</title>
+  <title>PayeeProof × Monerium — Sign, Submit & Track</title>
   <style>
     :root {
       color-scheme: dark;
@@ -25,25 +25,11 @@
       background: linear-gradient(180deg, #0b0d10 0%, #11151c 100%);
       color: var(--text);
     }
-    .wrap {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 24px;
-    }
-    h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
-      line-height: 1.15;
-    }
-    .sub {
-      color: var(--muted);
-      margin-bottom: 20px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap: 18px;
-    }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 24px; }
+    h1 { margin: 0 0 8px; font-size: 30px; line-height: 1.12; }
+    h2 { margin: 0 0 14px; font-size: 18px; }
+    .sub { color: var(--muted); margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 18px; }
     .card {
       background: rgba(18, 22, 28, 0.94);
       border: 1px solid var(--line);
@@ -51,29 +37,10 @@
       padding: 18px;
       box-shadow: 0 8px 30px rgba(0,0,0,.22);
     }
-    .card h2 {
-      margin: 0 0 14px;
-      font-size: 18px;
-    }
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 12px;
-    }
-    label {
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: .02em;
-      text-transform: uppercase;
-    }
-    input, textarea, select {
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    label { color: var(--muted); font-size: 12px; letter-spacing: .02em; text-transform: uppercase; }
+    input, textarea {
       width: 100%;
       border: 1px solid var(--line);
       background: var(--soft);
@@ -84,12 +51,7 @@
       font: inherit;
     }
     textarea { min-height: 92px; resize: vertical; }
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 8px;
-    }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
     button {
       border: 1px solid var(--line);
       background: var(--soft);
@@ -103,53 +65,26 @@
       min-width: 146px;
       position: relative;
     }
-    button:hover:not(:disabled) {
-      box-shadow: 0 0 0 1px rgba(140,180,255,.18), 0 8px 24px rgba(0,0,0,.22);
-    }
-    button:active:not(:disabled) {
-      transform: translateY(1px) scale(.99);
-    }
-    button.primary {
-      background: var(--accent);
-      color: #0b1220;
-      border-color: transparent;
-    }
+    button:hover:not(:disabled) { box-shadow: 0 0 0 1px rgba(140,180,255,.18), 0 8px 24px rgba(0,0,0,.22); }
+    button:active:not(:disabled) { transform: translateY(1px) scale(.99); }
+    button.primary { background: var(--accent); color: #0b1220; border-color: transparent; }
+    button.success { background: rgba(87, 211, 140, .14); color: var(--good); }
     button.busy {
-      opacity: 1;
-      cursor: wait;
+      opacity: 1; cursor: wait;
       box-shadow: 0 0 0 1px rgba(140,180,255,.22), 0 10px 28px rgba(20,32,58,.28);
     }
     button.busy::after {
       content: '';
-      width: 14px;
-      height: 14px;
-      border-radius: 999px;
-      border: 2px solid rgba(255,255,255,.35);
-      border-top-color: currentColor;
-      display: inline-block;
-      vertical-align: -2px;
-      margin-left: 9px;
+      width: 14px; height: 14px; border-radius: 999px;
+      border: 2px solid rgba(255,255,255,.35); border-top-color: currentColor;
+      display: inline-block; vertical-align: -2px; margin-left: 9px;
       animation: spin .85s linear infinite;
     }
-    button:disabled {
-      opacity: .55;
-      cursor: not-allowed;
-    }
-    .progress {
-      margin-top: 14px;
-      display: grid;
-      gap: 8px;
-    }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    .progress { margin-top: 14px; display: grid; gap: 8px; }
     .step {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: var(--soft);
-      border: 1px solid var(--line);
-      font-size: 13px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 10px 12px; border-radius: 12px; background: var(--soft); border: 1px solid var(--line); font-size: 13px;
     }
     .step small { color: var(--muted); font-size: 12px; }
     .step .state { font-weight: 700; letter-spacing: .01em; }
@@ -157,9 +92,7 @@
     .state.working { color: var(--warn); }
     .state.done { color: var(--good); }
     .state.fail { color: var(--bad); }
-    .flash {
-      animation: flashGlow .55s ease;
-    }
+    .flash { animation: flashGlow .55s ease; }
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes flashGlow {
       0% { box-shadow: 0 0 0 0 rgba(140,180,255,.0); }
@@ -167,69 +100,46 @@
       100% { box-shadow: 0 0 0 0 rgba(140,180,255,.0); }
     }
     .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: 999px;
-      padding: 8px 12px;
-      font-size: 13px;
-      background: var(--soft);
-      border: 1px solid var(--line);
-      margin-right: 8px;
-      margin-bottom: 8px;
+      display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 8px 12px;
+      font-size: 13px; background: var(--soft); border: 1px solid var(--line); margin-right: 8px; margin-bottom: 8px;
     }
     .ok { color: var(--good); }
     .warn { color: var(--warn); }
     .bad { color: var(--bad); }
-    pre {
-      margin: 0;
-      background: #0d1117;
-      color: #dce6f4;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 14px;
-      overflow: auto;
-      font-size: 12px;
-      line-height: 1.45;
-      min-height: 200px;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    .hint {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
-      margin-top: 10px;
-    }
-    .mini {
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .kvs {
-      display: grid;
-      gap: 10px;
-      margin-top: 12px;
-    }
+    .hint { color: var(--muted); font-size: 13px; line-height: 1.45; margin-top: 10px; }
+    .mini { font-size: 12px; color: var(--muted); }
+    .kvs { display: grid; gap: 10px; margin-top: 12px; }
     .kv {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: var(--soft);
-      border: 1px solid var(--line);
+      display: flex; justify-content: space-between; gap: 10px; padding: 10px 12px;
+      border-radius: 12px; background: var(--soft); border: 1px solid var(--line);
     }
     .kv span:first-child { color: var(--muted); }
+    .summary-banner {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); background: var(--soft); margin-bottom: 12px;
+    }
+    .summary-banner.good { border-color: rgba(87, 211, 140, .35); background: rgba(87, 211, 140, .10); }
+    .summary-banner.warn { border-color: rgba(245, 196, 81, .35); background: rgba(245, 196, 81, .10); }
+    .summary-banner.bad { border-color: rgba(255, 107, 107, .35); background: rgba(255, 107, 107, .10); }
+    .summary-title { font-size: 16px; font-weight: 700; }
+    .summary-sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    pre {
+      margin: 0; background: #0d1117; color: #dce6f4; border: 1px solid var(--line);
+      border-radius: 14px; padding: 14px; overflow: auto; font-size: 12px; line-height: 1.45; min-height: 220px; white-space: pre-wrap; word-break: break-word;
+    }
     @media (max-width: 900px) {
-      .grid, .row { grid-template-columns: 1fr; }
+      .grid, .row, .summary-grid { grid-template-columns: 1fr; }
       .wrap { padding: 16px; }
+      .summary-banner { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>PayeeProof × Monerium — Sign & Submit</h1>
-    <div class="sub">One-page submit tool for the SAFE Monerium draft flow.</div>
+    <h1>PayeeProof × Monerium — Sign, Submit & Track</h1>
+    <div class="sub">One-page demo flow: SAFE draft check → wallet signature → Monerium submit → status refresh → final summary.</div>
 
     <div class="grid">
       <section class="card">
@@ -309,18 +219,20 @@
           <button id="connectBtn">Connect wallet</button>
           <button id="draftBtn">Check draft</button>
           <button id="fullBtn" class="primary">Sign & submit</button>
+          <button id="refreshBtn" class="success" disabled>Refresh status</button>
           <button id="copyMessageBtn">Copy message</button>
+          <button id="copySummaryBtn">Copy summary</button>
         </div>
 
         <div class="progress">
           <div class="step" id="connectStep"><span>1. Wallet connect <small>click Connect wallet</small></span><span class="state idle" id="connectStepState">idle</span></div>
           <div class="step" id="draftStep"><span>2. Draft check <small>must return SAFE</small></span><span class="state idle" id="draftStepState">idle</span></div>
           <div class="step" id="signStep"><span>3. Signature <small>MetaMask popup</small></span><span class="state idle" id="signStepState">idle</span></div>
-          <div class="step" id="submitStep"><span>4. Monerium submit <small>final backend call</small></span><span class="state idle" id="submitStepState">idle</span></div>
+          <div class="step" id="submitStep"><span>4. Submit + track <small>Monerium order and refresh</small></span><span class="state idle" id="submitStepState">idle</span></div>
         </div>
 
         <div class="hint">
-          Open this page from a PayeeProof site page or another allowed browser origin. The submit path first re-checks <code>order-draft</code>, then signs the Monerium off-ramp message, then posts to <code>/api/integrations/monerium/place-order</code>.
+          Submit re-checks <code>order-draft</code>, signs the Monerium message, posts to <code>/api/integrations/monerium/place-order</code>, then you can refresh via <code>/api/integrations/monerium/order-status/&lt;order_id&gt;</code>.
         </div>
       </section>
 
@@ -335,24 +247,51 @@
           <div class="kv"><span>Message</span><span id="messageStatus">not generated</span></div>
           <div class="kv"><span>Signature</span><span id="signatureStatus">not generated</span></div>
           <div class="kv"><span>Submit</span><span id="submitStatus">not sent</span></div>
+          <div class="kv"><span>Order ID</span><span id="orderIdStatus">—</span></div>
         </div>
         <div class="hint mini" id="statusLine">Ready.</div>
       </section>
     </div>
 
     <section class="card" style="margin-top:18px;">
-      <h2>3) Message to sign</h2>
+      <h2>3) Order summary</h2>
+      <div class="summary-banner warn" id="summaryBanner">
+        <div>
+          <div class="summary-title" id="summaryTitle">No order yet</div>
+          <div class="summary-sub" id="summarySub">Run the flow first, then refresh status.</div>
+        </div>
+        <div class="mono" id="summaryPhase">phase: idle</div>
+      </div>
+      <div class="summary-grid">
+        <div class="kvs">
+          <div class="kv"><span>Order ID</span><span class="mono" id="sumOrderId">—</span></div>
+          <div class="kv"><span>State</span><span id="sumState">—</span></div>
+          <div class="kv"><span>Amount</span><span id="sumAmount">—</span></div>
+          <div class="kv"><span>IBAN</span><span class="mono" id="sumIban">—</span></div>
+        </div>
+        <div class="kvs">
+          <div class="kv"><span>Wallet</span><span class="mono" id="sumWallet">—</span></div>
+          <div class="kv"><span>Recipient</span><span id="sumRecipient">—</span></div>
+          <div class="kv"><span>Placed at</span><span id="sumPlacedAt">—</span></div>
+          <div class="kv"><span>Memo</span><span id="sumMemo">—</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:18px;">
+      <h2>4) Message to sign</h2>
       <textarea id="messageBox"></textarea>
     </section>
 
     <section class="card" style="margin-top:18px;">
-      <h2>4) Raw output</h2>
+      <h2>5) Raw output</h2>
       <pre id="output">No output yet.</pre>
     </section>
   </div>
 
   <script>
     const $ = (id) => document.getElementById(id);
+    const storageKey = 'pp_monerium_sign_submit_v05';
     const state = {
       walletAddress: '',
       chainIdHex: '',
@@ -360,27 +299,26 @@
       message: '',
       signature: '',
       submitResponse: null,
+      orderId: '',
+      orderSummary: null,
     };
 
     const buttonLabels = {
       connectBtn: 'Connect wallet',
       draftBtn: 'Check draft',
       fullBtn: 'Sign & submit',
+      refreshBtn: 'Refresh status',
       copyMessageBtn: 'Copy message',
+      copySummaryBtn: 'Copy summary',
     };
 
-    const setText = (id, value, className = '') => {
-      const el = $(id);
-      el.textContent = value;
-      if (className) el.className = className;
-    };
-
-    const setOutput = (value) => {
+    function setOutput(value) {
       $('output').textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
-    };
+    }
 
     function flash(id) {
       const el = $(id);
+      if (!el) return;
       el.classList.remove('flash');
       void el.offsetWidth;
       el.classList.add('flash');
@@ -402,18 +340,24 @@
       });
     }
 
-    function setStep(step, state, text) {
+    function setStep(step, mode, text) {
       const id = `${step}StepState`;
       const el = $(id);
       if (!el) return;
-      el.textContent = text || state;
-      el.className = `state ${state}`;
+      el.textContent = text || mode;
+      el.className = `state ${mode}`;
       flash(`${step}Step`);
     }
 
     function lockMainButtons(lock) {
-      ['connectBtn','draftBtn','fullBtn','copyMessageBtn'].forEach((id) => {
-        if (!$(id).classList.contains('busy')) $(id).disabled = !!lock;
+      ['connectBtn','draftBtn','fullBtn','refreshBtn','copyMessageBtn','copySummaryBtn'].forEach((id) => {
+        const btn = $(id);
+        if (!btn || btn.classList.contains('busy')) return;
+        if (id === 'refreshBtn' && !state.orderId) {
+          btn.disabled = true;
+          return;
+        }
+        btn.disabled = !!lock;
       });
     }
 
@@ -430,7 +374,7 @@
       if (!text) return '';
       const num = Number(text);
       if (!Number.isFinite(num) || num <= 0) throw new Error('Invalid amount.');
-      return num % 1 === 0 ? String(num) : String(num);
+      return String(num % 1 === 0 ? Number(num.toFixed(0)) : num);
     }
 
     function formatAmountForMessage(value) {
@@ -451,7 +395,6 @@
       if (idx === -1) return text;
       const prefix = text.slice(0, idx + marker.length);
       const rawTs = text.slice(idx + marker.length).trim();
-      if (!rawTs) return text;
       const dt = new Date(rawTs);
       if (Number.isNaN(dt.getTime())) return text;
       return `${prefix}${dt.toISOString().replace(/\.\d{3}Z$/, 'Z')}`;
@@ -496,10 +439,7 @@
       if (!key) throw new Error('Paste X-API-Key first.');
       const res = await fetch(`${apiBase()}${path}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': key,
-        },
+        headers: { 'Content-Type': 'application/json', 'X-API-Key': key },
         body: JSON.stringify(payload),
       });
       const text = await res.text();
@@ -517,9 +457,139 @@
       return data;
     }
 
+    async function apiGet(path) {
+      const key = apiKey();
+      if (!key) throw new Error('Paste X-API-Key first.');
+      const res = await fetch(`${apiBase()}${path}`, {
+        method: 'GET',
+        headers: { 'X-API-Key': key },
+      });
+      const text = await res.text();
+      let data;
+      try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
+      if (!res.ok) {
+        const message = (data && (data.error || data.message || data.code)) || `HTTP ${res.status}`;
+        const err = new Error(`${message}`);
+        err.httpStatus = res.status;
+        err.path = path;
+        err.payload = data || {};
+        throw err;
+      }
+      return data;
+    }
+
+    function saveFormState() {
+      const payload = {
+        apiBase: $('apiBase').value,
+        apiKey: $('apiKey').value,
+        connectionId: $('connectionId').value,
+        profileId: $('profileId').value,
+        chain: $('chain').value,
+        currency: $('currency').value,
+        amount: $('amount').value,
+        sourceAddress: $('sourceAddress').value,
+        recipientAddress: $('recipientAddress').value,
+        recipientIban: $('recipientIban').value,
+        recipientName: $('recipientName').value,
+        recipientCountry: $('recipientCountry').value,
+        memo: $('memo').value,
+        orderId: state.orderId || '',
+      };
+      localStorage.setItem(storageKey, JSON.stringify(payload));
+    }
+
+    function loadFormState() {
+      try {
+        const raw = localStorage.getItem(storageKey);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        ['apiBase','apiKey','connectionId','profileId','chain','currency','amount','sourceAddress','recipientAddress','recipientIban','recipientName','recipientCountry','memo'].forEach((id) => {
+          if (typeof data[id] === 'string' && data[id]) $(id).value = data[id];
+        });
+        if (typeof data.orderId === 'string' && data.orderId) {
+          state.orderId = data.orderId;
+          $('orderIdStatus').textContent = data.orderId;
+          $('refreshBtn').disabled = false;
+        }
+      } catch (_) {}
+    }
+
+    function updateSummaryBanner(mode, title, sub, phaseText) {
+      const banner = $('summaryBanner');
+      banner.className = `summary-banner ${mode}`;
+      $('summaryTitle').textContent = title;
+      $('summarySub').textContent = sub;
+      $('summaryPhase').textContent = phaseText;
+    }
+
+    function clearSummary() {
+      updateSummaryBanner('warn', 'No order yet', 'Run the flow first, then refresh status.', 'phase: idle');
+      const ids = ['sumOrderId','sumState','sumAmount','sumIban','sumWallet','sumRecipient','sumPlacedAt','sumMemo'];
+      ids.forEach((id) => { $(id).textContent = '—'; });
+      $('refreshBtn').disabled = !state.orderId;
+    }
+
+    function setSummaryFromResponse(response) {
+      const summary = response && response.order_summary ? response.order_summary : null;
+      const status = response && response.order_status ? response.order_status : null;
+      state.orderSummary = summary;
+      if (summary && summary.order_id) {
+        state.orderId = summary.order_id;
+        $('orderIdStatus').textContent = summary.order_id;
+        $('refreshBtn').disabled = false;
+      }
+      if (!summary) {
+        clearSummary();
+        return;
+      }
+      const phase = String((status && status.phase) || summary.phase || 'unknown').toLowerCase();
+      const phaseLabel = (status && status.phase_label) || summary.phase_label || 'Unknown';
+      const stateText = (status && status.state) || summary.state || 'unknown';
+      let bannerMode = 'warn';
+      let bannerTitle = 'Order submitted';
+      let bannerSub = 'Waiting for Monerium processing.';
+      if (phase === 'credited') {
+        bannerMode = 'good';
+        bannerTitle = 'Funds credited';
+        bannerSub = 'Monerium side looks complete.';
+      } else if (phase === 'failed') {
+        bannerMode = 'bad';
+        bannerTitle = 'Order failed';
+        bannerSub = 'Review the raw output and Monerium status.';
+      }
+      updateSummaryBanner(bannerMode, bannerTitle, bannerSub, `phase: ${phaseLabel}`);
+      $('sumOrderId').textContent = summary.order_id || '—';
+      $('sumState').textContent = `${stateText}${phaseLabel ? ` · ${phaseLabel}` : ''}`;
+      $('sumAmount').textContent = summary.amount ? `${summary.amount} ${String(summary.currency || '').toUpperCase()}` : '—';
+      $('sumIban').textContent = summary.recipient_iban || '—';
+      $('sumWallet').textContent = summary.wallet_address || '—';
+      $('sumRecipient').textContent = [summary.recipient_name || '', summary.recipient_country || ''].filter(Boolean).join(' · ') || '—';
+      $('sumPlacedAt').textContent = summary.placed_at || summary.updated_at || '—';
+      $('sumMemo').textContent = summary.memo || '—';
+      $('submitStatus').textContent = phase === 'credited' ? 'credited' : (phase === 'failed' ? 'failed' : 'submitted');
+      $('submitStatus').className = phase === 'credited' ? 'ok' : (phase === 'failed' ? 'bad' : 'warn');
+      $('statusLine').textContent = phase === 'credited' ? 'Funds are available on the Monerium side.' : (phase === 'failed' ? 'Order needs review.' : 'Order submitted. Refresh to update status.');
+      saveFormState();
+    }
+
+    function buildSummaryText() {
+      const s = state.orderSummary;
+      if (!s || !s.order_id) throw new Error('No order summary yet.');
+      return [
+        `Monerium order: ${s.order_id}`,
+        `State: ${s.state || 'unknown'}${s.phase_label ? ` (${s.phase_label})` : ''}`,
+        `Amount: ${s.amount || '—'} ${String(s.currency || '').toUpperCase()}`.trim(),
+        `IBAN: ${s.recipient_iban || '—'}`,
+        `Wallet: ${s.wallet_address || '—'}`,
+        `Recipient: ${[s.recipient_name || '', s.recipient_country || ''].filter(Boolean).join(' · ') || '—'}`,
+        `Placed at: ${s.placed_at || s.updated_at || '—'}`,
+        `Memo: ${s.memo || '—'}`,
+      ].join('\n');
+    }
+
     async function connectWallet() {
       setStep('connect', 'working', 'waiting wallet');
-      if (!window.ethereum) throw new Error('No injected wallet found. Open this page in the wallet browser or a browser with MetaMask.');
+      if (!window.ethereum) throw new Error('No injected wallet found. Open this page in MetaMask or another wallet-enabled browser.');
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       const address = Array.isArray(accounts) && accounts[0] ? accounts[0] : '';
       if (!address) throw new Error('Wallet returned no address.');
@@ -538,21 +608,14 @@
     async function checkDraft() {
       $('statusLine').textContent = 'Checking draft...';
       setStep('draft', 'working', 'checking');
-      const draftPayload = buildBasePayload();
-      const draft = await apiPost('/api/integrations/monerium/order-draft', draftPayload);
+      const draft = await apiPost('/api/integrations/monerium/order-draft', buildBasePayload());
       state.draft = draft;
       const verdict = (((draft || {}).gate || {}).verdict || 'unknown').toUpperCase();
       $('gatePill').textContent = `Gate: ${verdict}`;
       $('gatePill').className = verdict === 'SAFE' ? 'pill ok' : 'pill bad';
-      if (draft && draft.source && draft.source.linked_address) {
-        $('sourceAddress').value = draft.source.linked_address;
-      }
-      if (draft && draft.source && draft.source.connection_id && !$('connectionId').value.trim()) {
-        $('connectionId').value = draft.source.connection_id;
-      }
-      if (draft && draft.source && draft.source.profile_id && !$('profileId').value.trim()) {
-        $('profileId').value = draft.source.profile_id;
-      }
+      if (draft && draft.source && draft.source.linked_address) $('sourceAddress').value = draft.source.linked_address;
+      if (draft && draft.source && draft.source.connection_id && !$('connectionId').value.trim()) $('connectionId').value = draft.source.connection_id;
+      if (draft && draft.source && draft.source.profile_id && !$('profileId').value.trim()) $('profileId').value = draft.source.profile_id;
       const messageHint = ((((draft || {}).signing || {}).message_hint) || '').trim();
       if (messageHint) {
         const normalizedHint = normalizeMoneriumMessageTimestamp(messageHint);
@@ -562,7 +625,8 @@
       }
       setOutput(draft);
       $('statusLine').textContent = verdict === 'SAFE' ? 'Draft is SAFE.' : 'Draft is not SAFE.';
-      setStep('draft', verdict === 'SAFE' ? 'done' : 'fail', verdict === 'SAFE' ? 'SAFE' : verdict || 'blocked');
+      setStep('draft', verdict === 'SAFE' ? 'done' : 'fail', verdict === 'SAFE' ? 'SAFE' : (verdict || 'blocked'));
+      saveFormState();
       return draft;
     }
 
@@ -581,10 +645,7 @@
       if (!state.walletAddress) await connectWallet();
       const message = ($('messageBox').value || buildMoneriumOfframpMessage()).trim();
       if (!message) throw new Error('Message to sign is empty.');
-      const signature = await window.ethereum.request({
-        method: 'personal_sign',
-        params: [message, state.walletAddress],
-      });
+      const signature = await window.ethereum.request({ method: 'personal_sign', params: [message, state.walletAddress] });
       state.message = message;
       state.signature = signature;
       $('messageBox').value = message;
@@ -598,18 +659,25 @@
     async function submitPlaceOrder() {
       setStep('submit', 'working', 'sending');
       if (!state.signature || !state.message) throw new Error('Message/signature missing.');
-      const payload = {
-        ...buildBasePayload(),
-        message: state.message,
-        signature: state.signature,
-      };
+      const payload = { ...buildBasePayload(), message: state.message, signature: state.signature };
       const response = await apiPost('/api/integrations/monerium/place-order', payload);
       state.submitResponse = response;
-      $('submitStatus').textContent = response && response.submitted ? 'submitted' : 'unknown';
-      $('submitStatus').className = response && response.submitted ? 'ok' : 'warn';
+      setSummaryFromResponse(response);
       setOutput(response);
-      $('statusLine').textContent = response && response.submitted ? 'Order submitted.' : 'Submit returned a non-final response.';
       setStep('submit', response && response.submitted ? 'done' : 'fail', response && response.submitted ? 'submitted' : 'unknown');
+      saveFormState();
+      return response;
+    }
+
+    async function refreshOrderStatus(auto = false) {
+      if (!state.orderId) throw new Error('No order id yet. Submit first.');
+      if (!auto) setStep('submit', 'working', 'refreshing');
+      const path = `/api/integrations/monerium/order-status/${encodeURIComponent(state.orderId)}?connection_id=${encodeURIComponent($('connectionId').value.trim())}`;
+      const response = await apiGet(path);
+      setSummaryFromResponse(response);
+      setOutput(response);
+      const phase = String((((response || {}).order_status) || {}).phase || '').toLowerCase();
+      setStep('submit', phase === 'failed' ? 'fail' : 'done', phase === 'credited' ? 'credited' : (phase === 'failed' ? 'failed' : 'refreshed'));
       return response;
     }
 
@@ -626,19 +694,20 @@
         await connectWallet();
         const draft = await checkDraft();
         const verdict = ((((draft || {}).gate) || {}).verdict || '').toUpperCase();
-        if (verdict !== 'SAFE' || !draft.submit_ready) {
-          throw new Error(`Draft not ready. Gate=${verdict || 'unknown'}`);
-        }
+        if (verdict !== 'SAFE' || !draft.submit_ready) throw new Error(`Draft not ready. Gate=${verdict || 'unknown'}`);
         ensureWalletMatchesLinkedAddress(draft);
         await signMessage();
         await submitPlaceOrder();
+        setTimeout(async () => {
+          try { await refreshOrderStatus(true); } catch (_) {}
+        }, 4000);
       } catch (err) {
         const msg = err && err.message ? err.message : 'Unexpected error.';
         $('statusLine').textContent = msg;
         if ($('connectStepState').textContent === 'waiting wallet') setStep('connect', 'fail', 'failed');
         else if ($('draftStepState').textContent === 'checking') setStep('draft', 'fail', 'failed');
         else if ($('signStepState').textContent === 'open wallet') setStep('sign', 'fail', 'failed');
-        else if ($('submitStepState').textContent === 'sending') setStep('submit', 'fail', 'failed');
+        else if ($('submitStepState').textContent === 'sending' || $('submitStepState').textContent === 'refreshing') setStep('submit', 'fail', 'failed');
         setOutput({
           ok: false,
           error: String(msg),
@@ -651,21 +720,44 @@
       }
     }
 
+    function handleClickError(err, step) {
+      const msg = String(err && err.message ? err.message : err);
+      if (step) setStep(step, 'fail', 'failed');
+      $('statusLine').textContent = msg;
+      setOutput({
+        ok: false,
+        error: msg,
+        http_status: err && err.httpStatus ? err.httpStatus : undefined,
+        path: err && err.path ? err.path : undefined,
+        response: err && err.payload ? err.payload : undefined,
+        request: err && err.requestPayload ? err.requestPayload : undefined,
+      });
+    }
+
     $('connectBtn').addEventListener('click', async () => {
       setBusy('connectBtn', true, 'Connecting...');
       lockMainButtons(true);
-      try { await connectWallet(); } catch (err) { setStep('connect', 'fail', 'failed'); setOutput({ ok: false, error: String(err.message || err), http_status: err && err.httpStatus ? err.httpStatus : undefined, path: err && err.path ? err.path : undefined, response: err && err.payload ? err.payload : undefined, request: err && err.requestPayload ? err.requestPayload : undefined }); $('statusLine').textContent = String(err.message || err); } finally { setBusy('connectBtn', false); lockMainButtons(false); }
+      try { await connectWallet(); } catch (err) { handleClickError(err, 'connect'); } finally { setBusy('connectBtn', false); lockMainButtons(false); }
     });
+
     $('draftBtn').addEventListener('click', async () => {
       setBusy('draftBtn', true, 'Checking...');
       lockMainButtons(true);
-      try { await checkDraft(); } catch (err) { setStep('draft', 'fail', 'failed'); setOutput({ ok: false, error: String(err.message || err), http_status: err && err.httpStatus ? err.httpStatus : undefined, path: err && err.path ? err.path : undefined, response: err && err.payload ? err.payload : undefined, request: err && err.requestPayload ? err.requestPayload : undefined }); $('statusLine').textContent = String(err.message || err); } finally { setBusy('draftBtn', false); lockMainButtons(false); }
+      try { await checkDraft(); } catch (err) { handleClickError(err, 'draft'); } finally { setBusy('draftBtn', false); lockMainButtons(false); }
     });
+
     $('fullBtn').addEventListener('click', async () => {
       setBusy('fullBtn', true, 'Working...');
       lockMainButtons(true);
       try { await runFullFlow(); } catch (_) {} finally { setBusy('fullBtn', false); lockMainButtons(false); }
     });
+
+    $('refreshBtn').addEventListener('click', async () => {
+      setBusy('refreshBtn', true, 'Refreshing...');
+      lockMainButtons(true);
+      try { await refreshOrderStatus(false); } catch (err) { handleClickError(err, 'submit'); } finally { setBusy('refreshBtn', false); lockMainButtons(false); }
+    });
+
     $('copyMessageBtn').addEventListener('click', async () => {
       setBusy('copyMessageBtn', true, 'Copying...');
       try {
@@ -680,8 +772,29 @@
       }
     });
 
+    $('copySummaryBtn').addEventListener('click', async () => {
+      setBusy('copySummaryBtn', true, 'Copying...');
+      try {
+        const text = buildSummaryText();
+        await navigator.clipboard.writeText(text);
+        $('statusLine').textContent = 'Summary copied.';
+      } catch (err) {
+        $('statusLine').textContent = String(err.message || err);
+      } finally {
+        setBusy('copySummaryBtn', false);
+      }
+    });
+
+    ['apiBase','apiKey','connectionId','profileId','chain','currency','amount','sourceAddress','recipientAddress','recipientIban','recipientName','recipientCountry','memo'].forEach((id) => {
+      $(id).addEventListener('change', saveFormState);
+      $(id).addEventListener('blur', saveFormState);
+    });
+
     resetStepStates();
     $('messageBox').value = '';
+    clearSummary();
+    loadFormState();
+    if (state.orderId) $('statusLine').textContent = 'Saved order id restored. You can refresh status.';
   </script>
 </body>
 </html>
