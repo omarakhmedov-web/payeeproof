@@ -315,6 +315,7 @@
     };
 
     const MONERIUM_CHAIN_CONFIG = window.PAYEEPROOF_MONERIUM_CHAINS || {};
+    const PRIMARY_CHAIN_KEYS = ['ethereum', 'arbitrum', 'base', 'polygon'];
 
     function chainMeta(value) {
       const key = String(value || '').trim().toLowerCase();
@@ -384,9 +385,12 @@
       const select = $('chain');
       if (!select) return;
       const current = String(select.value || 'ethereum').trim().toLowerCase() || 'ethereum';
-      const entries = Object.entries(MONERIUM_CHAIN_CONFIG);
+      const optionKeys = PRIMARY_CHAIN_KEYS.filter((key) => !!MONERIUM_CHAIN_CONFIG[key]);
+      const entries = optionKeys.length
+        ? optionKeys.map((key) => [key, MONERIUM_CHAIN_CONFIG[key]])
+        : Object.entries(MONERIUM_CHAIN_CONFIG).filter(([, meta]) => !(meta && meta.isSandboxChain));
       select.innerHTML = entries.map(([key, meta]) => `<option value="${key}">${meta.label || key}</option>`).join('');
-      select.value = MONERIUM_CHAIN_CONFIG[current] ? current : 'ethereum';
+      select.value = entries.some(([key]) => key === current) ? current : 'ethereum';
     }
 
     function syncChainUi() {
