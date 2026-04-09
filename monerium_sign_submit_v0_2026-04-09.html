@@ -266,6 +266,7 @@
         <div class="kvs">
           <div class="kv"><span>Order ID</span><span class="mono" id="sumOrderId">—</span></div>
           <div class="kv"><span>State</span><span id="sumState">—</span></div>
+          <div class="kv"><span>Chain</span><span id="sumChain">—</span></div>
           <div class="kv"><span>Amount</span><span id="sumAmount">—</span></div>
           <div class="kv"><span>IBAN</span><span class="mono" id="sumIban">—</span></div>
         </div>
@@ -320,6 +321,50 @@
       return MONERIUM_CHAIN_CONFIG[key] || null;
     }
 
+    function isSandboxApiBase(value) {
+      return String(value || '').trim().toLowerCase().includes('.dev');
+    }
+
+    function resolveEffectiveChainKey(value, baseValue = apiBase()) {
+      const key = String(value || '').trim().toLowerCase();
+      const meta = chainMeta(key);
+      if (!meta) return key;
+      if (isSandboxApiBase(baseValue) && !meta.isSandboxChain && meta.sandboxPartnerKey && chainMeta(meta.sandboxPartnerKey)) {
+        return String(meta.sandboxPartnerKey).trim().toLowerCase();
+      }
+      return key;
+    }
+
+    function effectiveChainMeta(value, baseValue = apiBase()) {
+      return chainMeta(resolveEffectiveChainKey(value, baseValue));
+    }
+
+    function displayChainLabel(chainKey, requestedKey = '') {
+      const effectiveKey = String(chainKey || '').trim().toLowerCase();
+      const requested = String(requestedKey || '').trim().toLowerCase();
+      const effectiveMeta = chainMeta(effectiveKey);
+      const requestedMeta = chainMeta(requested);
+      const effectiveLabel = (effectiveMeta && effectiveMeta.label) || effectiveKey || 'Unknown';
+      const requestedLabel = (requestedMeta && requestedMeta.label) || requested;
+      if (requested && effectiveKey && requested !== effectiveKey) {
+        return `${effectiveLabel} (sandbox for ${requestedLabel || requested})`;
+      }
+      return effectiveLabel;
+    }
+
+    function currentExpectedNetworkLabel() {
+      const requestedKey = String($('chain').value || '').trim().toLowerCase();
+      const effectiveKey = resolveEffectiveChainKey(requestedKey);
+      const effectiveMeta = chainMeta(effectiveKey);
+      const walletLabel = (effectiveMeta && effectiveMeta.walletLabel) || 'Unknown';
+      if (requestedKey && effectiveKey && requestedKey !== effectiveKey) {
+        const requestedMeta = chainMeta(requestedKey);
+        const requestedLabel = (requestedMeta && requestedMeta.label) || requestedKey;
+        return `${walletLabel} (sandbox for ${requestedLabel})`;
+      }
+      return walletLabel;
+    }
+
     function populateChainOptions() {
       const select = $('chain');
       if (!select) return;
@@ -330,9 +375,10 @@
     }
 
     function syncChainUi() {
-      const meta = chainMeta($('chain').value);
+      const selectedKey = String($('chain').value || '').trim().toLowerCase();
+      const meta = effectiveChainMeta(selectedKey);
       const expectedHex = String((meta && meta.walletChainIdHex) || '').toLowerCase();
-      const expectedLabel = (meta && meta.walletLabel) || 'Unknown';
+      const expectedLabel = currentExpectedNetworkLabel();
       if (state.chainIdHex) {
         const connectedHex = String(state.chainIdHex || '').toLowerCase();
         const matches = !!expectedHex && connectedHex === expectedHex;
@@ -556,7 +602,7 @@
 
     function clearSummary() {
       updateSummaryBanner('warn', 'No order yet', 'Run the flow first, then refresh status.', 'phase: idle');
-      const ids = ['sumOrderId','sumState','sumAmount','sumIban','sumWallet','sumRecipient','sumPlacedAt','sumMemo'];
+      const ids = ['sumOrderId','sumState','sumChain','sumAmount','sumIban','sumWallet','sumRecipient','sumPlacedAt','sumMemo'];
       ids.forEach((id) => { $(id).textContent = '—'; });
       $('refreshBtn').disabled = !state.orderId;
     }
@@ -591,7 +637,10 @@
       }
       updateSummaryBanner(bannerMode, bannerTitle, bannerSub, `phase: ${phaseLabel}`);
       $('sumOrderId').textContent = summary.order_id || '—';
+      const requestedChain = String((((response || {}).source) || {}).chain || $('chain').value || '').trim().toLowerCase();
+      const executionChain = String(summary.chain || ((((response || {}).monerium_order_request) || {}).chain) || ((((response || {}).monerium_order_payload) || {}).chain) || '').trim().toLowerCase();
       $('sumState').textContent = `${stateText}${phaseLabel ? ` · ${phaseLabel}` : ''}`;
+      $('sumChain').textContent = executionChain ? displayChainLabel(executionChain, requestedChain) : '—';
       $('sumAmount').textContent = summary.amount ? `${summary.amount} ${String(summary.currency || '').toUpperCase()}` : '—';
       $('sumIban').textContent = summary.recipient_iban || '—';
       $('sumWallet').textContent = summary.wallet_address || '—';
@@ -610,6 +659,7 @@
       return [
         `Monerium order: ${s.order_id}`,
         `State: ${s.state || 'unknown'}${s.phase_label ? ` (${s.phase_label})` : ''}`,
+        `Chain: ${displayChainLabel(s.chain || '', $('chain').value || '')}`,
         `Amount: ${s.amount || '—'} ${String(s.currency || '').toUpperCase()}`.trim(),
         `IBAN: ${s.recipient_iban || '—'}`,
         `Wallet: ${s.wallet_address || '—'}`,
@@ -655,7 +705,10 @@
         $('messageStatus').textContent = normalizedHint === messageHint ? 'ready from draft' : 'normalized to RFC3339';
       }
       setOutput(draft);
-      $('statusLine').textContent = verdict === 'SAFE' ? 'Draft is SAFE.' : 'Draft is not SAFE.';
+      const requestedChain = String((((draft || {}).source) || {}).chain || $('chain').value || '').trim().toLowerCase();
+      const executionChain = String((((draft || {}).monerium_order_payload) || {}).chain || '').trim().toLowerCase();
+      const executionHint = executionChain ? ` Execution chain: ${displayChainLabel(executionChain, requestedChain)}.` : '';
+      $('statusLine').textContent = verdict === 'SAFE' ? `Draft is SAFE.${executionHint}` : 'Draft is not SAFE.';
       setStep('draft', verdict === 'SAFE' ? 'done' : 'fail', verdict === 'SAFE' ? 'SAFE' : (verdict || 'blocked'));
       saveFormState();
       return draft;
