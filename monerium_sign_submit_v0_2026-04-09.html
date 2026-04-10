@@ -290,7 +290,7 @@
     </section>
   </div>
 
-  <script src="monerium-chains.js?v=20260410c"></script>
+  <script src="monerium-chains.js?v=20260410d"></script>
   <script>
     const $ = (id) => document.getElementById(id);
     const storageKey = 'pp_monerium_sign_submit_v06';
@@ -374,6 +374,47 @@
       return null;
     }
 
+    function currentExpectedWalletMeta() {
+      const requestedKey = String($('chain').value || '').trim().toLowerCase();
+      const requestedMeta = chainMeta(requestedKey);
+      if (requestedMeta && requestedMeta.sandboxPartnerKey) {
+        return chainMeta(requestedMeta.sandboxPartnerKey) || null;
+      }
+      return effectiveChainMeta(requestedKey) || null;
+    }
+
+    async function ensureExpectedWalletNetwork() {
+      if (!window.ethereum) throw new Error('No injected wallet found.');
+      const expectedMeta = currentExpectedWalletMeta();
+      const expectedHex = String((expectedMeta && expectedMeta.walletChainIdHex) || '').trim().toLowerCase();
+      if (!expectedHex) return null;
+      const currentHex = String(await window.ethereum.request({ method: 'eth_chainId' }) || '').trim().toLowerCase();
+      if (currentHex === expectedHex) return expectedMeta;
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: expectedHex }],
+        });
+      } catch (err) {
+        const addParams = expectedMeta && expectedMeta.walletAddChain;
+        const needsAdd = err && (err.code === 4902 || /unknown chain|unrecognized chain|not added/i.test(String(err.message || '')));
+        if (needsAdd && addParams) {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [addParams],
+          });
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: expectedHex }],
+          });
+        } else {
+          const targetLabel = (expectedMeta && expectedMeta.walletLabel) || currentExpectedNetworkLabel();
+          throw new Error(`Wallet is on the wrong network. Please switch MetaMask to ${targetLabel}.`);
+        }
+      }
+      return expectedMeta;
+    }
+
     function currentExpectedNetworkLabel() {
       const requestedKey = String($('chain').value || '').trim().toLowerCase();
       const requestedMeta = chainMeta(requestedKey);
@@ -410,10 +451,12 @@
         const connectedHex = String(state.chainIdHex || '').toLowerCase();
         const connectedMeta = chainMetaByHex(connectedHex);
         const connectedLabel = connectedMeta
-          ? displayChainLabel((connectedMeta.apiChain || connectedMeta.label || '').toLowerCase(), selectedKey)
-          : expectedLabel;
+          ? ((connectedMeta && connectedMeta.walletLabel) || displayChainLabel((connectedMeta.apiChain || connectedMeta.label || '').toLowerCase(), selectedKey))
+          : `Unknown (${state.chainIdHex || 'unknown'})`;
         const matches = !!expectedHex && connectedHex === expectedHex;
-        $('networkPill').textContent = `Wallet network: ${connectedLabel} (${state.chainIdHex || 'unknown'})`;
+        $('networkPill').textContent = matches
+          ? `Wallet network: ${connectedLabel} (${state.chainIdHex || 'unknown'})`
+          : `Wallet network mismatch: connected ${connectedLabel} (${state.chainIdHex || 'unknown'}), expected ${expectedLabel}`;
         $('networkPill').className = matches ? 'pill ok' : 'pill warn';
         return;
       }
@@ -746,6 +789,7 @@
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       const address = Array.isArray(accounts) && accounts[0] ? accounts[0] : '';
       if (!address) throw new Error('Wallet returned no address.');
+      await ensureExpectedWalletNetwork();
       const chainIdHex = await window.ethereum.request({ method: 'eth_chainId' });
       state.walletAddress = address;
       state.chainIdHex = chainIdHex || '';
@@ -942,9 +986,18 @@
 
     ['apiBase','apiKey','connectionId','profileId','chain','currency','amount','sourceAddress','recipientAddress','recipientIban','recipientName','recipientCountry','memo'].forEach((id) => {
       const saveEvent = id === 'chain' ? 'change' : 'input';
-      $(id).addEventListener(saveEvent, () => {
+      $(id).addEventListener(saveEvent, async () => {
         if (id === 'chain' || id === 'connectionId' || id === 'profileId') {
           clearRuntimeState({ preserveWallet: true });
+          if (id === 'chain' && state.walletAddress && window.ethereum) {
+            try {
+              await ensureExpectedWalletNetwork();
+              state.chainIdHex = await window.ethereum.request({ method: 'eth_chainId' });
+              syncChainUi();
+            } catch (err) {
+              $('statusLine').textContent = String(err.message || err);
+            }
+          }
           return;
         }
         if (id === 'apiBase') {
@@ -955,6 +1008,22 @@
       });
       $(id).addEventListener('blur', saveFormState);
     });
+
+    if (window.ethereum && typeof window.ethereum.on === 'function') {
+      window.ethereum.on('chainChanged', (chainIdHex) => {
+        state.chainIdHex = String(chainIdHex || '').trim().toLowerCase();
+        syncChainUi();
+        saveFormState();
+      });
+      window.ethereum.on('accountsChanged', (accounts) => {
+        const address = Array.isArray(accounts) && accounts[0] ? accounts[0] : '';
+        state.walletAddress = address;
+        $('walletPill').textContent = address ? `Wallet: ${address}` : 'Wallet: not connected';
+        $('walletPill').className = address ? 'pill ok' : 'pill';
+        syncChainUi();
+        saveFormState();
+      });
+    }
 
     populateChainOptions();
     resetStepStates();
