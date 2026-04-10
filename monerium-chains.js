@@ -60,3 +60,20 @@ window.PAYEEPROOF_MONERIUM_CHAINS = {
     isSandboxChain: true,
   },
 };
+
+window.PAYEEPROOF_MONERIUM_CHAIN_ALIASES = {
+  ethereum: 'ethereum',
+  sepolia: 'sepolia',
+  arbitrum: 'arbitrum',
+  'arbitrum sepolia': 'arbitrum sepolia',
+  'arbitrum-sepolia': 'arbitrum sepolia',
+  arbitrum_sepolia: 'arbitrum sepolia',
+  arbitrumsepolia: 'arbitrum sepolia',
+  base: 'base',
+  'base sepolia': 'base sepolia',
+  'base-sepolia': 'base sepolia',
+  base_sepolia: 'base sepolia',
+  basesepolia: 'base sepolia',
+  polygon: 'polygon',
+  amoy: 'amoy',
+};
