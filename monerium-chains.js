@@ -76,4 +76,8 @@ window.PAYEEPROOF_MONERIUM_CHAIN_ALIASES = {
   basesepolia: 'base sepolia',
   polygon: 'polygon',
   amoy: 'amoy',
+  'polygon amoy': 'amoy',
+  'polygon-amoy': 'amoy',
+  polygon_amoy: 'amoy',
+  polygonamoy: 'amoy',
 };
