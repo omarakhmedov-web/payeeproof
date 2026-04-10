@@ -315,7 +315,6 @@
     };
 
     const MONERIUM_CHAIN_CONFIG = window.PAYEEPROOF_MONERIUM_CHAINS || {};
-    const PRIMARY_CHAIN_KEYS = ['ethereum', 'arbitrum', 'base', 'polygon'];
 
     function chainMeta(value) {
       const key = String(value || '').trim().toLowerCase();
@@ -340,13 +339,17 @@
       return chainMeta(resolveEffectiveChainKey(value, baseValue));
     }
 
+    function plainChainLabel(chainKey) {
+      const key = String(chainKey || '').trim().toLowerCase();
+      const meta = chainMeta(key);
+      return (meta && meta.label) || key || 'Unknown';
+    }
+
     function displayChainLabel(chainKey, requestedKey = '') {
       const effectiveKey = String(chainKey || '').trim().toLowerCase();
       const requested = String(requestedKey || '').trim().toLowerCase();
-      const effectiveMeta = chainMeta(effectiveKey);
-      const requestedMeta = chainMeta(requested);
-      const effectiveLabel = (effectiveMeta && effectiveMeta.label) || effectiveKey || 'Unknown';
-      const requestedLabel = (requestedMeta && requestedMeta.label) || requested;
+      const effectiveLabel = plainChainLabel(effectiveKey);
+      const requestedLabel = plainChainLabel(requested);
       if (requested && effectiveKey && requested !== effectiveKey) {
         return `${effectiveLabel} (sandbox for ${requestedLabel || requested})`;
       }
@@ -385,12 +388,9 @@
       const select = $('chain');
       if (!select) return;
       const current = String(select.value || 'ethereum').trim().toLowerCase() || 'ethereum';
-      const optionKeys = PRIMARY_CHAIN_KEYS.filter((key) => !!MONERIUM_CHAIN_CONFIG[key]);
-      const entries = optionKeys.length
-        ? optionKeys.map((key) => [key, MONERIUM_CHAIN_CONFIG[key]])
-        : Object.entries(MONERIUM_CHAIN_CONFIG).filter(([, meta]) => !(meta && meta.isSandboxChain));
+      const entries = Object.entries(MONERIUM_CHAIN_CONFIG);
       select.innerHTML = entries.map(([key, meta]) => `<option value="${key}">${meta.label || key}</option>`).join('');
-      select.value = entries.some(([key]) => key === current) ? current : 'ethereum';
+      select.value = MONERIUM_CHAIN_CONFIG[current] ? current : 'ethereum';
     }
 
     function syncChainUi() {
@@ -665,7 +665,7 @@
       const requestedChain = String((((response || {}).source) || {}).chain || $('chain').value || '').trim().toLowerCase();
       const executionChain = String(summary.chain || ((((response || {}).monerium_order_request) || {}).chain) || ((((response || {}).monerium_order_payload) || {}).chain) || '').trim().toLowerCase();
       $('sumState').textContent = `${stateText}${phaseLabel ? ` · ${phaseLabel}` : ''}`;
-      $('sumChain').textContent = executionChain ? displayChainLabel(executionChain, requestedChain) : '—';
+      $('sumChain').textContent = executionChain ? plainChainLabel(executionChain) : '—';
       $('sumAmount').textContent = summary.amount ? `${summary.amount} ${String(summary.currency || '').toUpperCase()}` : '—';
       $('sumIban').textContent = summary.recipient_iban || '—';
       $('sumWallet').textContent = summary.wallet_address || '—';
@@ -684,7 +684,7 @@
       return [
         `Monerium order: ${s.order_id}`,
         `State: ${s.state || 'unknown'}${s.phase_label ? ` (${s.phase_label})` : ''}`,
-        `Chain: ${displayChainLabel(s.chain || '', $('chain').value || '')}`,
+        `Chain: ${plainChainLabel(s.chain || '')}`,
         `Amount: ${s.amount || '—'} ${String(s.currency || '').toUpperCase()}`.trim(),
         `IBAN: ${s.recipient_iban || '—'}`,
         `Wallet: ${s.wallet_address || '—'}`,
