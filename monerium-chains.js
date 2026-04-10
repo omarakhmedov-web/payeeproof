@@ -8,10 +8,10 @@ window.PAYEEPROOF_MONERIUM_CHAINS = {
     isSandboxChain: false,
   },
   sepolia: {
-    label: 'Sepolia',
+    label: 'Ethereum Sepolia',
     apiChain: 'sepolia',
     walletChainIdHex: '0xaa36a7',
-    walletLabel: 'Sepolia',
+    walletLabel: 'Ethereum Sepolia',
     isSandboxChain: true,
   },
   arbitrum: {
