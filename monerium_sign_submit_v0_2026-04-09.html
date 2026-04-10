@@ -315,9 +315,15 @@
     };
 
     const MONERIUM_CHAIN_CONFIG = window.PAYEEPROOF_MONERIUM_CHAINS || {};
+    const MONERIUM_CHAIN_ALIASES = window.PAYEEPROOF_MONERIUM_CHAIN_ALIASES || {};
+
+    function normalizeChainKey(value) {
+      const key = String(value || '').trim().toLowerCase();
+      return MONERIUM_CHAIN_ALIASES[key] || key;
+    }
 
     function chainMeta(value) {
-      const key = String(value || '').trim().toLowerCase();
+      const key = normalizeChainKey(value);
       return MONERIUM_CHAIN_CONFIG[key] || null;
     }
 
@@ -340,14 +346,14 @@
     }
 
     function plainChainLabel(chainKey) {
-      const key = String(chainKey || '').trim().toLowerCase();
+      const key = normalizeChainKey(chainKey);
       const meta = chainMeta(key);
       return (meta && meta.label) || key || 'Unknown';
     }
 
     function displayChainLabel(chainKey, requestedKey = '') {
-      const effectiveKey = String(chainKey || '').trim().toLowerCase();
-      const requested = String(requestedKey || '').trim().toLowerCase();
+      const effectiveKey = normalizeChainKey(chainKey);
+      const requested = normalizeChainKey(requestedKey);
       const effectiveLabel = plainChainLabel(effectiveKey);
       const requestedLabel = plainChainLabel(requested);
       if (requested && effectiveKey && requested !== effectiveKey) {
@@ -730,8 +736,8 @@
         $('messageStatus').textContent = normalizedHint === messageHint ? 'ready from draft' : 'normalized to RFC3339';
       }
       setOutput(draft);
-      const requestedChain = String((((draft || {}).source) || {}).chain || $('chain').value || '').trim().toLowerCase();
-      const executionChain = String((((draft || {}).monerium_order_payload) || {}).chain || '').trim().toLowerCase();
+      const requestedChain = normalizeChainKey((((draft || {}).source) || {}).chain || $('chain').value || '');
+      const executionChain = normalizeChainKey((((draft || {}).monerium_order_payload) || {}).chain || '');
       const executionHint = executionChain ? ` Execution chain: ${displayChainLabel(executionChain, requestedChain)}.` : '';
       $('statusLine').textContent = verdict === 'SAFE' ? `Draft is SAFE.${executionHint}` : 'Draft is not SAFE.';
       setStep('draft', verdict === 'SAFE' ? 'done' : 'fail', verdict === 'SAFE' ? 'SAFE' : (verdict || 'blocked'));
