@@ -290,7 +290,7 @@
     </section>
   </div>
 
-  <script src="monerium-chains.js"></script>
+  <script src="monerium-chains.js?v=20260410b"></script>
   <script>
     const $ = (id) => document.getElementById(id);
     const storageKey = 'pp_monerium_sign_submit_v06';
@@ -603,6 +603,9 @@
         recipientCountry: $('recipientCountry').value,
         memo: $('memo').value,
         orderId: state.orderId || '',
+        orderChain: $('chain').value,
+        orderConnectionId: $('connectionId').value,
+        orderProfileId: $('profileId').value,
       };
       localStorage.setItem(storageKey, JSON.stringify(payload));
     }
@@ -615,12 +618,49 @@
         ['apiBase','apiKey','connectionId','profileId','chain','currency','amount','sourceAddress','recipientAddress','recipientIban','recipientName','recipientCountry','memo'].forEach((id) => {
           if (typeof data[id] === 'string' && data[id]) $(id).value = data[id];
         });
-        if (typeof data.orderId === 'string' && data.orderId) {
+        const sameChain = String(data.orderChain || '').trim().toLowerCase() === String($('chain').value || '').trim().toLowerCase();
+        const sameConnection = String(data.orderConnectionId || '').trim() === String($('connectionId').value || '').trim();
+        const sameProfile = String(data.orderProfileId || '').trim() === String($('profileId').value || '').trim();
+        if (typeof data.orderId === 'string' && data.orderId && sameChain && sameConnection && sameProfile) {
           state.orderId = data.orderId;
           $('orderIdStatus').textContent = data.orderId;
           $('refreshBtn').disabled = false;
         }
       } catch (_) {}
+    }
+
+
+    function clearOutputPanel() {
+      setOutput({ ok: true, hint: 'Ready for a fresh run.' });
+    }
+
+    function clearRuntimeState(options = {}) {
+      const preserveWallet = !!options.preserveWallet;
+      state.draft = null;
+      state.message = '';
+      state.signature = '';
+      state.submitResponse = null;
+      state.orderId = '';
+      state.orderSummary = null;
+      if (!preserveWallet) {
+        state.walletAddress = '';
+        state.chainIdHex = '';
+        $('walletPill').textContent = 'Wallet: not connected';
+        $('walletPill').className = 'pill';
+      }
+      $('gatePill').textContent = 'Gate: —';
+      $('gatePill').className = 'pill';
+      $('messageStatus').textContent = 'not generated';
+      $('signatureStatus').textContent = 'not generated';
+      $('submitStatus').textContent = 'not sent';
+      $('submitStatus').className = '';
+      $('orderIdStatus').textContent = '—';
+      $('messageBox').value = '';
+      clearSummary();
+      resetStepStates();
+      clearOutputPanel();
+      saveFormState();
+      syncChainUi();
     }
 
     function updateSummaryBanner(mode, title, sub, phaseText) {
@@ -903,7 +943,14 @@
     ['apiBase','apiKey','connectionId','profileId','chain','currency','amount','sourceAddress','recipientAddress','recipientIban','recipientName','recipientCountry','memo'].forEach((id) => {
       const saveEvent = id === 'chain' ? 'change' : 'input';
       $(id).addEventListener(saveEvent, () => {
-        if (id === 'chain') syncChainUi();
+        if (id === 'chain' || id === 'connectionId' || id === 'profileId') {
+          clearRuntimeState({ preserveWallet: true });
+          return;
+        }
+        if (id === 'apiBase') {
+          clearRuntimeState({ preserveWallet: false });
+          return;
+        }
         saveFormState();
       });
       $(id).addEventListener('blur', saveFormState);
@@ -913,6 +960,7 @@
     resetStepStates();
     $('messageBox').value = '';
     clearSummary();
+    clearOutputPanel();
     loadFormState();
     syncChainUi();
     if (state.orderId) $('statusLine').textContent = 'Saved order id restored. You can refresh status.';
