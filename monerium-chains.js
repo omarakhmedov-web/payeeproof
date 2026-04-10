@@ -13,6 +13,11 @@ window.PAYEEPROOF_MONERIUM_CHAINS = {
     walletChainIdHex: '0xaa36a7',
     walletLabel: 'Ethereum Sepolia',
     isSandboxChain: true,
+    walletAddChain: {
+      chainId: '0xaa36a7',
+      chainName: 'Ethereum Sepolia',
+      nativeCurrency: { name: 'Sepolia Ether', symbol: 'ETH', decimals: 18 },
+    },
   },
   arbitrum: {
     label: 'Arbitrum',
@@ -28,6 +33,12 @@ window.PAYEEPROOF_MONERIUM_CHAINS = {
     walletChainIdHex: '0x66eee',
     walletLabel: 'Arbitrum Sepolia',
     isSandboxChain: true,
+    walletAddChain: {
+      chainId: '0x66eee',
+      chainName: 'Arbitrum Sepolia',
+      nativeCurrency: { name: 'Sepolia Ether', symbol: 'ETH', decimals: 18 },
+      rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
+    },
   },
   base: {
     label: 'Base',
@@ -43,6 +54,12 @@ window.PAYEEPROOF_MONERIUM_CHAINS = {
     walletChainIdHex: '0x14a34',
     walletLabel: 'Base Sepolia',
     isSandboxChain: true,
+    walletAddChain: {
+      chainId: '0x14a34',
+      chainName: 'Base Sepolia',
+      nativeCurrency: { name: 'Sepolia Ether', symbol: 'ETH', decimals: 18 },
+      rpcUrls: ['https://sepolia.base.org'],
+    },
   },
   polygon: {
     label: 'Polygon',
@@ -58,6 +75,13 @@ window.PAYEEPROOF_MONERIUM_CHAINS = {
     walletChainIdHex: '0x13882',
     walletLabel: 'Polygon Amoy',
     isSandboxChain: true,
+    walletAddChain: {
+      chainId: '0x13882',
+      chainName: 'Polygon Amoy Testnet',
+      nativeCurrency: { name: 'POL', symbol: 'POL', decimals: 18 },
+      rpcUrls: ['https://rpc-amoy.polygon.technology/'],
+      blockExplorerUrls: ['https://amoy.polygonscan.com/'],
+    },
   },
 };
 
