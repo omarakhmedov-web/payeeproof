@@ -431,13 +431,25 @@
       return walletLabel;
     }
 
+    function requestedChainEntries() {
+      return Object.entries(MONERIUM_CHAIN_CONFIG).filter(([, meta]) => !meta || meta.isSandboxChain !== true);
+    }
+
+    function canonicalRequestedChainKey(value) {
+      const key = normalizeChainKey(value);
+      const meta = chainMeta(key);
+      if (meta && meta.isSandboxChain !== true) return key;
+      const baseEntry = requestedChainEntries().find(([, baseMeta]) => (baseMeta && baseMeta.sandboxPartnerKey) === key);
+      return (baseEntry && baseEntry[0]) || 'ethereum';
+    }
+
     function populateChainOptions() {
       const select = $('chain');
       if (!select) return;
-      const current = String(select.value || 'ethereum').trim().toLowerCase() || 'ethereum';
-      const entries = Object.entries(MONERIUM_CHAIN_CONFIG);
+      const current = canonicalRequestedChainKey(select.value || 'ethereum');
+      const entries = requestedChainEntries();
       select.innerHTML = entries.map(([key, meta]) => `<option value="${key}">${meta.label || key}</option>`).join('');
-      select.value = MONERIUM_CHAIN_CONFIG[current] ? current : 'ethereum';
+      select.value = entries.some(([key]) => key === current) ? current : 'ethereum';
     }
 
     function syncChainUi() {
