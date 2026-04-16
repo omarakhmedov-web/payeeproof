@@ -303,6 +303,8 @@
       submitResponse: null,
       orderId: '',
       orderSummary: null,
+      statusPollTimer: null,
+      statusPollAttempts: 0,
     };
 
     const buttonLabels = {
@@ -689,8 +691,57 @@
       setOutput({ ok: true, hint: 'Ready for a fresh run.' });
     }
 
+    function stopStatusPolling() {
+      if (state.statusPollTimer) {
+        clearTimeout(state.statusPollTimer);
+        state.statusPollTimer = null;
+      }
+      state.statusPollAttempts = 0;
+    }
+
+    function isTerminalOrderPhase(phaseValue) {
+      const phase = String(phaseValue || '').trim().toLowerCase();
+      return phase === 'credited' || phase === 'failed';
+    }
+
+    function scheduleStatusPolling(options = {}) {
+      stopStatusPolling();
+      if (!state.orderId) return;
+      const intervalMs = Number(options.intervalMs || 4000);
+      const maxAttempts = Number(options.maxAttempts || 18);
+      const initialDelayMs = Number(options.initialDelayMs || intervalMs);
+      const attemptRefresh = async () => {
+        try {
+          state.statusPollAttempts += 1;
+          const response = await refreshOrderStatus(true);
+          const phase = String((((response || {}).order_status) || {}).phase || (((response || {}).order_summary) || {}).phase || '').toLowerCase();
+          if (isTerminalOrderPhase(phase)) {
+            stopStatusPolling();
+            return;
+          }
+          if (state.statusPollAttempts >= maxAttempts) {
+            stopStatusPolling();
+            $('statusLine').textContent = 'Order still processing. Use Refresh status to check again.';
+            setStep('submit', 'done', 'waiting');
+            return;
+          }
+          state.statusPollTimer = setTimeout(attemptRefresh, intervalMs);
+        } catch (_) {
+          if (state.statusPollAttempts >= maxAttempts) {
+            stopStatusPolling();
+            $('statusLine').textContent = 'Auto-refresh stopped. Use Refresh status to check again.';
+            setStep('submit', 'done', 'waiting');
+            return;
+          }
+          state.statusPollTimer = setTimeout(attemptRefresh, intervalMs);
+        }
+      };
+      state.statusPollTimer = setTimeout(attemptRefresh, initialDelayMs);
+    }
+
     function clearRuntimeState(options = {}) {
       const preserveWallet = !!options.preserveWallet;
+      stopStatusPolling();
       state.draft = null;
       state.message = '';
       state.signature = '';
@@ -775,7 +826,7 @@
       $('sumMemo').textContent = summary.memo || '—';
       $('submitStatus').textContent = phase === 'credited' ? 'credited' : (phase === 'failed' ? 'failed' : 'submitted');
       $('submitStatus').className = phase === 'credited' ? 'ok' : (phase === 'failed' ? 'bad' : 'warn');
-      $('statusLine').textContent = phase === 'credited' ? 'Funds are available on the Monerium side.' : (phase === 'failed' ? 'Order needs review.' : 'Order submitted. Refresh to update status.');
+      $('statusLine').textContent = phase === 'credited' ? 'Funds are available on the Monerium side.' : (phase === 'failed' ? 'Order needs review.' : 'Order submitted. Auto-refreshing status...');
       saveFormState();
     }
 
@@ -875,20 +926,36 @@
       state.submitResponse = response;
       setSummaryFromResponse(response);
       setOutput(response);
-      setStep('submit', response && response.submitted ? 'done' : 'fail', response && response.submitted ? 'submitted' : 'unknown');
+      if (response && response.submitted) {
+        setStep('submit', 'working', 'checking');
+        scheduleStatusPolling({ initialDelayMs: 2500, intervalMs: 3500, maxAttempts: 20 });
+      } else {
+        setStep('submit', 'fail', 'unknown');
+      }
       saveFormState();
       return response;
     }
 
     async function refreshOrderStatus(auto = false) {
       if (!state.orderId) throw new Error('No order id yet. Submit first.');
-      if (!auto) setStep('submit', 'working', 'refreshing');
+      if (!auto) {
+        stopStatusPolling();
+        setStep('submit', 'working', 'refreshing');
+      }
       const path = `/api/integrations/monerium/order-status/${encodeURIComponent(state.orderId)}?connection_id=${encodeURIComponent($('connectionId').value.trim())}`;
       const response = await apiGet(path);
       setSummaryFromResponse(response);
       setOutput(response);
-      const phase = String((((response || {}).order_status) || {}).phase || '').toLowerCase();
-      setStep('submit', phase === 'failed' ? 'fail' : 'done', phase === 'credited' ? 'credited' : (phase === 'failed' ? 'failed' : 'refreshed'));
+      const phase = String((((response || {}).order_status) || {}).phase || (((response || {}).order_summary) || {}).phase || '').toLowerCase();
+      if (phase === 'credited') {
+        stopStatusPolling();
+        setStep('submit', 'done', 'credited');
+      } else if (phase === 'failed') {
+        stopStatusPolling();
+        setStep('submit', 'fail', 'failed');
+      } else {
+        setStep('submit', auto ? 'working' : 'done', auto ? 'checking' : 'refreshed');
+      }
       return response;
     }
 
@@ -909,9 +976,6 @@
         ensureWalletMatchesLinkedAddress(draft);
         await signMessage();
         await submitPlaceOrder();
-        setTimeout(async () => {
-          try { await refreshOrderStatus(true); } catch (_) {}
-        }, 4000);
       } catch (err) {
         const msg = err && err.message ? err.message : 'Unexpected error.';
         $('statusLine').textContent = msg;
