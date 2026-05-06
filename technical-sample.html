@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PayeeProof — integration quickstart</title>
-  <meta name="description" content="Minimal PayeeProof integration docs: one request, two working examples, and three sample responses." />
-  <meta property="og:title" content="PayeeProof — integration quickstart" />
-  <meta property="og:description" content="Minimal PayeeProof integration docs for teams that want to get to a first successful call fast." />
+  <title>PayeeProof — AI-era risk-control API quickstart</title>
+  <meta name="description" content="Minimal PayeeProof integration docs for adding no-custody risk control to AI-driven financial operations." />
+  <meta property="og:title" content="PayeeProof — AI-era risk-control API quickstart" />
+  <meta property="og:description" content="Minimal PayeeProof integration docs for teams that want a first risk-control call before funds move." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -223,9 +223,9 @@
     <section class="hero" id="start">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <div class="pill">Minimal docs · pre-send first</div>
-          <h1>Integrate PayeeProof in 5–10 minutes.</h1>
-          <p class="lead">One endpoint. One API key. One clear answer before funds move. This page is intentionally small: one quickstart request, two working code examples, and three sample responses. The primary operator outcomes are <strong>SAFE</strong>, <strong>BLOCK</strong>, <strong>REVERIFY</strong>, and <strong>TEST FIRST</strong>; <strong>UNAVAILABLE</strong> is a retry or manual-review state, not a green light.</p>
+          <div class="pill">Minimal docs · AI-era risk control</div>
+          <h1>Add a pre-send control call in 5–10 minutes.</h1>
+          <p class="lead">One endpoint. One API key. One clear control answer before funds move. This page is intentionally small: one quickstart request, two working code examples, and three sample responses. The primary operator outcomes are <strong>SAFE</strong>, <strong>BLOCK</strong>, <strong>REVERIFY</strong>, and <strong>TEST FIRST</strong>; <strong>UNAVAILABLE</strong> is a retry or manual-review state, not a green light.</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="#curl">Start with cURL</a>
             <a class="btn btn-secondary" href="https://raw.githubusercontent.com/omarakhmedov-web/payeeproof/main/examples/node-preflight.js" target="_blank" rel="noopener noreferrer">Download Node.js example</a>
@@ -246,7 +246,7 @@
             </div>
             <div class="kv">
               <div class="k">What you get back</div>
-              <div class="v">verdict, reason_code, next_action, confidence, proof</div>
+              <div class="v">verdict, reason_code, next_action, confidence_score, risk_level, AI risk context, proof</div>
             </div>
           </div>
         </div>
@@ -285,7 +285,7 @@ Response:
             <div class="list">
               <div class="list-item"><strong>expected.network / provided.network</strong><span>Lower friction if you normalize chain names before the request.</span></div>
               <div class="list-item"><strong>expected.asset / provided.asset</strong><span>Use a stable symbol such as USDC or USDT.</span></div>
-              <div class="list-item"><strong>expected.address / provided.address</strong><span>These are the most important fields for a first integration.</span></div>
+              <div class="list-item"><strong>expected.address / provided.address</strong><span>These are the most important fields for a first risk-control integration.</span></div>
               <div class="list-item"><strong>memo</strong><span>Optional. Include it for memo or tag based destinations.</span></div>
               <div class="list-item"><strong>context</strong><span>Optional but useful for your own reference_id and policy_profile.</span></div>
             </div>
@@ -294,7 +294,7 @@ Response:
             <h3 style="margin-bottom:14px;">Fast mental model</h3>
             <div class="list">
               <div class="list-item"><strong>SAFE</strong><span>The route matches and looks operationally normal.</span></div>
-              <div class="list-item"><strong>BLOCK</strong><span>Stop. Something is clearly wrong.</span></div>
+              <div class="list-item"><strong>BLOCK</strong><span>Stop. Something is clearly wrong or too risky for release.</span></div>
               <div class="list-item"><strong>TEST FIRST</strong><span>The route may be valid, but it behaves like infrastructure or an app.</span></div>
               <div class="list-item"><strong>REVERIFY</strong><span>Pause and confirm memo, venue, or destination details.</span></div>
               <div class="list-item"><strong>UNAVAILABLE</strong><span>Retry or route to manual review because live lookup did not complete cleanly.</span></div>
@@ -355,7 +355,7 @@ Response:
           <div class="card panel">
             <div class="badge warn">Python</div>
             <h3 style="margin-top:14px;">Simple <code>requests</code> example</h3>
-            <p class="mini" style="margin-top:10px;">Reads <code>PAYEEPROOF_API_KEY</code> from env, sends one request, prints a compact summary, and exits with error details if the call fails.</p>
+            <p class="mini" style="margin-top:10px;">Reads <code>PAYEEPROOF_API_KEY</code> from env, sends one request, prints a compact risk-control summary, and exits with error details if the call fails.</p>
             <div class="btn-row" style="margin-top:16px;">
               <a class="btn btn-primary" href="https://raw.githubusercontent.com/omarakhmedov-web/payeeproof/main/examples/python-preflight.py" target="_blank" rel="noopener noreferrer">Open file</a>
             </div>
@@ -367,7 +367,7 @@ Response:
     <section class="section-sm" id="responses">
       <div class="container">
         <div class="eyebrow">3. Sample responses</div>
-        <h2>These three shapes are enough for a practical first integration.</h2>
+        <h2>These three shapes are enough for a practical first risk-control integration.</h2>
         <div class="outcome-grid" style="margin-top:28px;">
           <div class="card outcome">
             <div class="badge ok">SAFE</div>
@@ -381,7 +381,7 @@ Response:
           </div>
           <div class="card outcome">
             <div class="badge warn">TEST FIRST</div>
-            <p>Route may be valid, but it behaves like infrastructure or an app rather than a plain wallet.</p>
+            <p>Route may be valid, but it behaves like infrastructure or an app rather than a plain wallet, so the safest action is to test small or reverify.</p>
             <div class="btn-row" style="margin-top:16px;"><a class="btn btn-secondary" href="https://raw.githubusercontent.com/omarakhmedov-web/payeeproof/main/examples/response-test-first.json" target="_blank" rel="noopener noreferrer">Open JSON</a></div>
           </div>
         </div>
@@ -403,8 +403,14 @@ Response:
   "next_action": "SAFE_TO_PROCEED",
   "next_action_label": "Proceed with the payment",
   "confidence": "High",
+  "confidence_score": 92,
+  "risk_level": "low",
   "summary": "Core details match and the destination looks like a personal wallet.",
   "why_this_verdict": "Network, asset, address, and memo or tag checks matched cleanly, and the destination looks like a normal wallet rather than infrastructure.",
+  "ai_risk_context": {
+    "pills": ["Human verification preserved", "Low route ambiguity"],
+    "summary": "The submitted payout route is suitable for normal approval in an AI-assisted operations workflow."
+  },
   "risk_flags": [],
   "checks": {
     "network_match": true,
@@ -449,8 +455,14 @@ Response:
   "next_action": "BLOCK_AND_REVERIFY",
   "next_action_label": "Block and re-verify the destination",
   "confidence": "High",
+  "confidence_score": 96,
+  "risk_level": "high",
   "summary": "The submitted payout details do not match the approved instructions.",
   "why_this_verdict": "The submitted destination is on a different chain than the approved request. This is the classic wrong-network mistake.",
+  "ai_risk_context": {
+    "pills": ["Fast execution risk", "Human re-check required"],
+    "summary": "Do not let an automated or AI-assisted payout workflow release funds until the route is corrected."
+  },
   "risk_flags": ["NETWORK_MISMATCH"],
   "checks": {
     "network_match": false,
@@ -495,8 +507,14 @@ Response:
   "next_action": "TEST_FIRST",
   "next_action_label": "Send a small test first",
   "confidence": "Medium",
+  "confidence_score": 68,
+  "risk_level": "medium",
   "summary": "The details match, but the destination looks like a contract or app.",
   "why_this_verdict": "Contract destinations can accept funds differently from a personal wallet. A small test first reduces irreversible mistakes.",
+  "ai_risk_context": {
+    "pills": ["Destination ambiguity", "Small test recommended"],
+    "summary": "The route should not be treated as a normal wallet approval inside an AI-assisted finance workflow."
+  },
   "risk_flags": ["DESTINATION_IS_CONTRACT_OR_APP"],
   "checks": {
     "network_match": true,
