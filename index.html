@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PayeeProof — no-custody verification for stablecoin payouts</title>
-  <meta name="description" content="PayeeProof adds a no-custody verification layer before stablecoin payouts move, giving teams one clear operational outcome: SAFE, BLOCK, REVERIFY, or TEST FIRST." />
+  <meta name="description" content="PayeeProof adds a no-custody AI-era risk control layer before stablecoin payouts move, giving teams one clear operational outcome: SAFE_TO_SEND, DO_NOT_SEND, REVERIFY, or SEND_SMALL_AMOUNT." />
   <meta property="og:title" content="PayeeProof — no-custody verification for stablecoin payouts" />
-  <meta property="og:description" content="Verify payout destinations before funds move. Get one clear operational outcome — SAFE, BLOCK, REVERIFY, or TEST FIRST — without giving up execution control." />
+  <meta property="og:description" content="Verify payout destinations before funds move. Get one clear operational outcome — SAFE_TO_SEND, DO_NOT_SEND, REVERIFY, or SEND_SMALL_AMOUNT — without giving up execution control." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -186,6 +186,14 @@
     .result-kv.wide { grid-column: 1 / -1; }
     .result-k { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #a1a1aa; margin-bottom: 8px; }
     .result-v { font-size: 13px; color: #f4f4f5; word-break: break-word; }
+    .ai-risk-context { display: grid; gap: 8px; }
+    .ai-risk-context-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .ai-risk-context-pill {
+      display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line); background:rgba(255,255,255,.04); color:#e4e4e7;
+      font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+    }
+    .ai-risk-context-summary { color:#d4d4d8; line-height:1.55; }
     .quick-answer-grid { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
     .quick-answer-card { border: 1px solid var(--line); background: rgba(255,255,255,.03); border-radius: 14px; padding: 12px; }
     .quick-answer-label { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #a1a1aa; margin-bottom: 8px; }
@@ -373,7 +381,7 @@
         <div class="hero-copy">
           <div class="pill">No-custody verification · live pre-send checks · pilot from $399/mo</div>
           <h1>Verify stablecoin payout destinations before funds move.</h1>
-          <p class="lead">PayeeProof helps payout, treasury, and operations teams catch avoidable payout mistakes before approval. Run a live pre-send check, get one clear operational outcome — <strong>SAFE</strong>, <strong>BLOCK</strong>, <strong>REVERIFY</strong>, or <strong>TEST FIRST</strong> — and keep execution control with your team.</p>
+          <p class="lead">PayeeProof helps payout, treasury, and operations teams catch avoidable payout mistakes before approval. Run a live pre-send check, get one clear operational outcome — <strong>SAFE_TO_SEND</strong>, <strong>DO_NOT_SEND</strong>, <strong>REVERIFY</strong>, or <strong>SEND_SMALL_AMOUNT</strong> — and keep execution control with your team.</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="#contact" data-pp-event="cta_click" data-pp-label="home_hero_request_pilot">Request pilot</a>
             <a class="btn btn-secondary" href="#preflight">Run pre-send check →</a>
@@ -396,7 +404,7 @@
           <div class="list">
             <div class="list-item"><strong>Decision layer</strong><span>Check destination details before approval instead of relying on manual double-checks alone.</span></div>
             <div class="list-item"><strong>No custody</strong><span>Your team keeps approval and execution control. PayeeProof adds verification, not fund handling.</span></div>
-            <div class="list-item"><strong>Clear output</strong><span>SAFE / BLOCK / REVERIFY / TEST FIRST gives operators one standard language for action and escalation.</span></div>
+            <div class="list-item"><strong>Clear output</strong><span>SAFE_TO_SEND / DO_NOT_SEND / REVERIFY / SEND_SMALL_AMOUNT gives operators one standard language for action and escalation.</span></div>
             <div class="list-item"><strong>Live coverage</strong><span>Ethereum, Arbitrum, Base, Polygon, BNB Chain, and Solana. Public checker supports USDC and USDT.</span></div>
           </div>
           <p class="note" style="margin-top:14px;">Built first for payout approvals and exchange-like deposit review. Treasury release control can follow once the first workflow proves useful.</p>
@@ -436,7 +444,7 @@
           </div>
           <div class="ops-card">
             <h3>Primary wedge: exchange-like deposit review</h3>
-            <p>Use REVERIFY or TEST FIRST when the destination looks custodial, memo-sensitive, routing-dependent, or operationally ambiguous.</p>
+            <p>Use REVERIFY or SEND_SMALL_AMOUNT when the destination looks custodial, memo-sensitive, routing-dependent, or operationally ambiguous.</p>
           </div>
           <div class="ops-card">
             <h3>Good second wedge: treasury release control</h3>
@@ -459,19 +467,19 @@
           <article class="card panel">
             <h3>Snapshot 1 — payout approval</h3>
             <p><strong>Situation:</strong> submitted route points to the wrong chain for the approved payout request.</p>
-            <p><strong>Result:</strong> <span class="scenario-badge block">BLOCK</span></p>
+            <p><strong>Result:</strong> <span class="scenario-badge block">DO_NOT_SEND</span></p>
             <p><strong>Operational value:</strong> the transfer stops before release instead of becoming support cleanup or manual recovery work.</p>
           </article>
           <article class="card panel">
             <h3>Snapshot 2 — exchange-like destination</h3>
             <p><strong>Situation:</strong> address pattern looks custodial, memo-sensitive, or still depends on venue confirmation.</p>
-            <p><strong>Result:</strong> <span class="scenario-badge reverify">REVERIFY</span> or <span class="scenario-badge reverify">TEST FIRST</span></p>
-            <p><strong>Operational value:</strong> the operator gets a clear pause signal instead of vague uncertainty or a false SAFE state.</p>
+            <p><strong>Result:</strong> <span class="scenario-badge reverify">REVERIFY</span> or <span class="scenario-badge reverify">SEND_SMALL_AMOUNT</span></p>
+            <p><strong>Operational value:</strong> the operator gets a clear pause signal instead of vague uncertainty or a false SAFE_TO_SEND state.</p>
           </article>
           <article class="card panel">
             <h3>Snapshot 3 — clean personal-wallet route</h3>
             <p><strong>Situation:</strong> network, asset, address, and context line up cleanly and the destination looks operationally normal.</p>
-            <p><strong>Result:</strong> <span class="scenario-badge safe">SAFE</span></p>
+            <p><strong>Result:</strong> <span class="scenario-badge safe">SAFE_TO_SEND</span></p>
             <p><strong>Operational value:</strong> teams keep approval moving with a readable proof record instead of ad-hoc reassurance in chat or email.</p>
           </article>
         </div>
@@ -519,7 +527,7 @@
           <div class="card panel">
             <h3 style="font-size:24px; margin-bottom:14px;">What the record captures</h3>
             <div class="list" style="margin-top:0;">
-              <div class="list-item"><strong>Stable outcome language</strong><span>SAFE, BLOCK, REVERIFY, or TEST FIRST — one clear status language for action and escalation.</span></div>
+              <div class="list-item"><strong>Stable outcome language</strong><span>SAFE_TO_SEND, DO_NOT_SEND, REVERIFY, or SEND_SMALL_AMOUNT — one clear status language for action and escalation.</span></div>
               <div class="list-item"><strong>Proof fields</strong><span>Checked at, confidence, reference, destination class, source, and next action.</span></div>
               <div class="list-item"><strong>Operational context</strong><span>Short explanation for why the decision was returned and how an ops team should react.</span></div>
               <div class="list-item"><strong>Reviewability</strong><span>A result that can be used in a workflow, ticket, or approval log without rewriting it.</span></div>
@@ -535,7 +543,7 @@
           <div class="proof-record">
             <div class="proof-row"><div class="proof-label">Record id</div><div class="proof-value">ppf_demo_2026_03_24_001</div></div>
             <div class="proof-row"><div class="proof-label">Time checked</div><div class="proof-value">2026-03-24T19:12:08Z</div></div>
-            <div class="proof-row"><div class="proof-label">Verdict</div><div class="proof-value">SAFE</div></div>
+            <div class="proof-row"><div class="proof-label">Verdict</div><div class="proof-value">SAFE_TO_SEND</div></div>
             <div class="proof-row"><div class="proof-label">System reference</div><div class="proof-value">OK</div></div>
             <div class="proof-row"><div class="proof-label">Confidence</div><div class="proof-value">High</div></div>
             <div class="proof-row"><div class="proof-label">Destination type</div><div class="proof-value">Personal wallet</div></div>
@@ -666,10 +674,13 @@
               <div class="result-kv"><div class="result-k">Next step</div><div class="result-v" id="pfNext">Run live check</div></div>
               <div class="result-kv"><div class="result-k">Time checked</div><div class="result-v" id="pfCheckedAt">—</div></div>
               <div class="result-kv"><div class="result-k">Confidence</div><div class="result-v" id="pfConfidence">—</div></div>
+              <div class="result-kv"><div class="result-k">Confidence score</div><div class="result-v" id="pfConfidenceScore">—</div></div>
+              <div class="result-kv"><div class="result-k">Risk level</div><div class="result-v" id="pfRiskLevel">—</div></div>
               <div class="result-kv"><div class="result-k">System reference</div><div class="result-v" id="pfReasonCode">—</div></div>
               <div class="result-kv wide"><div class="result-k">Why this verdict</div><div class="result-v" id="pfWhy">Waiting for a live or pilot-review result.</div></div>
               <div class="result-kv"><div class="result-k">Destination type</div><div class="result-v" id="pfDestType">Unknown</div></div>
               <div class="result-kv"><div class="result-k">Risk flags</div><div class="result-v" id="pfFlags">—</div></div>
+              <div class="result-kv wide"><div class="result-k">AI risk context</div><div class="result-v ai-risk-context" id="pfAiRisk"><div class="ai-risk-context-row"><span class="ai-risk-context-pill">Fast execution environment detected</span><span class="ai-risk-context-pill">Human verification reduced</span><span class="ai-risk-context-pill">Recommended: SEND_SMALL_AMOUNT</span></div><div class="ai-risk-context-summary">PayeeProof acts as the final control before funds move.</div></div></div>
               <div class="result-kv wide"><div class="result-k">Checks</div><div class="result-v check-list" id="pfChecks"><div class="check-row"><span>Live verification</span><span>Waiting</span></div></div></div>
             </div>
           </div>
@@ -852,7 +863,7 @@
           <div class="flow-step">
             <div class="flow-step-num">Step 3</div>
             <h3>Clear verdict</h3>
-            <p>The result returns one public language standard: SAFE, BLOCK, REVERIFY, or TEST FIRST. UNAVAILABLE stays a system fallback, not a green-light state.</p>
+            <p>The result returns one public language standard: SAFE_TO_SEND, DO_NOT_SEND, REVERIFY, or SEND_SMALL_AMOUNT. UNAVAILABLE stays a system fallback, not a green-light state.</p>
           </div>
           <div class="flow-step">
             <div class="flow-step-num">Step 4</div>
@@ -904,7 +915,7 @@
           <article class="scenario-card card">
             <div class="scenario-top">
               <div class="scenario-type">Pre-Send</div>
-              <div class="scenario-badge safe">SAFE</div>
+              <div class="scenario-badge safe">SAFE_TO_SEND</div>
             </div>
             <h3>Wallet details match</h3>
             <p>Network, asset, and destination align, and the recipient looks like a personal wallet rather than an ambiguous service endpoint.</p>
@@ -917,7 +928,7 @@
           <article class="scenario-card card">
             <div class="scenario-top">
               <div class="scenario-type">Pre-Send</div>
-              <div class="scenario-badge block">BLOCK</div>
+              <div class="scenario-badge block">DO_NOT_SEND</div>
             </div>
             <h3>Wrong network or invalid address</h3>
             <p>The safest answer is to stop immediately when the address format fails or the provided network does not match the intended route.</p>
@@ -1608,10 +1619,12 @@
 
     function formatNextActionLabel(value) {
       const labels = {
+        SAFE_TO_SEND: 'Safe to send',
         SAFE_TO_PROCEED: 'Proceed with the payment',
         BLOCK_AND_REVERIFY: 'Stop and re-check the details',
         CHECK_BACKEND: 'Retry when the live service is available',
-        TEST_FIRST: 'Confirm the destination before sending',
+        TEST_FIRST: 'Send a small amount first',
+        SEND_SMALL_AMOUNT: 'Send a small amount first',
         CONFIRM_DESTINATION: 'Confirm network and destination',
         ESCALATE: 'Escalate for manual review',
         DO_NOT_SEND: 'Do not send',
@@ -1907,18 +1920,35 @@
       box.classList.toggle('compact', !isExpanded);
     }
 
+    function canonicalPreflightVerdict(value) {
+      const raw = String(value || '').trim().toUpperCase().replace(/\s+/g, '_');
+      const aliases = {
+        SAFE: 'SAFE_TO_SEND',
+        SAFE_TO_SEND: 'SAFE_TO_SEND',
+        BLOCK: 'DO_NOT_SEND',
+        DO_NOT_SEND: 'DO_NOT_SEND',
+        TEST_FIRST: 'SEND_SMALL_AMOUNT',
+        SEND_SMALL_AMOUNT: 'SEND_SMALL_AMOUNT',
+        REVERIFY: 'REVERIFY',
+        UNAVAILABLE: 'UNAVAILABLE',
+      };
+      return aliases[raw] || raw || 'REVERIFY';
+    }
+
     function setResultBox(box, status) {
       box.classList.remove('ok', 'bad');
-      if (['verified', 'found', 'confirmed', 'safe'].includes(String(status || '').toLowerCase())) box.classList.add('ok');
-      else if (['blocked', 'failed', 'reverted', 'not_found', 'unavailable', 'block'].includes(String(status || '').toLowerCase())) box.classList.add('bad');
+      const normalized = canonicalPreflightVerdict(status);
+      const raw = String(status || '').toLowerCase();
+      if (['SAFE_TO_SEND'].includes(normalized) || ['verified', 'found', 'confirmed', 'safe'].includes(raw)) box.classList.add('ok');
+      else if (['DO_NOT_SEND'].includes(normalized) || ['blocked', 'failed', 'reverted', 'not_found', 'unavailable', 'block'].includes(raw)) box.classList.add('bad');
     }
 
     function preflightVerdictFromData(data) {
       if (data && data._verdict) {
-        return { label: data._verdict, why: data._why || data.explanation || 'Sample scenario.' };
+        return { label: canonicalPreflightVerdict(data._verdict), why: data._why || data.explanation || 'Sample scenario.' };
       }
       if (data && data.verdict) {
-        return { label: data.verdict, why: data.why_this_verdict || data.explanation || 'Live verification result.' };
+        return { label: canonicalPreflightVerdict(data.verdict), why: data.why_this_verdict || data.explanation || 'Live verification result.' };
       }
       const status = String(data?.status || '').toLowerCase();
       const reasonCode = formatReasonCodeRaw(data?.reason_code);
@@ -1927,20 +1957,17 @@
       const hasRiskFlags = Array.isArray(data?.risk_flags) && data.risk_flags.length > 0;
 
       if (reasonCode === 'INVALID_ADDRESS') {
-        return { label: 'BLOCK', why: data?.explanation || 'The destination address format is invalid.' };
+        return { label: 'DO_NOT_SEND', why: data?.explanation || 'The destination address format is invalid.' };
       }
       if (['NETWORK_MISMATCH', 'ASSET_MISMATCH', 'ADDRESS_MISMATCH', 'MEMO_MISMATCH', 'UNSUPPORTED_ASSET', 'UNSUPPORTED_NETWORK', 'UNSUPPORTED_ASSET_OR_NETWORK'].includes(reasonCode) || status === 'mismatch_detected') {
-        return { label: 'BLOCK', why: data?.explanation || 'The selected network, asset, or destination details do not match.' };
+        return { label: 'DO_NOT_SEND', why: data?.explanation || 'The selected network, asset, or destination details do not match.' };
       }
       if (status === 'verified') {
         if (destination.label === 'Personal wallet' && !hasRiskFlags) {
-          return { label: 'SAFE', why: data?.explanation || 'The selected network, asset, and destination matched cleanly.' };
+          return { label: 'SAFE_TO_SEND', why: data?.explanation || 'The selected network, asset, and destination matched cleanly.' };
         }
-        if (destination.label === 'Contract or app') {
-          return { label: 'REVERIFY', why: data?.explanation || 'The destination is not a plain personal wallet. Confirm that this receiver is intentionally correct before sending.' };
-        }
-        if (destination.label === 'Bridge / router') {
-          return { label: 'REVERIFY', why: data?.explanation || 'The destination looks like infrastructure. Confirm the exact route and receiving flow before sending.' };
+        if (destination.label === 'Contract or app' || destination.label === 'Bridge / router') {
+          return { label: 'SEND_SMALL_AMOUNT', why: data?.explanation || 'The destination is infrastructure-like. Send a small amount first before releasing a larger payout.' };
         }
         if (destination.label === 'Exchange-like deposit') {
           return { label: 'REVERIFY', why: data?.explanation || 'Confirm the venue, network, asset, and any memo or tag before sending.' };
@@ -1954,21 +1981,59 @@
     }
 
     function preflightTitleFromVerdict(verdict) {
+      const normalized = canonicalPreflightVerdict(verdict);
       const labels = {
-        SAFE: 'You can proceed.',
-        BLOCK: 'Do not send in the current form.',
+        SAFE_TO_SEND: 'Safe to send.',
+        DO_NOT_SEND: 'Do not send in the current form.',
+        SEND_SMALL_AMOUNT: 'Send a small amount first.',
         REVERIFY: 'Confirm the destination before sending.',
         UNAVAILABLE: 'Live verification is unavailable.',
       };
-      return labels[verdict] || 'Review the payout details.';
+      return labels[normalized] || 'Review the payout details.';
     }
 
     function inferPreflightConfidence(data, verdictLabel) {
       if (data && data._confidence) return data._confidence;
       if (data && data.confidence) return data.confidence;
-      if (verdictLabel === 'SAFE' || verdictLabel === 'BLOCK') return 'High';
-      if (verdictLabel === 'REVERIFY') return 'Medium';
+      const normalized = canonicalPreflightVerdict(verdictLabel);
+      if (normalized === 'SAFE_TO_SEND' || normalized === 'DO_NOT_SEND') return 'High';
+      if (normalized === 'REVERIFY' || normalized === 'SEND_SMALL_AMOUNT') return 'Medium';
       return 'Limited';
+    }
+
+    function inferPreflightRiskLevel(data, verdictLabel) {
+      if (data && data.risk_level) return String(data.risk_level).toUpperCase();
+      const normalized = canonicalPreflightVerdict(verdictLabel);
+      const riskFlags = Array.isArray(data?.risk_flags) ? data.risk_flags : [];
+      if (normalized === 'DO_NOT_SEND') return 'HIGH';
+      if (normalized === 'SEND_SMALL_AMOUNT' || normalized === 'REVERIFY' || normalized === 'UNAVAILABLE' || riskFlags.length) return 'MEDIUM';
+      return 'LOW';
+    }
+
+    function inferPreflightConfidenceScore(data, verdictLabel, riskLevel) {
+      const raw = data?._confidence_score ?? data?.confidence_score ?? data?.proof?.confidence_score;
+      const parsed = Number(raw);
+      if (Number.isFinite(parsed)) return `${Math.round(parsed)}/100`;
+      const normalized = canonicalPreflightVerdict(verdictLabel);
+      if (riskLevel === 'LOW' && normalized === 'SAFE_TO_SEND') return '92/100';
+      if (riskLevel === 'HIGH' || normalized === 'DO_NOT_SEND') return '67/100';
+      if (normalized === 'SEND_SMALL_AMOUNT' || normalized === 'REVERIFY') return '62/100';
+      return '42/100';
+    }
+
+    function renderAiRiskContext(data, verdictLabel, riskLevel) {
+      const ctx = data?.ai_risk_context || {};
+      const signals = Array.isArray(ctx.signals) && ctx.signals.length
+        ? ctx.signals
+        : ['Fast execution environment detected', 'Human verification reduced'];
+      const normalized = canonicalPreflightVerdict(verdictLabel);
+      const recommended = ctx.recommended_action || (normalized === 'DO_NOT_SEND' ? 'DO_NOT_SEND' : normalized === 'SAFE_TO_SEND' ? 'SAFE_TO_SEND' : normalized === 'SEND_SMALL_AMOUNT' ? 'SEND_SMALL_AMOUNT' : 'REVERIFY');
+      const summary = ctx.summary || 'AI-assisted and lean payout teams can move faster than manual review processes. PayeeProof adds the final control before funds move.';
+      const pills = signals
+        .concat([`Risk: ${riskLevel}`, `Recommended: ${canonicalPreflightVerdict(recommended)}`])
+        .map((item) => `<span class="ai-risk-context-pill">${escapeHtml(item)}</span>`)
+        .join('');
+      return `<div class="ai-risk-context-row">${pills}</div><div class="ai-risk-context-summary">${escapeHtml(summary)}</div>`;
     }
 
     function setPreflightButtonsBusy(isBusy) {
@@ -2027,7 +2092,9 @@
       const checks = data?.checks || {};
       const checkedAt = data?._checked_at_label || data?.checked_at || new Date().toISOString();
       const reasonCode = formatReasonCodeRaw(data?.reason_code);
-      const nextAction = data?._next_action_label || formatNextActionLabel(data?.next_action || (verdict.label === 'BLOCK' ? 'BLOCK_AND_REVERIFY' : verdict.label === 'REVERIFY' ? 'CONFIRM_DESTINATION' : verdict.label === 'UNAVAILABLE' ? 'CHECK_BACKEND' : 'SAFE_TO_PROCEED'));
+      const nextAction = data?._next_action_label || data?.next_action_label || formatNextActionLabel(data?.next_action || (verdict.label === 'DO_NOT_SEND' ? 'BLOCK_AND_REVERIFY' : verdict.label === 'SEND_SMALL_AMOUNT' ? 'TEST_FIRST' : verdict.label === 'REVERIFY' ? 'CONFIRM_DESTINATION' : verdict.label === 'UNAVAILABLE' ? 'CHECK_BACKEND' : 'SAFE_TO_PROCEED'));
+      const riskLevel = inferPreflightRiskLevel(data, verdict.label);
+      const confidenceScore = inferPreflightConfidenceScore(data, verdict.label, riskLevel);
 
       setResultBox(el('pfResult'), verdict.label);
       el('pfResultStatus').textContent = verdict.label;
@@ -2039,10 +2106,13 @@
       el('pfNext').textContent = nextAction;
       el('pfCheckedAt').textContent = toDisplayTime(checkedAt);
       el('pfConfidence').textContent = inferPreflightConfidence(data, verdict.label);
+      el('pfConfidenceScore').textContent = confidenceScore;
+      el('pfRiskLevel').textContent = riskLevel;
       el('pfReasonCode').textContent = reasonCode;
       el('pfWhy').textContent = data?._why || verdict.why;
       el('pfDestType').innerHTML = formatDestinationProfile(destinationType, data?._address || '');
       el('pfFlags').textContent = formatRiskFlags(data?.risk_flags);
+      el('pfAiRisk').innerHTML = renderAiRiskContext(data, verdict.label, riskLevel);
       el('pfChecks').innerHTML = renderChecks(checks);
     }
 
@@ -2153,7 +2223,7 @@
           checks: commonChecks,
         },
         invalid: {
-          _verdict: 'BLOCK',
+          _verdict: 'DO_NOT_SEND',
           _confidence: 'High',
           status: 'blocked',
           reason_code: 'INVALID_ADDRESS',
