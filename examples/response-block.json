@@ -12,8 +12,17 @@
   "next_action": "BLOCK_AND_REVERIFY",
   "next_action_label": "Block and re-verify the destination",
   "confidence": "High",
+  "confidence_score": 96,
+  "risk_level": "high",
   "summary": "The submitted payout details do not match the approved instructions.",
   "why_this_verdict": "The submitted destination is on a different chain than the approved request. This is the classic wrong-network mistake.",
+  "ai_risk_context": {
+    "pills": [
+      "Fast execution risk",
+      "Human re-check required"
+    ],
+    "summary": "Do not let an automated or AI-assisted payout workflow release funds until the route is corrected."
+  },
   "risk_flags": [
     "NETWORK_MISMATCH"
   ],
