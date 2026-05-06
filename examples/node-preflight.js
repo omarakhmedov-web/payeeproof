@@ -58,10 +58,16 @@ async function run() {
   console.log(`Reason: ${data.reason_code}`);
   console.log(`Next action: ${data.next_action}`);
   console.log(`Confidence: ${data.confidence}`);
+  console.log(`Confidence score: ${data.confidence_score ?? "n/a"}`);
+  console.log(`Risk level: ${data.risk_level || "n/a"}`);
   console.log(`Record ID: ${data.record_id || "n/a"}`);
 
   if (data.why_this_verdict) {
     console.log(`Why: ${data.why_this_verdict}`);
+  }
+
+  if (data.ai_risk_context?.summary) {
+    console.log(`AI risk context: ${data.ai_risk_context.summary}`);
   }
 }
 
