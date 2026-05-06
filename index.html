@@ -680,7 +680,7 @@
               <div class="result-kv wide"><div class="result-k">Why this verdict</div><div class="result-v" id="pfWhy">Waiting for a live or pilot-review result.</div></div>
               <div class="result-kv"><div class="result-k">Destination type</div><div class="result-v" id="pfDestType">Unknown</div></div>
               <div class="result-kv"><div class="result-k">Risk flags</div><div class="result-v" id="pfFlags">—</div></div>
-              <div class="result-kv wide"><div class="result-k">AI risk context</div><div class="result-v ai-risk-context" id="pfAiRisk"><div class="ai-risk-context-row"><span class="ai-risk-context-pill">Fast execution environment detected</span><span class="ai-risk-context-pill">Human verification reduced</span><span class="ai-risk-context-pill">Recommended: SEND_SMALL_AMOUNT</span></div><div class="ai-risk-context-summary">PayeeProof acts as the final control before funds move.</div></div></div>
+              <div class="result-kv wide"><div class="result-k">AI risk context</div><div class="result-v ai-risk-context" id="pfAiRisk"><div class="ai-risk-context-row"><span class="ai-risk-context-pill">Fast execution environment detected</span><span class="ai-risk-context-pill">Human verification reduced</span><span class="ai-risk-context-pill">Waiting for live result</span></div><div class="ai-risk-context-summary">Run a live check to generate the final recommendation.</div></div></div>
               <div class="result-kv wide"><div class="result-k">Checks</div><div class="result-v check-list" id="pfChecks"><div class="check-row"><span>Live verification</span><span>Waiting</span></div></div></div>
             </div>
           </div>
@@ -2036,6 +2036,13 @@
       return `<div class="ai-risk-context-row">${pills}</div><div class="ai-risk-context-summary">${escapeHtml(summary)}</div>`;
     }
 
+    function renderAiRiskPendingContext(message = 'Waiting for live result') {
+      const pills = ['Fast execution environment detected', 'Human verification reduced', message]
+        .map((item) => `<span class="ai-risk-context-pill">${escapeHtml(item)}</span>`)
+        .join('');
+      return `<div class="ai-risk-context-row">${pills}</div><div class="ai-risk-context-summary">Run a live check to generate the final recommendation.</div>`;
+    }
+
     function setPreflightButtonsBusy(isBusy) {
       const ids = ['pfRunBtn', 'pfHappyBtn', 'pfMismatchBtn', 'pfContractDemoBtn', 'pfExchangeDemoBtn', 'pfInvalidDemoBtn', 'pfUnsupportedDemoBtn'];
       ids.forEach((id) => {
@@ -2069,6 +2076,7 @@
         el('pfWhy').textContent = 'Waiting for the live response.';
         el('pfDestType').textContent = 'Checking…';
         el('pfFlags').textContent = 'Checking…';
+        el('pfAiRisk').innerHTML = renderAiRiskPendingContext('Waiting for live result');
         el('pfChecks').innerHTML = '<div class="check-row"><span>Live verification</span><span>Running</span></div>';
         return;
       }
@@ -2083,6 +2091,7 @@
       el('pfWhy').textContent = 'Waiting for a live or pilot-review result.';
       el('pfDestType').textContent = 'Unknown';
       el('pfFlags').textContent = '—';
+      el('pfAiRisk').innerHTML = renderAiRiskPendingContext('Waiting for live result');
       el('pfChecks').innerHTML = '<div class="check-row"><span>Live verification</span><span>Not run yet</span></div>';
     }
 
