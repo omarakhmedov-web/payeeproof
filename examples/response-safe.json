@@ -12,8 +12,17 @@
   "next_action": "SAFE_TO_PROCEED",
   "next_action_label": "Proceed with the payment",
   "confidence": "High",
+  "confidence_score": 92,
+  "risk_level": "low",
   "summary": "Core details match and the destination looks like a personal wallet.",
   "why_this_verdict": "Network, asset, address, and memo or tag checks matched cleanly, and the destination looks like a normal wallet rather than infrastructure.",
+  "ai_risk_context": {
+    "pills": [
+      "Human verification preserved",
+      "Low route ambiguity"
+    ],
+    "summary": "The submitted payout route is suitable for normal approval in an AI-assisted operations workflow."
+  },
   "risk_flags": [],
   "checks": {
     "network_match": true,
