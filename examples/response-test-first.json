@@ -12,8 +12,17 @@
   "next_action": "TEST_FIRST",
   "next_action_label": "Send a small test first",
   "confidence": "Medium",
+  "confidence_score": 68,
+  "risk_level": "medium",
   "summary": "The details match, but the destination looks like a contract or app.",
   "why_this_verdict": "Contract destinations can accept funds differently from a personal wallet. A small test first reduces irreversible mistakes.",
+  "ai_risk_context": {
+    "pills": [
+      "Destination ambiguity",
+      "Small test recommended"
+    ],
+    "summary": "The route should not be treated as a normal wallet approval inside an AI-assisted finance workflow."
+  },
   "risk_flags": [
     "DESTINATION_IS_CONTRACT_OR_APP"
   ],
