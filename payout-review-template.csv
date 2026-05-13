@@ -1,0 +1,4 @@
+reference_id,flow_type,expected_network,expected_asset,expected_address,expected_memo,provided_network,provided_asset,provided_address,provided_memo,recipient_type,notes
+PP-DEMO-001,contractor_payout,Polygon,USDC,0x1111111111111111111111111111111111111111,,Polygon,USDC,0x1111111111111111111111111111111111111111,,contractor,"Monthly contractor payout, first payment to this wallet"
+PP-DEMO-002,affiliate_payout,TRON,USDT,TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX,,Ethereum,USDT,0x2222222222222222222222222222222222222222,,affiliate,"Recipient pasted an address from a different network"
+PP-DEMO-003,refund,Solana,USDC,So11111111111111111111111111111111111111112,,Solana,USDC,So11111111111111111111111111111111111111112,,customer,"High-value refund, operator wants a second check before sending"

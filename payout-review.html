@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Free payout safety review | PayeeProof</title>
+  <meta name="description" content="Send 10 anonymized USDC or USDT payout scenarios. PayeeProof returns a pre-send review with clear payout decisions and proof records. No integration required." />
+  <meta property="og:title" content="Free payout safety review | PayeeProof" />
+  <meta property="og:description" content="A no-integration way to test PayeeProof on real stablecoin payout risk before starting a pilot." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://payeeproof.com/payeeproof-logo.png" />
+  <meta name="theme-color" content="#06080d" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./payeeproof-favicon-32.png" />
+  <style>
+    :root {
+      --bg: #06080d;
+      --panel: rgba(255,255,255,.055);
+      --panel-2: rgba(255,255,255,.035);
+      --line: rgba(255,255,255,.11);
+      --text: #f4f4f5;
+      --muted: #a1a1aa;
+      --soft: #d4d4d8;
+      --ok: #86efac;
+      --warn: #fcd34d;
+      --bad: #fca5a5;
+      --accent: #93c5fd;
+      --shadow: 0 20px 70px rgba(0,0,0,.34);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(37,99,235,.22), transparent 34%),
+        radial-gradient(circle at 88% 12%, rgba(20,184,166,.16), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--line);
+      background: rgba(6,8,13,.84);
+      backdrop-filter: blur(16px);
+    }
+    .topbar-inner {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .brand img { width: 36px; height: 36px; border-radius: 8px; }
+    .brand strong { display: block; font-size: 15px; letter-spacing: 0; }
+    .brand span { display: block; color: var(--muted); font-size: 12px; }
+    .nav { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .nav a {
+      color: var(--soft);
+      font-size: 14px;
+      padding: 9px 11px;
+      border-radius: 8px;
+    }
+    .nav a:hover { background: rgba(255,255,255,.07); color: var(--text); }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 11px 16px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text);
+      background: rgba(255,255,255,.08);
+    }
+    .button.primary {
+      background: #f4f4f5;
+      color: #09090b;
+      border-color: #f4f4f5;
+    }
+    .button:hover { transform: translateY(-1px); }
+    .hero { padding: 92px 0 54px; }
+    .eyebrow {
+      display: inline-flex;
+      color: var(--accent);
+      border: 1px solid rgba(147,197,253,.22);
+      background: rgba(147,197,253,.08);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    h1 {
+      max-width: 880px;
+      margin: 0;
+      font-size: clamp(42px, 7vw, 76px);
+      line-height: .96;
+      letter-spacing: 0;
+    }
+    .lead {
+      max-width: 760px;
+      margin: 24px 0 0;
+      color: var(--soft);
+      font-size: clamp(18px, 2.2vw, 22px);
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .proof-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 42px;
+    }
+    .verdict {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 16px;
+      min-height: 92px;
+      box-shadow: var(--shadow);
+    }
+    .verdict strong { display: block; font-size: 13px; letter-spacing: 0; }
+    .verdict span { display: block; color: var(--muted); font-size: 13px; margin-top: 8px; }
+    .ok strong { color: var(--ok); }
+    .warn strong { color: var(--warn); }
+    .bad strong { color: var(--bad); }
+    section { padding: 54px 0; }
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+    h2 { margin: 0; font-size: clamp(28px, 3.6vw, 42px); line-height: 1.06; letter-spacing: 0; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; gap: 16px; }
+    .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+    .card h3 { margin: 0 0 9px; font-size: 18px; letter-spacing: 0; }
+    .card p { margin: 0; color: var(--muted); }
+    .step {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+    .num {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid var(--line);
+      font-weight: 800;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+    }
+    th, td {
+      text-align: left;
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      font-size: 14px;
+    }
+    th { color: var(--text); background: rgba(255,255,255,.055); }
+    td { color: var(--soft); }
+    tr:last-child td { border-bottom: 0; }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: #e0f2fe;
+      font-size: .95em;
+    }
+    .cta {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(255,255,255,.09), rgba(255,255,255,.045));
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 26px;
+      box-shadow: var(--shadow);
+    }
+    .cta h2 { font-size: clamp(26px, 3vw, 36px); }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 30px 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    @media (max-width: 860px) {
+      .topbar-inner { align-items: flex-start; flex-direction: column; padding: 14px 0; }
+      .nav { justify-content: flex-start; }
+      .proof-strip, .three, .two, .cta { grid-template-columns: 1fr; }
+      .hero { padding-top: 56px; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="./index.html">
+        <img src="./payeeproof-favicon-192.png" alt="" />
+        <span>
+          <strong>PayeeProof</strong>
+          <span>Stablecoin payout verification</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="./index.html">Home</a>
+        <a href="./pricing.html">Pricing</a>
+        <a href="./trust-security.html">Trust</a>
+        <a class="button" href="mailto:hello@payeeproof.com?subject=Free%20payout%20review%20request">Request review</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <span class="eyebrow">No integration required</span>
+        <h1>Get a free payout safety review.</h1>
+        <p class="lead">Send 10 anonymized USDC or USDT payout scenarios. PayeeProof checks the expected route against the provided route and returns a clear pre-send decision record before any funds move.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="mailto:hello@payeeproof.com?subject=Free%20payout%20review%20request&body=Hi%20PayeeProof%2C%0A%0AI%20want%20to%20try%20the%20free%20payout%20safety%20review.%20We%20send%20USDC%2FUSDT%20payouts%20for%3A%20%5Bcontractors%2Faffiliates%2Fcreators%2Frefunds%2Fother%5D.%0A%0AI%20can%20share%2010%20anonymized%20payout%20scenarios%20using%20your%20CSV%20template.%0A%0AThanks.">Email PayeeProof</a>
+          <a class="button" href="./payout-review-template.csv" download>Download CSV template</a>
+        </div>
+        <div class="proof-strip" aria-label="PayeeProof decisions">
+          <div class="verdict ok"><strong>SAFE_TO_SEND</strong><span>The payout route matches the expected recipient details.</span></div>
+          <div class="verdict bad"><strong>DO_NOT_SEND</strong><span>Network, asset, address, memo, or policy mismatch detected.</span></div>
+          <div class="verdict warn"><strong>REVERIFY</strong><span>The operator should confirm recipient details before release.</span></div>
+          <div class="verdict warn"><strong>SEND_SMALL_AMOUNT</strong><span>Use a test transfer before the full-value payout.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section-title">
+          <h2>How the review works</h2>
+          <p class="muted">Built for teams that already send real crypto payouts.</p>
+        </div>
+        <div class="grid two">
+          <div class="card step">
+            <div class="num">1</div>
+            <div>
+              <h3>Fill the CSV</h3>
+              <p>Use anonymized references. Do not include names, emails, private keys, seed phrases, or sensitive customer data.</p>
+            </div>
+          </div>
+          <div class="card step">
+            <div class="num">2</div>
+            <div>
+              <h3>Share 10 scenarios</h3>
+              <p>Include normal payouts, first-time recipients, refunds, changed wallets, network changes, and anything that currently needs a manual second check.</p>
+            </div>
+          </div>
+          <div class="card step">
+            <div class="num">3</div>
+            <div>
+              <h3>Receive decisions</h3>
+              <p>PayeeProof returns decision records with risk level, reason codes, and recommended operator action.</p>
+            </div>
+          </div>
+          <div class="card step">
+            <div class="num">4</div>
+            <div>
+              <h3>Start a pilot only if useful</h3>
+              <p>If the review catches real manual pain, move into a lightweight pilot for API, dashboard, or batch checks.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section-title">
+          <h2>CSV fields</h2>
+          <a class="button" href="./payout-review-template.csv" download>Download template</a>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Column</th>
+              <th>What to enter</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>reference_id</code></td><td>Internal anonymized ID, such as <code>PAYOUT-001</code>.</td></tr>
+            <tr><td><code>flow_type</code></td><td>Contractor payout, affiliate payout, creator payout, refund, vendor payout, treasury transfer, or other.</td></tr>
+            <tr><td><code>expected_network</code> / <code>expected_asset</code></td><td>The network and token your team intended to send.</td></tr>
+            <tr><td><code>expected_address</code> / <code>expected_memo</code></td><td>The recipient details your system or operator expects.</td></tr>
+            <tr><td><code>provided_network</code> / <code>provided_asset</code></td><td>The network and token submitted by the recipient or entered by the operator.</td></tr>
+            <tr><td><code>provided_address</code> / <code>provided_memo</code></td><td>The address and memo/tag that would be used for payout.</td></tr>
+            <tr><td><code>recipient_type</code></td><td>Contractor, affiliate, creator, vendor, customer, DAO contributor, exchange account, or other.</td></tr>
+            <tr><td><code>notes</code></td><td>Short context: first payout, changed wallet, high-value payout, cross-network concern, manual approval needed.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="grid three">
+          <div class="card">
+            <h3>No custody</h3>
+            <p>PayeeProof does not hold funds, initiate transfers, or require wallet control for the review.</p>
+          </div>
+          <div class="card">
+            <h3>No sensitive data</h3>
+            <p>Use anonymized references and payout details only. Keep personal data and secrets out of the file.</p>
+          </div>
+          <div class="card">
+            <h3>Fast feedback</h3>
+            <p>The goal is to prove whether PayeeProof can reduce manual payout review before asking for engineering time.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="cta">
+          <div>
+            <h2>Send 10 anonymized payout scenarios.</h2>
+            <p class="muted">You will get a clear review showing which payouts are safe, which should be blocked, and which need manual confirmation.</p>
+          </div>
+          <a class="button primary" href="mailto:hello@payeeproof.com?subject=Free%20payout%20review%20request">Request free review</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">PayeeProof verifies payout details before funds move. It is a decision layer, not custody or transfer execution.</div>
+  </footer>
+</body>
+</html>
