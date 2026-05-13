@@ -155,18 +155,23 @@ paths:
                   summary: Safe payout approval
                   value:
                     ok: true
-                    api_version: v1
-                    request_id: ppf_req_01HZZZZZZZZZZZZZZZZZZZZZZ
+                    service: preflight-check
+                    version: 2.7.2-api-log-cleanup
+                    trace_id: req_01hzzzzzzzzzzzz
+                    record_id: ppf_rec_01hzzzzzzzzzzzz
                     checked_at: '2026-03-26T10:12:08Z'
-                    verdict: SAFE
+                    chain: ethereum
+                    status: safe
+                    verdict: SAFE_TO_SEND
+                    legacy_verdict: SAFE
                     reason_code: OK
                     confidence: High
-                    destination_type: personal_wallet
+                    confidence_score: 98
+                    risk_level: LOW
                     next_action: SAFE_TO_PROCEED
+                    next_action_label: Proceed with the payment
+                    summary: Route looks safe to send.
                     why_this_verdict: Network, asset, address, and memo checks matched. The destination classified as a personal wallet.
-                    scope:
-                      network: ethereum
-                      asset: USDC
                     policy_profile: payout_strict
                     checks:
                       network_match: true
@@ -179,18 +184,21 @@ paths:
                   summary: Wrong network
                   value:
                     ok: true
-                    api_version: v1
-                    request_id: ppf_req_01HYYYYYYYYYYYYYYYYYYYYYY
+                    service: preflight-check
+                    version: 2.7.2-api-log-cleanup
+                    trace_id: req_01hyyyyyyyyyyyy
+                    record_id: ppf_rec_01hyyyyyyyyyyyy
                     checked_at: '2026-03-26T10:15:41Z'
-                    verdict: BLOCK
+                    chain: arbitrum
+                    status: blocked
+                    verdict: DO_NOT_SEND
+                    legacy_verdict: BLOCK
                     reason_code: NETWORK_MISMATCH
                     confidence: High
-                    destination_type: unknown
-                    next_action: BLOCK_AND_REVERIFY
+                    confidence_score: 99
+                    risk_level: HIGH
+                    next_action: DO_NOT_SEND
                     why_this_verdict: The provided network does not match the approved payout route.
-                    scope:
-                      network: ethereum
-                      asset: USDC
                     checks:
                       network_match: false
                       asset_match: true
@@ -202,18 +210,21 @@ paths:
                   summary: Deposit-like destination
                   value:
                     ok: true
-                    api_version: v1
-                    request_id: ppf_req_01HXXXXXXXXXXXXXXXXXXXXXX
+                    service: preflight-check
+                    version: 2.7.2-api-log-cleanup
+                    trace_id: req_01hxxxxxxxxxxxx
+                    record_id: ppf_rec_01hxxxxxxxxxxxx
                     checked_at: '2026-03-26T10:17:02Z'
+                    chain: ethereum
+                    status: review_required
                     verdict: REVERIFY
+                    legacy_verdict: REVERIFY
                     reason_code: DESTINATION_REQUIRES_MEMO_OR_VENUE_CHECK
                     confidence: Medium
-                    destination_type: exchange_like_deposit
+                    confidence_score: 68
+                    risk_level: MEDIUM
                     next_action: RECHECK_MEMO_OR_TAG
                     why_this_verdict: The destination looks like a platform-style deposit route and may depend on venue and memo/tag.
-                    scope:
-                      network: ethereum
-                      asset: USDT
                     checks:
                       network_match: true
                       asset_match: true
@@ -476,7 +487,7 @@ components:
           type: boolean
     Verdict:
       type: string
-      enum: [SAFE, BLOCK, REVERIFY, TEST_FIRST, UNAVAILABLE]
+      enum: [SAFE_TO_SEND, DO_NOT_SEND, REVERIFY, SEND_SMALL_AMOUNT, UNAVAILABLE]
     ReasonCode:
       type: string
       enum:
@@ -501,10 +512,15 @@ components:
       type: string
       enum:
         - SAFE_TO_PROCEED
+        - SAFE_TO_SEND
+        - DO_NOT_SEND
+        - SEND_SMALL_AMOUNT
+        - TEST_FIRST
         - BLOCK_AND_REVERIFY
         - CONFIRM_DESTINATION
         - RECHECK_MEMO_OR_TAG
         - REVERIFY_DESTINATION
+        - REVIEW_REQUEST_TEMPLATE
         - RETRY_OR_ESCALATE
     DestinationType:
       type: string
@@ -523,49 +539,89 @@ components:
       additionalProperties: true
       required:
         - ok
-        - api_version
-        - request_id
+        - service
+        - version
+        - trace_id
         - checked_at
         - verdict
+        - legacy_verdict
         - reason_code
         - confidence
-        - destination_type
+        - confidence_score
+        - risk_level
         - next_action
       properties:
         ok:
           type: boolean
-        api_version:
+        service:
           type: string
-          example: v1
-        request_id:
+          example: preflight-check
+        version:
+          type: string
+          example: 2.7.2-api-log-cleanup
+        trace_id:
+          type: string
+        record_id:
+          type: string
+        history_url:
           type: string
         checked_at:
           type: string
           format: date-time
+        chain:
+          type: string
+        status:
+          type: string
         verdict:
           $ref: '#/components/schemas/Verdict'
+        legacy_verdict:
+          type: string
+          enum: [SAFE, BLOCK, REVERIFY, TEST FIRST, UNAVAILABLE]
         reason_code:
           $ref: '#/components/schemas/ReasonCode'
         confidence:
           $ref: '#/components/schemas/Confidence'
-        destination_type:
-          $ref: '#/components/schemas/DestinationType'
+        confidence_score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        risk_level:
+          type: string
+          enum: [LOW, MEDIUM, HIGH]
         next_action:
           $ref: '#/components/schemas/NextAction'
+        next_action_label:
+          type: string
         policy_profile:
           $ref: '#/components/schemas/PolicyProfile'
         why_this_verdict:
           type:
             - string
             - 'null'
-        scope:
-          $ref: '#/components/schemas/Scope'
         checks:
           $ref: '#/components/schemas/Checks'
+        proof:
+          type: object
+          additionalProperties: true
         expected:
           $ref: '#/components/schemas/Party'
         provided:
           $ref: '#/components/schemas/Party'
+        destination:
+          type: object
+          additionalProperties: true
+        onchain:
+          type: object
+          additionalProperties: true
+        classification:
+          type: object
+          additionalProperties: true
+        supported_scope:
+          type: object
+          additionalProperties: true
+        limits:
+          type: object
+          additionalProperties: true
     ErrorResponse:
       type: object
       additionalProperties: true
@@ -582,7 +638,7 @@ components:
           type:
             - string
             - 'null'
-        request_id:
+        trace_id:
           type:
             - string
             - 'null'
