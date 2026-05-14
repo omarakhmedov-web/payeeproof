@@ -521,14 +521,14 @@
       <div class="container">
         <div class="eyebrow">Proof format</div>
         <h2>A verification result should read like a control record, not an AI guess.</h2>
-        <p class="lead" style="max-width:900px; margin-top:14px;">The product is built around a compact payout control record: stable verdict, reason code, confidence score, risk level, destination class, and a clear next step.</p>
+        <p class="lead" style="max-width:900px; margin-top:14px;">The product is built around a compact payout control record: stable verdict, reason code, decision confidence, risk level, destination class, and a clear next step.</p>
 
         <div class="proof-grid">
           <div class="card panel">
             <h3 style="font-size:24px; margin-bottom:14px;">What the record captures</h3>
             <div class="list" style="margin-top:0;">
               <div class="list-item"><strong>Stable outcome language</strong><span>SAFE_TO_SEND, DO_NOT_SEND, REVERIFY, or SEND_SMALL_AMOUNT — one clear status language for action and escalation.</span></div>
-              <div class="list-item"><strong>Control fields</strong><span>Checked at, confidence, confidence score, risk level, reference, destination class, and next action.</span></div>
+              <div class="list-item"><strong>Control fields</strong><span>Checked at, confidence level, decision confidence, risk level, reference, destination class, and next action.</span></div>
               <div class="list-item"><strong>Operational context</strong><span>Short explanation for why the decision was returned and how an ops team should react.</span></div>
               <div class="list-item"><strong>Reviewability</strong><span>A result that can be used in a workflow, ticket, or approval log without rewriting it.</span></div>
             </div>
@@ -674,7 +674,7 @@
               <div class="result-kv"><div class="result-k">Next step</div><div class="result-v" id="pfNext">Run live check</div></div>
               <div class="result-kv"><div class="result-k">Time checked</div><div class="result-v" id="pfCheckedAt">—</div></div>
               <div class="result-kv"><div class="result-k">Confidence</div><div class="result-v" id="pfConfidence">—</div></div>
-              <div class="result-kv"><div class="result-k">Confidence score</div><div class="result-v" id="pfConfidenceScore">—</div></div>
+              <div class="result-kv"><div class="result-k">Decision confidence</div><div class="result-v" id="pfConfidenceScore">—</div></div>
               <div class="result-kv"><div class="result-k">Risk level</div><div class="result-v" id="pfRiskLevel">—</div></div>
               <div class="result-kv"><div class="result-k">System reference</div><div class="result-v" id="pfReasonCode">—</div></div>
               <div class="result-kv wide"><div class="result-k">Why this verdict</div><div class="result-v" id="pfWhy">Waiting for a live or pilot-review result.</div></div>
@@ -863,7 +863,7 @@
           <div class="flow-step">
             <div class="flow-step-num">Step 3</div>
             <h3>Clear verdict</h3>
-            <p>The result returns one public language standard: SAFE_TO_SEND, DO_NOT_SEND, REVERIFY, or SEND_SMALL_AMOUNT, with confidence score, risk level, and AI risk context. UNAVAILABLE stays a system fallback, not a green-light state.</p>
+            <p>The result returns one public language standard: SAFE_TO_SEND, DO_NOT_SEND, REVERIFY, or SEND_SMALL_AMOUNT, with decision confidence, risk level, and AI risk context. UNAVAILABLE stays a system fallback, not a green-light state.</p>
           </div>
           <div class="flow-step">
             <div class="flow-step-num">Step 4</div>
@@ -2016,12 +2016,35 @@
     function inferPreflightConfidenceScore(data, verdictLabel, riskLevel) {
       const raw = data?._confidence_score ?? data?.confidence_score ?? data?.proof?.confidence_score;
       const parsed = Number(raw);
-      if (Number.isFinite(parsed)) return `${Math.round(parsed)}/100`;
+      const rawScore = Number.isFinite(parsed) ? Math.max(0, Math.min(100, Math.round(parsed))) : null;
       const normalized = canonicalPreflightVerdict(verdictLabel);
-      if (riskLevel === 'LOW' && normalized === 'SAFE_TO_SEND') return '92/100';
-      if (riskLevel === 'HIGH' || normalized === 'DO_NOT_SEND') return '67/100';
-      if (normalized === 'SEND_SMALL_AMOUNT' || normalized === 'REVERIFY') return '62/100';
-      return '42/100';
+      const reasonCode = formatReasonCodeRaw(data?.reason_code);
+      const destinationType = String((((data?.onchain || {}).provided || {}).address_type) || '').toLowerCase();
+      const riskFlags = Array.isArray(data?.risk_flags) ? data.risk_flags.map((item) => String(item).toLowerCase()) : [];
+
+      let floor = 42;
+      if (reasonCode === 'INVALID_ADDRESS' || reasonCode === 'ZERO_ADDRESS') {
+        floor = 100;
+      } else if (['NETWORK_MISMATCH', 'ASSET_MISMATCH', 'ADDRESS_MISMATCH', 'MEMO_MISMATCH'].includes(reasonCode)) {
+        floor = 99;
+      } else if (['UNSUPPORTED_ASSET', 'UNSUPPORTED_NETWORK', 'UNSUPPORTED_ASSET_OR_NETWORK'].includes(reasonCode)) {
+        floor = 95;
+      } else if (destinationType === 'exchange_deposit' || reasonCode === 'DESTINATION_REQUIRES_MEMO_OR_VENUE_CHECK' || riskFlags.includes('confirm_venue') || riskFlags.includes('confirm_memo_or_tag')) {
+        floor = 90;
+      } else if (destinationType === 'contract' || destinationType === 'bridge_router' || reasonCode === 'DESTINATION_IS_CONTRACT_OR_APP' || reasonCode === 'DESTINATION_IS_BRIDGE_ROUTER' || riskFlags.includes('contract_destination')) {
+        floor = 88;
+      } else if (riskLevel === 'LOW' && normalized === 'SAFE_TO_SEND') {
+        floor = 96;
+      } else if (normalized === 'DO_NOT_SEND') {
+        floor = 96;
+      } else if (normalized === 'SEND_SMALL_AMOUNT') {
+        floor = 88;
+      } else if (normalized === 'REVERIFY') {
+        floor = 86;
+      }
+
+      const score = rawScore === null ? floor : Math.max(rawScore, floor);
+      return `${Math.max(0, Math.min(100, score))}/100`;
     }
 
     function renderAiRiskContext(data, verdictLabel, riskLevel) {
@@ -2075,6 +2098,7 @@
         el('pfNext').textContent = 'Please wait';
         el('pfCheckedAt').textContent = '—';
         el('pfConfidence').textContent = '—';
+        el('pfConfidenceScore').textContent = '—';
         el('pfReasonCode').textContent = '—';
         el('pfWhy').textContent = 'Waiting for the live response.';
         el('pfDestType').textContent = 'Checking…';
@@ -2090,6 +2114,7 @@
       el('pfNext').textContent = 'Run live check';
       el('pfCheckedAt').textContent = '—';
       el('pfConfidence').textContent = '—';
+      el('pfConfidenceScore').textContent = '—';
       el('pfReasonCode').textContent = '—';
       el('pfWhy').textContent = 'Waiting for a live or pilot-review result.';
       el('pfDestType').textContent = 'Unknown';
@@ -2209,6 +2234,7 @@
         contract: {
           _verdict: 'REVERIFY',
           _confidence: 'Medium',
+          _confidence_score: 88,
           status: 'verified',
           reason_code: 'DESTINATION_IS_CONTRACT_OR_APP',
           next_action: 'CONFIRM_DESTINATION',
@@ -2223,6 +2249,7 @@
         exchange: {
           _verdict: 'REVERIFY',
           _confidence: 'Medium',
+          _confidence_score: 90,
           status: 'verified',
           reason_code: 'OK',
           next_action: 'BLOCK_AND_REVERIFY',
@@ -2237,6 +2264,7 @@
         invalid: {
           _verdict: 'DO_NOT_SEND',
           _confidence: 'High',
+          _confidence_score: 100,
           status: 'blocked',
           reason_code: 'INVALID_ADDRESS',
           next_action: 'BLOCK_AND_REVERIFY',
@@ -2250,7 +2278,8 @@
         },
         unsupported: {
           _verdict: 'REVERIFY',
-          _confidence: 'Medium',
+          _confidence: 'High',
+          _confidence_score: 95,
           status: 'blocked',
           reason_code: 'UNSUPPORTED_ASSET_OR_NETWORK',
           next_action: 'BLOCK_AND_REVERIFY',
